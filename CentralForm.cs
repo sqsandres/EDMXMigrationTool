@@ -1,3 +1,4 @@
+using System.Data.Common;
 using System.Text;
 using System.Xml.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -133,7 +134,7 @@ namespace EDMXMigrationTool
                 interfaceFile.AppendLine(" {");
                 interfaceFile.Append("   public interface I");
                 interfaceFile.Append(entity.NameFixed);
-                interfaceFile.AppendLine("Repository : IRepository<");
+                interfaceFile.Append("Repository : IRepository<");
                 interfaceFile.Append(entity.NameFixed);
                 interfaceFile.AppendLine("> {");
                 interfaceFile.AppendLine("   }");
@@ -308,15 +309,31 @@ namespace EDMXMigrationTool
                 file.Append("\", SchemaName.");
                 file.Append(table.Schema);
                 file.AppendLine(");");
+                var primaryKeys = table.Columns.Where(c => c.IsPrimaryKey).ToList();
+                if (primaryKeys.Count > 1)
+                {
+                    file.Append("           builder.HasKey(x => new { ");
+                    for (int i = 0; i < primaryKeys.Count; i++)
+                    {
+                        if (i > 0)
+                        {
+                            file.Append(", ");
+                        }
+                        file.Append("x.");
+                        file.Append(primaryKeys[i].Name);
+                    }
+                    file.AppendLine(" });");
+                }
+                else if (primaryKeys.Count == 1)
+                {
+                    file.Append("           builder.HasKey(x => x.");
+                    file.Append(primaryKeys[0].Name);
+                    file.AppendLine(");");
+                }
                 foreach (Column column in table.Columns)
                 {
-                    if (column.IsPrimaryKey)
-                    {
-                        file.Append("           builder.HasKey(x => x.");
-                        file.Append(column.Name);
-                        file.AppendLine(");");
-                    }
                     file.Append("           builder.Property(x => x.");
+                    file.Append(column.Name);
                     file.Append(")");
                     if (!column.IsNullable)
                     {
@@ -350,9 +367,9 @@ namespace EDMXMigrationTool
                     file.AppendLine(";");
                 }
 
-                file.Append("       }");
-                file.Append("   }");
-                file.Append("}");
+                file.AppendLine("       }");
+                file.AppendLine("   }");
+                file.AppendLine("}");
                 File.WriteAllText(Path.Combine(parameters.DestinationPath, "Configuration", table.NameFixed + ".cs"), file.ToString());
             }
         }
@@ -439,7 +456,7 @@ namespace EDMXMigrationTool
             file.Append("}");
             File.WriteAllText(Path.Combine(parameters.DestinationPath, name + ".cs"), file.ToString());
         }
-        
+
         private void AnaliceContext(IDictionary<string, Table> tables, IDictionary<string, Entity> entities, IList<Mapping> mappings)
         {
 
@@ -457,7 +474,7 @@ namespace EDMXMigrationTool
             {
                 throw new InvalidOperationException("The EDMX file does not contain any schemas for SSDL context.");
             }
-            string schemaName = schema?.Attribute("Namespace")?.Value ?? string.Empty;
+            string schemaName = "dbo";//schema?.Attribute("Namespace")?.Value ?? string.Empty;
             foreach (var entity in schema.Descendants())
             {
                 if (entity.Name.LocalName == "EntityType")
