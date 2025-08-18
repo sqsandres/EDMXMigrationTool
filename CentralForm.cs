@@ -1,5 +1,6 @@
 using System.Text;
 using System.Xml.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EDMXMigrationTool
 {
@@ -96,13 +97,65 @@ namespace EDMXMigrationTool
                 AddLog("Creating models classes:");
                 CreateFolder(Path.Combine(parameters.DestinationPath, "Models"));
                 CreateModelClasses(tables, entities, mappings, parameters);
-                AddLog("Creating the DBContext:");
-                CreateDbContext(entities, parameters);
+                AddLog("Creating the DBContext with dbSets:");
+                CreateDbContext(entities, parameters, "AppDbContext", true);
+                AddLog("Creating the DBContext without dbSets:");
+                CreateDbContext(entities, parameters, "AppDbContext2", false);
+
+                AddLog("Creating repositories classes:");
+                CreateFolder(Path.Combine(parameters.DestinationPath, "IRepositories"));
+                CreateFolder(Path.Combine(parameters.DestinationPath, "Repositories"));
+                CreateRepositoriesClasses(tables, entities, mappings, parameters);
+
                 AddLog("Migrated!");
             }
             catch (Exception ex)
             {
                 AddLog($"Error during migration: {ex.Message}");
+            }
+        }
+
+        private void CreateRepositoriesClasses(IDictionary<string, Table> tables, IDictionary<string, Entity> entities, IList<Mapping> mappings, UIParameters parameters)
+        {
+            foreach (Entity entity in entities.Values)
+            {
+                StringBuilder interfaceFile = new StringBuilder();
+                interfaceFile.AppendLine("using System;");
+                interfaceFile.AppendLine("using System.Collections.Generic;");
+                interfaceFile.AppendLine("using System.Threading.Tasks;");
+                interfaceFile.Append("using ");
+                interfaceFile.Append(parameters.Namespace);
+                interfaceFile.AppendLine(".Models;");
+                interfaceFile.Append(Environment.NewLine);
+                interfaceFile.Append("namespace ");
+                interfaceFile.Append(parameters.Namespace);
+                interfaceFile.Append(".Contracts.Repositories");
+                interfaceFile.AppendLine(" {");
+                interfaceFile.Append("   public interface I");
+                interfaceFile.Append(entity.NameFixed);
+                interfaceFile.AppendLine("Repository : IRepository<");
+                interfaceFile.Append(entity.NameFixed);
+                interfaceFile.AppendLine("> {");
+                interfaceFile.AppendLine("   }");
+                interfaceFile.Append("}");
+                File.WriteAllText(Path.Combine(parameters.DestinationPath, "IRepositories", "I" + entity.NameFixed + "Repository.cs"), interfaceFile.ToString());
+
+                StringBuilder repoFile = new StringBuilder();
+                repoFile.AppendLine("using System;");
+                repoFile.AppendLine("using System.Collections.Generic;");
+                repoFile.AppendLine("using System.Threading.Tasks;");
+                repoFile.AppendLine($"using {parameters.Namespace}.Models;");
+                repoFile.AppendLine($"using {parameters.Namespace}.Contracts.Repositories;");
+                repoFile.Append(Environment.NewLine);
+                repoFile.AppendLine($"namespace {parameters.Namespace}.Repositories {{");
+                repoFile.AppendLine($"   public class {entity.NameFixed}Repository : Repository<{entity.NameFixed}>, I{entity.NameFixed}Repository {{");
+                //repoFile.Append($"       private readonly AppDbContext _context;");
+                repoFile.AppendLine($"       public {entity.NameFixed}Repository(AppDbContext context) : base(context) {{");
+                //repoFile.Append($"           _context = context;");
+                repoFile.AppendLine("       }");
+                repoFile.AppendLine("   }");
+                repoFile.AppendLine("}");
+                File.WriteAllText(Path.Combine(parameters.DestinationPath, "Repositories", entity.NameFixed + "Repository.cs"), repoFile.ToString());
             }
         }
         private void CreateModelClasses(IDictionary<string, Table> tables, IDictionary<string, Entity> entities, IList<Mapping> mappings, UIParameters parameters)
@@ -303,7 +356,7 @@ namespace EDMXMigrationTool
                 File.WriteAllText(Path.Combine(parameters.DestinationPath, "Configuration", table.NameFixed + ".cs"), file.ToString());
             }
         }
-        private void CreateDbContext(IDictionary<string, Entity> entities, UIParameters parameters)
+        private void CreateDbContext(IDictionary<string, Entity> entities, UIParameters parameters, string name, bool hasDbSets)
         {
             StringBuilder file = new StringBuilder();
             file.AppendLine("using System;");
@@ -326,13 +379,51 @@ namespace EDMXMigrationTool
             file.AppendLine("       protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder){");
             file.AppendLine("           base.OnConfiguring(optionsBuilder);");
             file.AppendLine("       }");
-            foreach (Entity entity in entities.Values.OrderBy(x => x.Name))
+            if (hasDbSets)
             {
-                file.Append("       public DbSet<");
-                file.Append(entity.NameFixed);
-                file.Append("> ");
-                file.Append(entity.NameFixed);
-                file.AppendLine("s { get; set; }");
+                foreach (Entity entity in entities.Values.OrderBy(x => x.Name))
+                {
+                    file.Append("       public DbSet<");
+                    file.Append(entity.NameFixed);
+                    file.Append("> ");
+                    file.Append(entity.NameFixed);
+                    if (
+                        entity.NameFixed.EndsWith("s", StringComparison.InvariantCultureIgnoreCase)
+                        //|| entity.NameFixed.EndsWith("1", StringComparison.InvariantCultureIgnoreCase)
+                        )
+                    {
+                        //we dont need to do somthing else...
+                    }
+                    else if (entity.NameFixed.EndsWith("a", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.NameFixed.EndsWith("e", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.NameFixed.EndsWith("i", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.NameFixed.EndsWith("o", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.NameFixed.EndsWith("u", StringComparison.InvariantCultureIgnoreCase)
+
+
+                        || entity.NameFixed.EndsWith("h", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.NameFixed.EndsWith("k", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.NameFixed.EndsWith("c", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.NameFixed.EndsWith("f", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.NameFixed.EndsWith("g", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.NameFixed.EndsWith("r", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.NameFixed.EndsWith("b", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.NameFixed.EndsWith("t", StringComparison.InvariantCultureIgnoreCase)
+                        )
+                    {
+                        file.Append("s");
+                    }
+                    else if (entity.NameFixed.EndsWith("z", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        file.Length--;
+                        file.Append("ces");
+                    }
+                    else
+                    {
+                        file.Append("es");
+                    }
+                    file.AppendLine(" { get; set; }");
+                }
             }
             file.Append(Environment.NewLine);
             file.AppendLine("       protected override void OnModelCreating(ModelBuilder modelBuilder){");
@@ -346,8 +437,9 @@ namespace EDMXMigrationTool
             file.AppendLine("       }");
             file.AppendLine("   }");
             file.Append("}");
-            File.WriteAllText(Path.Combine(parameters.DestinationPath, "AppDbContext.cs"), file.ToString());
+            File.WriteAllText(Path.Combine(parameters.DestinationPath, name + ".cs"), file.ToString());
         }
+        
         private void AnaliceContext(IDictionary<string, Table> tables, IDictionary<string, Entity> entities, IList<Mapping> mappings)
         {
 
@@ -375,7 +467,7 @@ namespace EDMXMigrationTool
                         Name = entity.Attribute("Name")?.Value ?? string.Empty,
                         Schema = schemaName ?? string.Empty
                     };
-                    table.NameFixed = FixedTableName(table.Name);
+                    table.NameFixed = NameInPascalCase(table.Name);
                     foreach (var property in entity.Descendants().Where(n => n.Name.LocalName == "Property"))
                     {
                         Column column = new Column
@@ -400,7 +492,7 @@ namespace EDMXMigrationTool
             }
             return data;
         }
-        private string FixedTableName(string name)
+        private string NameInPascalCase(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -426,7 +518,10 @@ namespace EDMXMigrationTool
                 if (part.Length > 1)
                     pascalName.Append(part.Substring(1).ToLower());
             }
-            return pascalName.ToString();
+            string nameInPascalCase = pascalName.ToString();
+            nameInPascalCase = nameInPascalCase.Replace("tms", "TMS", StringComparison.InvariantCultureIgnoreCase);
+            nameInPascalCase = nameInPascalCase.EndsWith("doc") ? nameInPascalCase.Replace("doc", "Doc", StringComparison.InvariantCultureIgnoreCase) : nameInPascalCase;
+            return nameInPascalCase;
         }
         private bool IsInPascalCase(string name)
         {
@@ -434,7 +529,7 @@ namespace EDMXMigrationTool
             {
                 return false;
             }
-            return char.IsUpper(name[0]) && (char.IsLower(name[1]) || char.IsLower(name[5]));
+            return char.IsUpper(name[0]) && (char.IsLower(name[1]) || (name.Length > 5 && char.IsLower(name[5])));
         }
         /// <summary>
         /// SSDL content
@@ -458,7 +553,7 @@ namespace EDMXMigrationTool
                     TableName = entityType.Attribute("Name")?.Value ?? string.Empty,
                     Schema = schemaName ?? string.Empty
                 };
-                e.NameFixed = FixedTableName(e.Name);
+                e.NameFixed = NameInPascalCase(e.Name);
                 foreach (var property in entityType.Descendants().Where(n => n.Name.LocalName == "Property"))
                 {
                     Property prop = new Property

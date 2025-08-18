@@ -226,7 +226,7 @@
             txtNamespace.Name = "txtNamespace";
             txtNamespace.Size = new Size(980, 44);
             txtNamespace.TabIndex = 5;
-            txtNamespace.Text = "RJO.OrderService.Persistence.Database";
+            txtNamespace.Text = "TMS.Solution.Persistence.Database";
             // 
             // frmCentralForm
             // 
