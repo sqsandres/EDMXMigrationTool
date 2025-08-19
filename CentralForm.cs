@@ -127,7 +127,6 @@ namespace EDMXMigrationTool
             file.Append("namespace ");
             file.Append(parameters.Namespace);
             file.AppendLine("{");
-            file.Append(Environment.NewLine);
             file.AppendLine("   public enum SchemaName {");
             foreach (string schema in tables.Values.Select(x => x.Schema).Distinct())
             {
