@@ -106,7 +106,7 @@
             txtFile.ReadOnly = true;
             txtFile.Size = new Size(860, 42);
             txtFile.TabIndex = 0;
-            txtFile.Text = "C:\\Users\\sqsan\\OneDrive\\Desktop\\TMSBD.edmx";
+            txtFile.Text = "C:\\EDMX\\TMSBD.edmx";
             // 
             // bntFileSelection
             // 
@@ -142,7 +142,7 @@
             txtDestination.ReadOnly = true;
             txtDestination.Size = new Size(860, 42);
             txtDestination.TabIndex = 0;
-            txtDestination.Text = "C:\\Users\\sqsan\\OneDrive\\Desktop\\Result";
+            txtDestination.Text = "C:\\EDMX\\Result";
             // 
             // btnFindDestination
             // 
@@ -226,7 +226,7 @@
             txtNamespace.Name = "txtNamespace";
             txtNamespace.Size = new Size(980, 44);
             txtNamespace.TabIndex = 5;
-            txtNamespace.Text = "TMS.Solution.Persistence.Database";
+            txtNamespace.Text = "TMS.Solution.Core.Data";
             // 
             // frmCentralForm
             // 

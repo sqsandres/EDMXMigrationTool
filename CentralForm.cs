@@ -108,12 +108,45 @@ namespace EDMXMigrationTool
                 CreateFolder(Path.Combine(parameters.DestinationPath, "Repositories"));
                 CreateRepositoriesClasses(tables, entities, mappings, parameters);
 
+
+                AddLog("Creating the schema enum:");
+                CreateSchemaEnum(tables, parameters);
                 AddLog("Migrated!");
             }
             catch (Exception ex)
             {
                 AddLog($"Error during migration: {ex.Message}");
             }
+        }
+
+        private void CreateSchemaEnum(IDictionary<string, Table> tables, UIParameters parameters)
+        {
+            StringBuilder file = new StringBuilder();
+            file.AppendLine("using System;");
+            file.Append(Environment.NewLine);
+            file.Append("namespace ");
+            file.Append(parameters.Namespace);
+            file.AppendLine("{");
+            file.Append(Environment.NewLine);
+            file.AppendLine("   public enum SchemaName {");
+            foreach (string schema in tables.Values.Select(x => x.Schema).Distinct())
+            {
+                file.Append("       public const string ");
+                if (schema.Equals("dbo", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    file.AppendLine("General = \"dbo\";");
+                }
+                else
+                {
+                    file.Append(NameInPascalCase(schema));
+                    file.Append(" = \"");
+                    file.Append(schema);
+                    file.AppendLine("\";");
+                }
+            }
+            file.AppendLine("   }");
+            file.AppendLine("}");
+            File.WriteAllText(Path.Combine(txtDestination.Text, "SchemaName.cs"), file.ToString());
         }
 
         private void CreateRepositoriesClasses(IDictionary<string, Table> tables, IDictionary<string, Entity> entities, IList<Mapping> mappings, UIParameters parameters)
@@ -307,7 +340,14 @@ namespace EDMXMigrationTool
                 file.Append("           builder.ToTable(\"");
                 file.Append(table.Name);
                 file.Append("\", SchemaName.");
-                file.Append(table.Schema);
+                if(string.Equals(table.Schema, "dbo", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    file.Append("General");
+                }
+                else
+                {
+                    file.Append(table.Schema);
+                }
                 file.AppendLine(");");
                 var primaryKeys = table.Columns.Where(c => c.IsPrimaryKey).ToList();
                 if (primaryKeys.Count > 1)
@@ -474,15 +514,13 @@ namespace EDMXMigrationTool
             {
                 throw new InvalidOperationException("The EDMX file does not contain any schemas for SSDL context.");
             }
-            string schemaName = "dbo";//schema?.Attribute("Namespace")?.Value ?? string.Empty;
             foreach (var entity in schema.Descendants())
             {
                 if (entity.Name.LocalName == "EntityType")
                 {
                     Table table = new Table
                     {
-                        Name = entity.Attribute("Name")?.Value ?? string.Empty,
-                        Schema = schemaName ?? string.Empty
+                        Name = entity.Attribute("Name")?.Value ?? string.Empty
                     };
                     table.NameFixed = NameInPascalCase(table.Name);
                     foreach (var property in entity.Descendants().Where(n => n.Name.LocalName == "Property"))
@@ -505,6 +543,19 @@ namespace EDMXMigrationTool
                         table.Columns.Add(column);
                     }
                     data[table.Name] = table;
+                }
+            }
+            XElement? schemaNames = storageModels?.Descendants().FirstOrDefault(n => n.Name.LocalName == "EntityContainer");
+            foreach (var entity in schema.Descendants())
+            {
+                if (entity.Name.LocalName == "EntitySet")
+                {
+                    string entityName = entity.Attribute("Name")?.Value ?? string.Empty;
+                    if (data.ContainsKey(entityName))
+                    {
+                        Table table = data[entityName];
+                        table.Schema = entity.Attribute("Schema")?.Value ?? "dbo";
+                    }
                 }
             }
             return data;
