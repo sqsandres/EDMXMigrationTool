@@ -192,16 +192,19 @@ namespace EDMXMigrationTool
                 //interfaceFile.AppendLine("using System.Threading.Tasks;");
                 interfaceFile.Append("using ");
                 interfaceFile.Append(parameters.Namespace);
-                interfaceFile.Append(".Domain.");
-                if (hasSchema)
-                {
-                    interfaceFile.Append(entity.Schema);
-                }
-                else
-                {
-                    interfaceFile.Append(DefaultSchema);
-                }
-                interfaceFile.AppendLine(";");
+                interfaceFile.AppendLine(".Contract;");
+                //interfaceFile.Append("using ");
+                //interfaceFile.Append(parameters.Namespace);
+                //interfaceFile.Append(".Domain.");
+                //if (hasSchema)
+                //{
+                //    interfaceFile.Append(entity.Schema);
+                //}
+                //else
+                //{
+                //    interfaceFile.Append(DefaultSchema);
+                //}
+                //interfaceFile.AppendLine(";");
                 interfaceFile.Append(Environment.NewLine);
                 interfaceFile.Append("namespace ");
                 interfaceFile.Append(parameters.Namespace);
@@ -217,7 +220,16 @@ namespace EDMXMigrationTool
                 interfaceFile.AppendLine(" {");
                 interfaceFile.Append("   public interface I");
                 interfaceFile.Append(entity.NameFixed);
-                interfaceFile.Append("Repository : IRepository<");
+                interfaceFile.Append("Repository : IRepository<Domain.");
+                if (hasSchema)
+                {
+                    interfaceFile.Append(entity.Schema);
+                }
+                else
+                {
+                    interfaceFile.Append(DefaultSchema);
+                }
+                interfaceFile.Append(".");
                 interfaceFile.Append(entity.NameFixed);
                 interfaceFile.AppendLine("> {");
                 interfaceFile.AppendLine("   }");
@@ -235,18 +247,18 @@ namespace EDMXMigrationTool
                 //repoFile.AppendLine("using System;");
                 //repoFile.AppendLine("using System.Collections.Generic;");
                 //repoFile.AppendLine("using System.Threading.Tasks;");
-                repoFile.Append("using ");
-                repoFile.Append(parameters.Namespace);
-                repoFile.Append(".Domain.");
-                if (hasSchema)
-                {
-                    repoFile.Append(entity.Schema);
-                }
-                else
-                {
-                    repoFile.Append(DefaultSchema);
-                }
-                repoFile.AppendLine(";");
+                //repoFile.Append("using ");
+                //repoFile.Append(parameters.Namespace);
+                //repoFile.Append(".Domain.");
+                //if (hasSchema)
+                //{
+                //    repoFile.Append(entity.Schema);
+                //}
+                //else
+                //{
+                //    repoFile.Append(DefaultSchema);
+                //}
+                //repoFile.AppendLine(";");
                 repoFile.Append("using ");
                 repoFile.Append(parameters.Namespace);
                 repoFile.Append(".Contracts.Repositories.");
@@ -272,7 +284,7 @@ namespace EDMXMigrationTool
                     repoFile.Append(DefaultSchema);
                 }
                 repoFile.AppendLine(" {");
-                repoFile.AppendLine($"   public class {entity.NameFixed}Repository : Repository<{entity.NameFixed}>, I{entity.NameFixed}Repository {{");
+                repoFile.AppendLine($"   public class {entity.NameFixed}Repository : Repository<Domain.{(hasSchema? entity.Schema: DefaultSchema)}.{entity.NameFixed}>, I{entity.NameFixed}Repository {{");
                 repoFile.AppendLine($"       public {entity.NameFixed}Repository(AppDbContext context) : base(context) {{");
                 repoFile.AppendLine("       }");
                 repoFile.AppendLine("   }");
@@ -294,6 +306,10 @@ namespace EDMXMigrationTool
                 bool hasSchema = HasSchema(entity.Schema);
                 StringBuilder file = new StringBuilder();
                 file.AppendLine("using System;");
+                // file.Append("using ");
+                // file.Append(parameters.Namespace);
+                // file.Append(".Domain;");
+
                 file.Append(Environment.NewLine);
                 file.Append("namespace ");
                 file.Append(parameters.Namespace);
@@ -309,7 +325,7 @@ namespace EDMXMigrationTool
                 file.AppendLine(" {");
                 file.Append("   public class ");
                 file.Append(entity.NameFixed);
-                file.AppendLine(" {");
+                file.AppendLine(" : Entity {");
                 file.Append("       public ");
                 file.Append(entity.NameFixed);
                 file.AppendLine("() { }");
@@ -437,25 +453,27 @@ namespace EDMXMigrationTool
         }
         private void CreateConfigurationClasses(IDictionary<string, Table> tables, IDictionary<string, Entity> entities, IList<Mapping> mappings, UIParameters parameters)
         {
-            foreach (Table table in tables.Values.Where(x => x.Used))
+            foreach (var mapping in mappings)
             {
+                Table table = tables[mapping.TableName];
+                Entity entity = entities[mapping.EntityName];
                 bool hasSchema = HasSchema(table.Schema);
                 StringBuilder file = new StringBuilder();
                 //file.AppendLine("using System;");
                 file.AppendLine("using Microsoft.EntityFrameworkCore;");
                 file.AppendLine("using Microsoft.EntityFrameworkCore.Metadata.Builders;");
-                file.Append("using ");
-                file.Append(parameters.Namespace);
-                file.Append(".Domain.");
-                if (hasSchema)
-                {
-                    file.Append(table.Schema);
-                }
-                else
-                {
-                    file.Append(DefaultSchema);
-                }
-                file.AppendLine(";");
+                //file.Append("using ");
+                //file.Append(parameters.Namespace);
+                //file.Append(".Domain.");
+                //if (hasSchema)
+                //{
+                //    file.Append(table.Schema);
+                //}
+                //else
+                //{
+                //    file.Append(DefaultSchema);
+                //}
+                //file.AppendLine(";");
                 file.Append(Environment.NewLine);
                 file.Append("namespace ");
                 file.Append(parameters.Namespace);
@@ -471,10 +489,28 @@ namespace EDMXMigrationTool
                 file.AppendLine(" {");
                 file.Append("   public class ");
                 file.Append(table.EntityName);
-                file.Append("Configuration : IEntityTypeConfiguration<");
+                file.Append("Configuration : IEntityTypeConfiguration<Domain.");
+                if (hasSchema)
+                {
+                    file.Append(table.Schema);
+                }
+                else
+                {
+                    file.Append(DefaultSchema);
+                }
+                file.Append(".");
                 file.Append(table.EntityName);
                 file.AppendLine(">{");
-                file.Append("       public void Configure(EntityTypeBuilder<");
+                file.Append("       public void Configure(EntityTypeBuilder<Domain.");
+                if (hasSchema)
+                {
+                    file.Append(table.Schema);
+                }
+                else
+                {
+                    file.Append(DefaultSchema);
+                }
+                file.Append(".");
                 file.Append(table.EntityName);
                 file.AppendLine("> builder){");
                 file.Append("           builder.ToTable(\"");
@@ -489,7 +525,7 @@ namespace EDMXMigrationTool
                     file.Append(table.Schema);
                 }
                 file.AppendLine(");");
-                var primaryKeys = table.Columns.Where(c => c.IsPrimaryKey).ToList();
+                var primaryKeys = table.Columns.Values.Where(c => c.IsPrimaryKey).ToList();
                 if (primaryKeys.Count > 1)
                 {
                     file.Append("           builder.HasKey(x => new { ");
@@ -500,24 +536,32 @@ namespace EDMXMigrationTool
                             file.Append(", ");
                         }
                         file.Append("x.");
-                        file.Append(primaryKeys[i].Name);
+                        file.Append(primaryKeys[i].PropertyName);
                     }
                     file.AppendLine(" });");
                 }
                 else if (primaryKeys.Count == 1)
                 {
                     file.Append("           builder.HasKey(x => x.");
-                    file.Append(primaryKeys[0].Name);
+                    file.Append(primaryKeys[0].PropertyName);
                     file.AppendLine(");");
                 }
-                foreach (Column column in table.Columns)
+
+                foreach (MappingProperty prop in mapping.Properties)
                 {
+                    Column column = table.Columns[prop.ColumnName];
                     file.Append("           builder.Property(x => x.");
-                    file.Append(column.Name);
+                    file.Append(prop.PropertyName);
                     file.Append(")");
                     if (!column.IsNullable)
                     {
                         file.Append(".IsRequired()");
+                    }
+                    if(prop.PropertyName != prop.ColumnName)
+                    {
+                        file.Append(".HasColumnName(\"");
+                        file.Append(prop.ColumnName);
+                        file.Append("\")");
                     }
                     if (column.MaxLength.HasValue && column.MaxLength.Value > 0)
                     {
@@ -691,7 +735,10 @@ namespace EDMXMigrationTool
                 table.EntityName = entity.NameFixed;
                 entity.TableName = map.TableName;
                 entity.Schema = table.Schema;
-
+                foreach (MappingProperty item in map.Properties)
+                {
+                    table.Columns[item.ColumnName].PropertyName = item.PropertyName;
+                }
             }
         }
         /// <summary>
@@ -716,7 +763,7 @@ namespace EDMXMigrationTool
                         Name = entity.Attribute("Name")?.Value ?? string.Empty
                     };
                     table.NameFixed = NameInPascalCase(table.Name);
-                    foreach (var property in entity.Descendants().Where(n => n.Name.LocalName == "Property"))
+                    foreach (XElement? property in entity.Descendants().Where(n => n.Name.LocalName == "Property"))
                     {
                         Column column = new Column
                         {
@@ -733,7 +780,7 @@ namespace EDMXMigrationTool
                         column.MaxLength = column.Type == "varchar(max)" ? null : column.MaxLength;
                         column.MaxLength = column.Type == "varbinary(max)" ? null : column.MaxLength;
                         column.IsPrimaryKey = entity.Descendants().Any(n => n.Name.LocalName == "Key" && n.Descendants().Any(k => k.Attribute("Name")?.Value == column.Name));
-                        table.Columns.Add(column);
+                        table.Columns.Add(column.Name, column);
                     }
                     data[table.Name] = table;
                 }
