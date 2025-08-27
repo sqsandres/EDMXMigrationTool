@@ -130,8 +130,8 @@ namespace EDMXMigrationTool
                 }
                 if (parameters.CreateDbContext)
                 {
-                    //AddLog("Creating the DBContext with dbSets:");
-                    //CreateDbContext(entities, parameters, "AppDbContext2", true, schemas);
+                    AddLog("Creating the DBContext with dbSets:");
+                    CreateDbContext(entities, parameters, "AppDbContext3", true, schemas);
                     AddLog("Creating the DBContext without dbSets:");
                     CreateDbContext(entities, parameters, "AppDbContext", false, schemas);
                 }
@@ -284,7 +284,7 @@ namespace EDMXMigrationTool
                     repoFile.Append(DefaultSchema);
                 }
                 repoFile.AppendLine(" {");
-                repoFile.AppendLine($"   public class {entity.NameFixed}Repository : Repository<Domain.{(hasSchema? entity.Schema: DefaultSchema)}.{entity.NameFixed}>, I{entity.NameFixed}Repository {{");
+                repoFile.AppendLine($"   public class {entity.NameFixed}Repository : Repositorio<Domain.{(hasSchema? entity.Schema: DefaultSchema)}.{entity.NameFixed}>, I{entity.NameFixed}Repository {{");
                 repoFile.AppendLine($"       public {entity.NameFixed}Repository(AppDbContext context) : base(context) {{");
                 repoFile.AppendLine("       }");
                 repoFile.AppendLine("   }");
@@ -642,37 +642,60 @@ namespace EDMXMigrationTool
             {
                 foreach (Entity entity in entities.Values.Where(x => x.Used).OrderBy(x => x.Schema).ThenBy(x => x.Name))
                 {
-                    file.Append("       public DbSet<");
+
+                    file.AppendLine("       /// <summary>");
+                    file.Append("       /// Gets or sets the collection of <see cref=\"Domain.");
+                    if (HasSchema(entity.Schema))
+                    {
+                        file.Append(entity.Schema);
+                    }
+                    else
+                    {
+                        file.Append(DefaultSchema);
+                    }
+                    file.Append(entity.NameFixed);
+                    file.AppendLine("\"/> entities in the database context.");
+                    file.AppendLine("       /// </summary>");
+                    file.Append("       public DbSet<Domain.");
+                    if (HasSchema(entity.Schema))
+                    {
+                        file.Append(entity.Schema);
+                    }
+                    else
+                    {
+                        file.Append(DefaultSchema);
+                    }
+                    file.Append(".");
                     file.Append(entity.NameFixed);
                     file.Append("> ");
-                    file.Append(entity.NameFixed);
+                    //file.Append(entity.Name);
                     if (
-                        entity.NameFixed.EndsWith("s", StringComparison.InvariantCultureIgnoreCase)
+                        entity.Name.EndsWith("s", StringComparison.InvariantCultureIgnoreCase)
                         //|| entity.NameFixed.EndsWith("1", StringComparison.InvariantCultureIgnoreCase)
                         )
                     {
                         //we dont need to do somthing else...
                     }
-                    else if (entity.NameFixed.EndsWith("a", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("e", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("i", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("o", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("u", StringComparison.InvariantCultureIgnoreCase)
+                    else if (entity.Name.EndsWith("a", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("e", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("i", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("o", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("u", StringComparison.InvariantCultureIgnoreCase)
 
 
-                        || entity.NameFixed.EndsWith("h", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("k", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("c", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("f", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("g", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("r", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("b", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("t", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("h", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("k", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("c", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("f", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("g", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("r", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("b", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("t", StringComparison.InvariantCultureIgnoreCase)
                         )
                     {
                         file.Append("s");
                     }
-                    else if (entity.NameFixed.EndsWith("z", StringComparison.InvariantCultureIgnoreCase))
+                    else if (entity.Name.EndsWith("z", StringComparison.InvariantCultureIgnoreCase))
                     {
                         file.Length--;
                         file.Append("ces");
