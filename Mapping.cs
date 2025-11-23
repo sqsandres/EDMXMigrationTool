@@ -1,5 +1,11 @@
 ﻿namespace EDMXMigrationTool
 {
+    internal class MappingContext
+    {
+        public IList<Mapping> Tables { get; set; } = new List<Mapping>();
+        public IList<MappingFunction> Function { get; set; } = new List<MappingFunction>();
+
+    }
     internal class Mapping
     {
         public string TableName { get; set; }
@@ -17,6 +23,15 @@
         public override string ToString()
         {
             return $"Column:{ColumnName} == Property:{PropertyName}";
+        }
+    }
+    internal class MappingFunction
+    {
+        public string FunctionName { get; set; }
+        public string StoredProcedureName { get; set; }
+        public override string ToString()
+        {
+            return $"Function:{FunctionName} == StoredProcedure:{StoredProcedureName}";
         }
     }
 }
