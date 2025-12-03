@@ -1940,6 +1940,8 @@ namespace EDMXMigrationTool
                 {
                     throw new InvalidOperationException("The EDMX file contains an invalid association definition. [1]");
                 }
+                entityS = entityS.Replace("Self.", string.Empty);
+                entityD = entityD.Replace("Self.", string.Empty);
                 Entity entitySou = conceptualModel.Entities[entityS];
                 Entity entityDes = conceptualModel.Entities[entityD];
                 if (entitySou == null || entityDes == null)
@@ -2015,8 +2017,10 @@ namespace EDMXMigrationTool
             foreach (XElement? mappingElement in context.Descendants().Where(n => n.Name.LocalName == "FunctionImportMapping"))
             {
                 string baseFunctionName = mappingElement.Attribute("FunctionImportName")?.Value ?? string.Empty;
-                string realName = (mappingElement.Attribute("FunctionName")?.Value ?? string.Empty).Split('.')[2];
-                if(baseFunctionName != realName)
+                string realName = (mappingElement.Attribute("FunctionName")?.Value ?? string.Empty);
+                string[] arr = realName.Split('.');
+                realName = arr.Last();
+                if (baseFunctionName != realName)
                 {
                     mappingContext.Function.Add(new MappingFunction
                     {
