@@ -1110,7 +1110,8 @@ namespace EDMXMigrationTool
                     StorageFunction sfn = storageModel.Functions[fn.Name];
                     string returnDataType = fnCalculateReturnType(fn, sfn, parameters);
                     file.AppendLine("    /// <summary>");
-                    file.AppendLine("    ///    ");
+                    file.Append("    ///    Name: ");
+                    file.AppendLine(fn.Name);
                     file.AppendLine("    /// </summary>");
                     file.Append("    public ");
                     file.Append(FnMapCSharpTypeToAlias(returnDataType));
@@ -1118,7 +1119,7 @@ namespace EDMXMigrationTool
                     file.Append(fn.NameFixed);
                     file.Append("(");
                     file.Append(
-                        string.Join(", ", fn.Parameters.Where(x => x.Direction != Direction.Out).Select(p => p.Type + " " + p.Name.ToLower()))
+                        string.Join(", ", fn.Parameters.Where(x => x.Direction != Direction.Out).Select(p => p.Type + "? " + p.Name.ToLower()))
                     );
                     file.AppendLine(")");
                     file.AppendLine("    {");
@@ -1247,6 +1248,11 @@ namespace EDMXMigrationTool
                 "Float" => "float",
                 "String" => "string",
                 "DateTime" => "DateTime",
+                "IEnumerable<Int32>" => "IEnumerable<int>",
+                "IEnumerable<Decimal>" => "IEnumerable<decimal>",
+                "IEnumerable<Boolean>" => "IEnumerable<bool>",
+                "IEnumerable<String>" => "IEnumerable<string>",
+                "IEnumerable<DateTime>" => "IEnumerable<DateTime>",
                 _ => parameterType,
             };
         }
@@ -1264,7 +1270,13 @@ namespace EDMXMigrationTool
         /// complex type, or a collection type depending on the function's metadata.</returns>
         private string fnCalculateReturnType(Function fn, StorageFunction sfn, UIParameters parameters)
         {
-            if (string.IsNullOrEmpty(fn.ReturnComplexType))
+            if (string.IsNullOrEmpty(fn.ReturnComplexType) 
+                || fn.ReturnComplexType == "Collection(String)"
+                || fn.ReturnComplexType == "Collection(Int32)"
+                || fn.ReturnComplexType == "Collection(Boolean)"
+                || fn.ReturnComplexType == "Collection(Decimal)"
+                || fn.ReturnComplexType == "Collection(DateTime)"
+                )
             {
                 List<FunctionParameter> lstOut = fn.Parameters.Where(x => x.Direction == Direction.Out).ToList();
                 List<FunctionParameter> lstInOut = fn.Parameters.Where(x => x.Direction == Direction.InOut).ToList();
@@ -1276,7 +1288,7 @@ namespace EDMXMigrationTool
                 {
                     return lstInOut.First().Type ?? "int";
                 }
-                return "int";
+                return string.IsNullOrEmpty(fn.ReturnComplexType) ? "int" : fn.ReturnComplexType.Replace("Collection(", "IEnumerable<").Replace(")", ">");
             }
             string collectionType = fn.IsFunction ? "IQueryable" : "IEnumerable";
             if (fn.ReturnComplexType.StartsWith("Collection("))
