@@ -77,7 +77,8 @@ namespace EDMXMigrationTool
                 CreateModels = chkCreateModels.Checked,
                 CreateRepositories = chkCreateRepositories.Checked,
                 CreateConfigurations = chkCreateConfigurations.Checked,
-                DbName = txtDbName.Text
+                DbName = txtDbName.Text,
+                ExportLogs = chkExportLogs.Checked
             });
         }
         private void AddLog(string message)
@@ -138,8 +139,11 @@ namespace EDMXMigrationTool
                 AddLog("Analysing:");
                 AnaliceContext(storageModels, conceptualModel, mappings);
                 AddLog("Creating the schema enum:");
+                if (parameters.ExportLogs)
+                {
+                    vdGenerateLogs(parameters, storageModels, conceptualModel, mappings);
+                }
                 List<string> schemas = CreateSchemaClass(storageModels, parameters);
-
                 AddLog("Creating folders:");
                 CreateFolder(Path.Combine(parameters.DestinationPath, "Configuration"));
                 CreateFolder(Path.Combine(parameters.DestinationPath, "Domain"));
@@ -186,6 +190,239 @@ namespace EDMXMigrationTool
                 AddLog($"Error during migration: {ex.Message}");
             }
         }
+
+        private void vdGenerateLogs(UIParameters parameters, StorageModel storageModels, ConceptualModel conceptualModel, MappingContext mappings)
+        {
+            //generate some txt files with the content of the storage model, conceptual model and mappings for debugging purposes
+            try
+            {
+                string logFolder = Path.Combine(parameters.DestinationPath, "Logs");
+                CreateFolder(logFolder);
+
+                // Generate Storage Model Log
+                StringBuilder storageLog = new StringBuilder();
+                storageLog.AppendLine("=".PadRight(80, '='));
+                storageLog.AppendLine("STORAGE MODEL (SSDL) - DATABASE SCHEMA");
+                storageLog.AppendLine("=".PadRight(80, '='));
+                storageLog.AppendLine($"Total Tables/Views: {storageModels.Tables.Count}");
+                storageLog.AppendLine($"Total Functions: {storageModels.Functions.Count}");
+                storageLog.AppendLine("TABLES AND VIEWS:");
+                storageLog.AppendLine("-".PadRight(80, '-'));
+                foreach (var table in storageModels.Tables.Values.OrderBy(t => t.Schema).ThenBy(t => t.Name))
+                {
+                    storageLog.AppendLine($"\n[{table.Schema}].[{table.Name}] ({table.RepoType})");
+                    //storageLog.AppendLine($"  Entity Name: {table.EntityName}");
+                    //storageLog.AppendLine($"  Name Fixed: {table.NameFixed}");
+                    //storageLog.AppendLine($"  Used: {table.Used}");
+                    //storageLog.AppendLine($"  Columns ({table.Columns.Count}):");
+                    //foreach (var column in table.Columns.Values)
+                    //{
+                    //    string pkMarker = column.IsPrimaryKey ? " [PK]" : "";
+                    //    string nullable = column.IsNullable ? "NULL" : "NOT NULL";
+                    //    string maxLen = column.MaxLength.HasValue ? $"({column.MaxLength})" : "";
+                    //    string precision = column.Precision.HasValue ? $"({column.Precision},{column.Scale})" : "";
+                    //    string valueGen = !string.IsNullOrEmpty(column.ValueGenerator) ? $" [{column.ValueGenerator}]" : "";
+                    //
+                    //    storageLog.AppendLine($"    - {column.Name}{pkMarker}: {column.Type}{maxLen}{precision} {nullable}{valueGen}");
+                    //    if (!string.IsNullOrEmpty(column.PropertyName))
+                    //    {
+                    //        storageLog.AppendLine($"      Property Name: {column.PropertyName}");
+                    //    }
+                    //}
+                    List<string> pks = (from f in table.Columns.Values where f.IsPrimaryKey select f.Name).ToList();
+                    if (pks.Count > 0)
+                    {
+                        storageLog.Append($"  PK Keys ({pks.Count}):");
+                        storageLog.AppendLine(string.Join(" - ", pks));
+                    }
+                    if (table.ForeingKeys.Count > 0)
+                    {
+                        storageLog.AppendLine($"  Foreign Keys ({table.ForeingKeys.Count}):");
+                        foreach (var fk in table.ForeingKeys)
+                        {
+                            storageLog.AppendLine($"    - To: [{fk.TableSchema}].[{fk.Table}] ({fk.Source} -> {fk.Destination}) -- -- Columns: {string.Join(", ", fk.Columns.Select(c => $"{c.Key} -> {c.Value}"))}");
+                        }
+                    }
+                }
+
+                storageLog.AppendLine("\n\nFUNCTIONS AND STORED PROCEDURES:");
+                storageLog.AppendLine("-".PadRight(80, '-'));
+                foreach (var function in storageModels.Functions.Values.OrderBy(f => f.Schema).ThenBy(f => f.Name))
+                {
+                    string type = function.IsFunction ? "Function" : "Stored Procedure";
+                    storageLog.AppendLine($"\n[{function.Schema}].[{function.Name}] ({type})");
+                    storageLog.AppendLine($"  Name Fixed: {function.NameFixed}");
+                    storageLog.AppendLine($"  Returning Collection: {function.ReturningCollection}");
+
+                    if (function.Parameters.Count > 0)
+                    {
+                        storageLog.AppendLine($"  Parameters ({function.Parameters.Count}):");
+                        foreach (var param in function.Parameters)
+                        {
+                            storageLog.AppendLine($"    - {param.Name}: {param.Type} ({param.Direction})");
+                        }
+                    }
+
+                    if (function.ReturnColumns.Count > 0)
+                    {
+                        storageLog.AppendLine($"  Return Columns ({function.ReturnColumns.Count}):");
+                        foreach (var col in function.ReturnColumns)
+                        {
+                            storageLog.AppendLine($"    - {col.Name}: {col.Type}");
+                        }
+                    }
+                }
+
+                File.WriteAllText(Path.Combine(logFolder, "StorageModel.txt"), storageLog.ToString());
+                AddLog("Generated: StorageModel.txt");
+
+                // Generate Conceptual Model Log
+                StringBuilder conceptualLog = new StringBuilder();
+                conceptualLog.AppendLine("=".PadRight(80, '='));
+                conceptualLog.AppendLine("CONCEPTUAL MODEL (CSDL) - ENTITY MODEL");
+                conceptualLog.AppendLine("=".PadRight(80, '='));
+                conceptualLog.AppendLine($"Generated: {DateTime.Now}");
+                conceptualLog.AppendLine($"Total Entities: {conceptualModel.Entities.Count}");
+                conceptualLog.AppendLine($"Total Functions: {conceptualModel.Functions.Count}");
+                conceptualLog.AppendLine($"Total Complex Types: {conceptualModel.ComplexTypes.Count}");
+                conceptualLog.AppendLine("ENTITIES:");
+                conceptualLog.AppendLine("-".PadRight(80, '-'));
+                foreach (var entity in conceptualModel.Entities.Values.OrderBy(e => e.Schema).ThenBy(e => e.Name))
+                {
+                    conceptualLog.AppendLine($"\n{entity.Name}");
+                    conceptualLog.AppendLine($"  Schema: {entity.Schema} ---  Name Fixed: [{entity.NameFixed}] -- Table Name: [{entity.TableName}]");
+                    conceptualLog.AppendLine($"  Used: {entity.Used}");
+                    //conceptualLog.AppendLine($"  Properties ({entity.Properties.Count}):");
+                    //foreach (var prop in entity.Properties)
+                    //{
+                    //    string pkMarker = prop.IsPrimaryKey ? " [PK]" : "";
+                    //    string nullable = prop.IsNullable ? "?" : "";
+                    //    string maxLen = prop.MaxLength.HasValue ? $"({prop.MaxLength})" : "";
+                    //
+                    //    conceptualLog.AppendLine($"    - {prop.Name}{pkMarker}: {prop.Type}{nullable}{maxLen}");
+                    //}
+                    if (entity.NavigationProperties.Count > 0)
+                    {
+                        conceptualLog.AppendLine($"  Navigation Properties ({entity.NavigationProperties.Count}):");
+                        foreach (var nav in entity.NavigationProperties)
+                        {
+                            conceptualLog.AppendLine($"    - {nav.TargetNameFixedWithCounter}: {nav.EntityName} ({nav.Multiplicity}) ---   Target: {nav.TargetName} (Schema: {nav.TargetSchema})");
+                        }
+                    }
+                }
+
+                conceptualLog.AppendLine("\n\nFUNCTIONS:");
+                conceptualLog.AppendLine("-".PadRight(80, '-'));
+                foreach (var function in conceptualModel.Functions.Values.OrderBy(f => f.Name))
+                {
+                    string type = function.IsFunction ? "Function" : "Stored Procedure";
+                    conceptualLog.AppendLine($"\n{function.Name} ({type})");
+                    conceptualLog.AppendLine($"  Name Fixed: {function.NameFixed}");
+                    conceptualLog.AppendLine($"  Return Type: {function.ReturnComplexType ?? "void"}");
+
+                    if (function.Parameters.Count > 0)
+                    {
+                        conceptualLog.AppendLine($"  Parameters ({function.Parameters.Count}):");
+                        foreach (var param in function.Parameters)
+                        {
+                            conceptualLog.AppendLine($"    - {param.Name}: {param.Type} ({param.Direction})");
+                        }
+                    }
+                }
+
+                conceptualLog.AppendLine("\n\nCOMPLEX TYPES:");
+                conceptualLog.AppendLine("-".PadRight(80, '-'));
+                foreach (var complexType in conceptualModel.ComplexTypes.Values.OrderBy(c => c.Name))
+                {
+                    conceptualLog.AppendLine($"{complexType.Name} --- Name Fixed: {complexType.NameFixed}");
+                    //conceptualLog.AppendLine($"  Properties ({complexType.Properties.Count}):");
+                    //foreach (var prop in complexType.Properties)
+                    //{
+                    //    string nullable = prop.IsNullable ? "?" : "";
+                    //    conceptualLog.AppendLine($"    - {prop.Name}: {prop.Type}{nullable}");
+                    //}
+                }
+
+                File.WriteAllText(Path.Combine(logFolder, "ConceptualModel.txt"), conceptualLog.ToString());
+                AddLog("Generated: ConceptualModel.txt");
+
+                // Generate Mappings Log
+                StringBuilder mappingLog = new StringBuilder();
+                mappingLog.AppendLine("=".PadRight(80, '='));
+                mappingLog.AppendLine("MAPPING CONTEXT (C-S MAPPING)");
+                mappingLog.AppendLine("=".PadRight(80, '='));
+                mappingLog.AppendLine($"Generated: {DateTime.Now}");
+                mappingLog.AppendLine($"Total Table Mappings: {mappings.Tables.Count}");
+                mappingLog.AppendLine($"Total Function Mappings: {mappings.Function.Count}");
+                mappingLog.AppendLine("TABLE TO ENTITY MAPPINGS:");
+                mappingLog.AppendLine("-".PadRight(80, '-'));
+                foreach (var mapping in mappings.Tables.OrderBy(m => m.TableName))
+                {
+                    mappingLog.AppendLine($"[{mapping.TableName}] -> [{mapping.EntityName}]");
+                    //mappingLog.AppendLine($"  Property Mappings ({mapping.Properties.Count}):");
+                    //foreach (var prop in mapping.Properties)
+                    //{
+                    //    mappingLog.AppendLine($"    {prop.ColumnName} -> {prop.PropertyName}");
+                    //}
+                }
+                //if (mappings.Function.Count > 0)
+                //{
+                //    mappingLog.AppendLine("\n\nFUNCTION MAPPINGS:");
+                //    mappingLog.AppendLine("-".PadRight(80, '-'));
+                //    foreach (var funcMapping in mappings.Function.OrderBy(f => f.StoredProcedureName))
+                //    {
+                //        mappingLog.AppendLine($"{funcMapping.FunctionName} -> {funcMapping.StoredProcedureName}");
+                //    }
+                //}
+
+                File.WriteAllText(Path.Combine(logFolder, "Mappings.txt"), mappingLog.ToString());
+                AddLog("Generated: Mappings.txt");
+
+                // Generate Summary Log
+                StringBuilder summaryLog = new StringBuilder();
+                summaryLog.AppendLine("=".PadRight(80, '='));
+                summaryLog.AppendLine("EDMX MIGRATION SUMMARY");
+                summaryLog.AppendLine("=".PadRight(80, '='));
+                summaryLog.AppendLine($"Generated: {DateTime.Now}");
+                summaryLog.AppendLine($"Source File: {parameters.FilePath}");
+                summaryLog.AppendLine($"Destination: {parameters.DestinationPath}");
+                summaryLog.AppendLine($"Namespace: {parameters.Namespace}");
+                summaryLog.AppendLine($"Database Name: {parameters.DbName}");
+                summaryLog.AppendLine();
+                summaryLog.AppendLine("STATISTICS:");
+                summaryLog.AppendLine("-".PadRight(80, '-'));
+                summaryLog.AppendLine($"Tables/Views: {storageModels.Tables.Count}");
+                summaryLog.AppendLine($"  - Used  : {storageModels.Tables.Values.Count(t => t.Used)}");
+                summaryLog.AppendLine($"  - Tables: {storageModels.Tables.Values.Count(t => t.RepoType == RepoType.Table)}");
+                summaryLog.AppendLine($"  - Views : {storageModels.Tables.Values.Count(t => t.RepoType == RepoType.View)}");
+                summaryLog.AppendLine($"Storage Functions: {storageModels.Functions.Count}");
+                summaryLog.AppendLine($"  - Functions         : {storageModels.Functions.Values.Count(f => f.IsFunction)}");
+                summaryLog.AppendLine($"  - Stored Procedures : {storageModels.Functions.Values.Count(f => !f.IsFunction)}");
+                summaryLog.AppendLine($"Entities: {conceptualModel.Entities.Count}");
+                summaryLog.AppendLine($"  - Used: {conceptualModel.Entities.Values.Count(e => e.Used)}");
+                summaryLog.AppendLine($"Complex Types: {conceptualModel.ComplexTypes.Count}");
+                summaryLog.AppendLine($"Conceptual Functions: {conceptualModel.Functions.Count}");
+                summaryLog.AppendLine($"Mappings: {mappings.Tables.Count}");
+                summaryLog.AppendLine($"Function Mappings: {mappings.Function.Count}");
+                summaryLog.AppendLine();
+                summaryLog.AppendLine("SCHEMAS:");
+                summaryLog.AppendLine("-".PadRight(80, '-'));
+                var schemas = storageModels.Tables.Values.Select(t => t.Schema).Distinct().OrderBy(s => s);
+                foreach (var schema in schemas)
+                {
+                    int tableCount = storageModels.Tables.Values.Count(t => t.Schema == schema);
+                    summaryLog.AppendLine($"  {schema}: {tableCount} tables/views");
+                }
+                File.WriteAllText(Path.Combine(logFolder, "Summary.txt"), summaryLog.ToString());
+                AddLog("Generated: Summary.txt");
+                AddLog($"All log files saved to: {logFolder}");
+            }
+            catch (Exception ex)
+            {
+                AddLog($"Error generating log files: {ex.Message}");
+            }
+        }
+
         private List<string> CreateSchemaClass(StorageModel storageModel, UIParameters parameters)
         {
             StringBuilder file = new StringBuilder();
@@ -310,7 +547,7 @@ namespace EDMXMigrationTool
                 file.Append(hasSchema ? entity.Schema : DefaultSchema);
                 file.AppendLine(";");
                 file.AppendLine("/// <summary>");
-                file.AppendLine("/// Represents entity.");
+                file.AppendLine($"/// Represents entity from table {entity.TableName}");
                 file.AppendLine("/// </summary>");
 
                 file.Append("public class ");
@@ -790,6 +1027,7 @@ namespace EDMXMigrationTool
                     foreach (ForeingKey fk in table.ForeingKeys)
                     {
                         file.Append("        ");
+                        //if(table.NameFixed== table.EntityName)
                         // many to one
                         if (
                             fk.Destination is Multiplicity.Many or Multiplicity.ZeroOrMany &&
@@ -982,7 +1220,7 @@ namespace EDMXMigrationTool
                 {
 
                     file.AppendLine("    /// <summary>");
-                    file.AppendLine($"    /// Gets or sets the collection of <see cref=\"Domain.{parameters.DbName}.{(HasSchema(entity.Schema) ? entity.Schema : DefaultSchema)}.{entity.NameFixed}\"/> entities in the database context.");
+                    file.AppendLine($"    /// Gets or sets the collection of <see cref=\"Domain.{parameters.DbName}.{(HasSchema(entity.Schema) ? entity.Schema : DefaultSchema)}.{entity.NameFixed}\"/> entities in the database context. Table: ${entity.Schema}.${entity.TableName}");
                     file.AppendLine("    /// </summary>");
                     file.Append($"    public DbSet<Domain.{parameters.DbName}.{(HasSchema(entity.Schema) ? entity.Schema : DefaultSchema)}.{entity.NameFixed}> {entity.NameFixed}");
                     if (
@@ -1815,6 +2053,7 @@ namespace EDMXMigrationTool
                 Functions = new Dictionary<string, Function>(),
                 ComplexTypes = new Dictionary<string, ComplexType>(),
             };
+            HashSet<string> complexTypesNewNames = new HashSet<string>();
             XElement? conceptualModels = edmxRuntime?.Descendants().FirstOrDefault(n => n.Name.LocalName == "ConceptualModels");
             XElement? schema = conceptualModels?.Descendants().FirstOrDefault(n => n.Name.LocalName == "Schema");
             XElement? namespaceNode = conceptualModels?.Descendants().FirstOrDefault(n => n.Name.LocalName == "Namespace");
@@ -1873,7 +2112,16 @@ namespace EDMXMigrationTool
                         preFix = temp.Substring(0, 2);
                         temp = temp.Substring(2);
                     }
-                    complexType.NameFixed = preFix + NameInPascalCase(temp, false);
+                    string newName = preFix + NameInPascalCase(temp, false);
+                    string newNameFinal = newName;
+                    int i = 1;
+                    while (complexTypesNewNames.Contains(newNameFinal))
+                    {
+                        newNameFinal = newName + i;
+                        i++;
+                    }
+                    complexTypesNewNames.Add(newNameFinal);
+                    complexType.NameFixed = newNameFinal;
                     foreach (XElement parameter in entityType.Elements().Where(n => n.Name.LocalName == "Property"))
                     {
                         Property param = new Property
@@ -1939,15 +2187,15 @@ namespace EDMXMigrationTool
             foreach (XElement? association in schema.Descendants().Where(n => n.Name.LocalName == "Association"))
             {
                 List<XElement> elements = association.Elements().ToList();
-                if (elements.Count < 3)
+                if (elements.Count < 2)
                 {
                     continue;
                     //throw new InvalidOperationException("The EDMX file contains an invalid association definition.");
                 }
                 string? entityS = elements[0].Attribute("Type")?.Value.Replace(namespaceName, string.Empty);
                 string? entityD = elements[1].Attribute("Type")?.Value.Replace(namespaceName, string.Empty);
-                Multiplicity multiplicityS = GetMultiplicity(elements[0].Attribute("Multiplicity")?.Value);
-                Multiplicity multiplicityD = GetMultiplicity(elements[1].Attribute("Multiplicity")?.Value);
+                Multiplicity multiplicityS = GetMultiplicity(elements[0].Attribute("Multiplicity")?.Value ?? string.Empty);
+                Multiplicity multiplicityD = GetMultiplicity(elements[1].Attribute("Multiplicity")?.Value ?? string.Empty);
                 if (string.IsNullOrEmpty(entityS) || string.IsNullOrEmpty(entityD))
                 {
                     throw new InvalidOperationException("The EDMX file contains an invalid association definition. [1]");
@@ -1978,6 +2226,22 @@ namespace EDMXMigrationTool
                 }
                 */
             }
+            /*
+            foreach (XElement? association in schema.Descendants().Where(n => n.Name.LocalName == "AssociationSet"))
+            {
+                List<XElement> elements = association.Elements().ToList();
+                if (elements.Count != 2)
+                {
+                    continue;
+                }
+                string? entityS = elements[0].Attribute("Type")?.Value.Replace(namespaceName, string.Empty);
+                string? entityD = elements[1].Attribute("Type")?.Value.Replace(namespaceName, string.Empty);
+                Multiplicity multiplicityS = GetMultiplicity(elements[0].Attribute("Multiplicity")?.Value);
+                Multiplicity multiplicityD = GetMultiplicity(elements[1].Attribute("Multiplicity")?.Value);
+
+
+            }
+            */
             return conceptualModel;
         }
         /// <summary>
@@ -2077,6 +2341,7 @@ namespace EDMXMigrationTool
         public bool CreateModels { get; internal set; }
         public bool CreateRepositories { get; internal set; }
         public bool CreateConfigurations { get; internal set; }
+        public bool ExportLogs { get; internal set; }
     }
     public class StorageModel
     {

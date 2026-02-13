@@ -44,6 +44,7 @@
             lblNamespace = new Label();
             txtNamespace = new TextBox();
             panel3 = new Panel();
+            chkExportLogs = new CheckBox();
             chkCreateConfigurations = new CheckBox();
             chkCreateModels = new CheckBox();
             chkCreateRepositories = new CheckBox();
@@ -232,6 +233,7 @@
             // 
             // panel3
             // 
+            panel3.Controls.Add(chkExportLogs);
             panel3.Controls.Add(chkCreateConfigurations);
             panel3.Controls.Add(chkCreateModels);
             panel3.Controls.Add(chkCreateRepositories);
@@ -242,6 +244,18 @@
             panel3.Name = "panel3";
             panel3.Size = new Size(785, 30);
             panel3.TabIndex = 8;
+            // 
+            // chkExportLogs
+            // 
+            chkExportLogs.AutoSize = true;
+            chkExportLogs.Checked = true;
+            chkExportLogs.CheckState = CheckState.Checked;
+            chkExportLogs.Location = new Point(439, 3);
+            chkExportLogs.Name = "chkExportLogs";
+            chkExportLogs.Size = new Size(109, 24);
+            chkExportLogs.TabIndex = 4;
+            chkExportLogs.Text = "Export Logs";
+            chkExportLogs.UseVisualStyleBackColor = true;
             // 
             // chkCreateConfigurations
             // 
@@ -381,5 +395,6 @@
         private CheckBox chkCreateConfigurations;
         private Label label2;
         private TextBox txtDbName;
+        private CheckBox chkExportLogs;
     }
 }
