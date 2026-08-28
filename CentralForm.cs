@@ -1,4 +1,4 @@
-using System.Data.Common;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Xml.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -7,10 +7,21 @@ namespace EDMXMigrationTool
 {
     public partial class frmCentralForm : Form
     {
+        private string[] PrimitiveTypes = ["Int32", "Boolean", "String", "Decimal"];
+        private const string DefaultSchema = "General";
+        private XNamespace StoreNameSpace = "http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator";
         public frmCentralForm()
         {
             InitializeComponent();
         }
+        /// <summary>
+        /// Handles the click event for the file selection button, allowing the user to choose an EDMX file and updates
+        /// the file path display.
+        /// </summary>
+        /// <remarks>The file dialog filters for files with the .edmx extension. If the user selects a
+        /// file and confirms, the selected file path is displayed in the associated text box.</remarks>
+        /// <param name="sender">The source of the event, typically the file selection button.</param>
+        /// <param name="e">An EventArgs instance containing event data.</param>
         public void bntFileSelection_Click(object sender, EventArgs e)
         {
             using OpenFileDialog openFileDialog = new();
@@ -21,6 +32,14 @@ namespace EDMXMigrationTool
                 txtFile.Text = openFileDialog.FileName;
             }
         }
+        /// <summary>
+        /// Handles the Click event for the Find Destination button, allowing the user to select a destination folder
+        /// for migration files.
+        /// </summary>
+        /// <remarks>Displays a folder browser dialog for the user to choose a destination folder. If a
+        /// folder is selected, the path is set in the destination text box.</remarks>
+        /// <param name="sender">The source of the event, typically the Find Destination button.</param>
+        /// <param name="e">An EventArgs object that contains the event data.</param>
         public void btnFindDestination_Click(object sender, EventArgs e)
         {
             using FolderBrowserDialog folderBrowserDialog = new();
@@ -30,6 +49,15 @@ namespace EDMXMigrationTool
                 txtDestination.Text = folderBrowserDialog.SelectedPath;
             }
         }
+        /// <summary>
+        /// Handles the Click event of the Run button, validating user input and initiating the background process to
+        /// generate files based on the selected EDMX file and destination.
+        /// </summary>
+        /// <remarks>If either the EDMX file path or the destination folder is not specified, an error
+        /// message is displayed and the operation is aborted. When valid input is provided, the method disables related
+        /// controls and starts the background worker with the specified parameters.</remarks>
+        /// <param name="sender">The source of the event, typically the Run button control.</param>
+        /// <param name="e">An EventArgs instance containing event data.</param>
         public void btnRun_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtFile.Text) || string.IsNullOrWhiteSpace(txtDestination.Text))
@@ -44,7 +72,13 @@ namespace EDMXMigrationTool
             {
                 FilePath = txtFile.Text,
                 DestinationPath = txtDestination.Text,
-                Namespace = txtNamespace.Text
+                Namespace = txtNamespace.Text,
+                CreateDbContext = chkCreateDBContext.Checked,
+                CreateModels = chkCreateModels.Checked,
+                CreateRepositories = chkCreateRepositories.Checked,
+                CreateConfigurations = chkCreateConfigurations.Checked,
+                DbName = txtDbName.Text,
+                ExportLogs = chkExportLogs.Checked
             });
         }
         private void AddLog(string message)
@@ -55,12 +89,24 @@ namespace EDMXMigrationTool
                 txtLog.ScrollToCaret();
             }));
         }
+        /// <summary>
+        /// Handles the background migration process when the associated BackgroundWorker raises the DoWork event.
+        /// Loads, parses, and migrates the specified EDMX file, generates related classes and folders, and logs
+        /// progress and errors throughout the operation.
+        /// </summary>
+        /// <remarks>This method performs a series of migration steps, including reading the EDMX file,
+        /// analyzing entities and mappings, creating necessary folders, and generating configuration, model, context,
+        /// and repository classes based on the provided parameters. Progress and errors are logged for monitoring
+        /// purposes. If the EDMX file is missing or invalid, the method logs the error and terminates the migration
+        /// process.</remarks>
+        /// <param name="sender">The source of the event, typically the BackgroundWorker instance that triggered the DoWork event.</param>
+        /// <param name="e">A DoWorkEventArgs object containing the event data, including the migration parameters supplied via the
+        /// Argument property.</param>
         private void bkWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             try
             {
-                UIParameters parameters = (UIParameters)e.Argument;
-                Dictionary<string, byte> schemas = new Dictionary<string, byte>();
+                UIParameters parameters = (UIParameters)e.Argument ?? new UIParameters();
                 AddLog("Starting migration...");
                 //1. Load the EDMX file
                 string edmxFilePath = txtFile.Text;
@@ -69,10 +115,10 @@ namespace EDMXMigrationTool
                     throw new FileNotFoundException("The specified EDMX file does not exist.", edmxFilePath);
                 }
                 AddLog($"Loading EDMX file: {edmxFilePath}");
-                var edmxContent = File.ReadAllText(edmxFilePath);
+                string edmxContent = File.ReadAllText(edmxFilePath);
                 //2. Parse the EDMX file
                 AddLog("Parsing EDMX file...");
-                var edmxDocument = XDocument.Parse(edmxContent);
+                XDocument edmxDocument = XDocument.Parse(edmxContent);
                 //3. Migrate the EDMX file
                 AddLog("Migrating EDMX file...");
                 //4. Listing all entities and their properties
@@ -82,35 +128,61 @@ namespace EDMXMigrationTool
                     throw new InvalidOperationException("The EDMX file does not contain any entities.");
                 }
                 AddLog(" --> Reading Tables:");
-                IDictionary<string, Table> tables = GetStorageModels(edmxRuntime);
-                AddLog($" --> Tables:{tables.Count}");
+                StorageModel storageModels = GetStorageModels(edmxRuntime);
+                AddLog($" --> Tables:{storageModels.Tables.Count}");
                 AddLog(" --> Reading Entities:");
-                IDictionary<string, Entity> entities = GetConceptualModels(edmxRuntime);
-                AddLog($" --> Entities:{entities.Count}");
+                ConceptualModel conceptualModel = GetConceptualModels(edmxRuntime);
+                AddLog($" --> Entities:{conceptualModel.Entities.Count}");
                 AddLog(" --> Reading mappings:");
-                IList<Mapping> mappings = GetMappings(edmxRuntime);
-                AddLog($" --> Mappings:{mappings.Count}");
+                MappingContext mappings = GetMappings(edmxRuntime);
+                AddLog($" --> Mappings:{mappings.Tables.Count}");
                 AddLog("Analysing:");
-                AnaliceContext(tables, entities, mappings);
-                AddLog("Creating configuration classes:");
+                AnaliceContext(storageModels, conceptualModel, mappings);
+                AddLog("Creating the schema enum:");
+                if (parameters.ExportLogs)
+                {
+                    vdGenerateLogs(parameters, storageModels, conceptualModel, mappings);
+                }
+                List<string> schemas = CreateSchemaClass(storageModels, parameters);
+                AddLog("Creating folders:");
                 CreateFolder(Path.Combine(parameters.DestinationPath, "Configuration"));
-                CreateConfigurationClasses(tables, entities, mappings, parameters);
-                AddLog("Creating models classes:");
-                CreateFolder(Path.Combine(parameters.DestinationPath, "Models"));
-                CreateModelClasses(tables, entities, mappings, parameters);
-                AddLog("Creating the DBContext with dbSets:");
-                CreateDbContext(entities, parameters, "AppDbContext", true);
-                AddLog("Creating the DBContext without dbSets:");
-                CreateDbContext(entities, parameters, "AppDbContext2", false);
-
-                AddLog("Creating repositories classes:");
+                CreateFolder(Path.Combine(parameters.DestinationPath, "Domain"));
                 CreateFolder(Path.Combine(parameters.DestinationPath, "IRepositories"));
                 CreateFolder(Path.Combine(parameters.DestinationPath, "Repositories"));
-                CreateRepositoriesClasses(tables, entities, mappings, parameters);
+                foreach (string? schema in schemas.Where(x => x != "dbo"))
+                {
+                    CreateFolder(Path.Combine(parameters.DestinationPath, "Configuration", schema));
+                    CreateFolder(Path.Combine(parameters.DestinationPath, "Domain", schema));
+                    CreateFolder(Path.Combine(parameters.DestinationPath, "IRepositories", schema));
+                    CreateFolder(Path.Combine(parameters.DestinationPath, "Repositories", schema));
+                }
+                CreateFolder(Path.Combine(parameters.DestinationPath, "Configuration", DefaultSchema));
+                CreateFolder(Path.Combine(parameters.DestinationPath, "Domain", DefaultSchema));
+                CreateFolder(Path.Combine(parameters.DestinationPath, "IRepositories", DefaultSchema));
+                CreateFolder(Path.Combine(parameters.DestinationPath, "Repositories", DefaultSchema));
 
-
-                AddLog("Creating the schema enum:");
-                CreateSchemaEnum(tables, parameters);
+                if (parameters.CreateConfigurations)
+                {
+                    AddLog("Creating configuration classes:");
+                    CreateConfigurationClasses(storageModels, conceptualModel, mappings, parameters);
+                }
+                if (parameters.CreateModels)
+                {
+                    AddLog("Creating models classes:");
+                    CreateModelClasses(storageModels, conceptualModel, mappings, parameters);
+                }
+                if (parameters.CreateDbContext)
+                {
+                    AddLog("Creating the DBContext with dbSets:");
+                    CreateDbContext(storageModels, conceptualModel, parameters, "DbContext" + parameters.DbName, true, schemas);
+                    //AddLog("Creating the DBContext without dbSets:");
+                    //CreateDbContext(entities, parameters, "AppDbContext", false, schemas);
+                }
+                if (parameters.CreateRepositories)
+                {
+                    AddLog("Creating repositories classes:");
+                    CreateRepositoriesClasses(storageModels.Tables, conceptualModel.Entities, mappings, parameters);
+                }
                 AddLog("Migrated!");
             }
             catch (Exception ex)
@@ -119,17 +191,264 @@ namespace EDMXMigrationTool
             }
         }
 
-        private void CreateSchemaEnum(IDictionary<string, Table> tables, UIParameters parameters)
+        private void vdGenerateLogs(UIParameters parameters, StorageModel storageModels, ConceptualModel conceptualModel, MappingContext mappings)
+        {
+            //generate some txt files with the content of the storage model, conceptual model and mappings for debugging purposes
+            try
+            {
+                string logFolder = Path.Combine(parameters.DestinationPath, "Logs");
+                CreateFolder(logFolder);
+
+                // Generate Storage Model Log
+                StringBuilder storageLog = new StringBuilder();
+                storageLog.AppendLine("=".PadRight(80, '='));
+                storageLog.AppendLine("STORAGE MODEL (SSDL) - DATABASE SCHEMA");
+                storageLog.AppendLine("=".PadRight(80, '='));
+                storageLog.AppendLine($"Total Tables/Views: {storageModels.Tables.Count}");
+                storageLog.AppendLine($"Total Functions: {storageModels.Functions.Count}");
+                storageLog.AppendLine("TABLES AND VIEWS:");
+                storageLog.AppendLine("-".PadRight(80, '-'));
+                foreach (var table in storageModels.Tables.Values.OrderBy(t => t.Schema).ThenBy(t => t.Name))
+                {
+                    storageLog.AppendLine($"\n[{table.Schema}].[{table.Name}] ({table.RepoType})");
+                    //storageLog.AppendLine($"  Entity Name: {table.EntityName}");
+                    //storageLog.AppendLine($"  Name Fixed: {table.NameFixed}");
+                    //storageLog.AppendLine($"  Used: {table.Used}");
+                    //storageLog.AppendLine($"  Columns ({table.Columns.Count}):");
+                    //foreach (var column in table.Columns.Values)
+                    //{
+                    //    string pkMarker = column.IsPrimaryKey ? " [PK]" : "";
+                    //    string nullable = column.IsNullable ? "NULL" : "NOT NULL";
+                    //    string maxLen = column.MaxLength.HasValue ? $"({column.MaxLength})" : "";
+                    //    string precision = column.Precision.HasValue ? $"({column.Precision},{column.Scale})" : "";
+                    //    string valueGen = !string.IsNullOrEmpty(column.ValueGenerator) ? $" [{column.ValueGenerator}]" : "";
+                    //
+                    //    storageLog.AppendLine($"    - {column.Name}{pkMarker}: {column.Type}{maxLen}{precision} {nullable}{valueGen}");
+                    //    if (!string.IsNullOrEmpty(column.PropertyName))
+                    //    {
+                    //        storageLog.AppendLine($"      Property Name: {column.PropertyName}");
+                    //    }
+                    //}
+                    List<string> pks = (from f in table.Columns.Values where f.IsPrimaryKey select f.Name).ToList();
+                    if (pks.Count > 0)
+                    {
+                        storageLog.Append($"  PK Keys ({pks.Count}):");
+                        storageLog.AppendLine(string.Join(" - ", pks));
+                    }
+                    if (table.ForeingKeys.Count > 0)
+                    {
+                        storageLog.AppendLine($"  Foreign Keys ({table.ForeingKeys.Count}):");
+                        foreach (var fk in table.ForeingKeys)
+                        {
+                            storageLog.AppendLine($"    - To: [{fk.TableSchema}].[{fk.Table}] ({fk.Source} -> {fk.Destination}) -- -- Columns: {string.Join(", ", fk.Columns.Select(c => $"{c.Key} -> {c.Value}"))}");
+                        }
+                    }
+                }
+
+                storageLog.AppendLine("\n\nFUNCTIONS AND STORED PROCEDURES:");
+                storageLog.AppendLine("-".PadRight(80, '-'));
+                foreach (var function in storageModels.Functions.Values.OrderBy(f => f.Schema).ThenBy(f => f.Name))
+                {
+                    string type = function.IsFunction ? "Function" : "Stored Procedure";
+                    storageLog.AppendLine($"\n[{function.Schema}].[{function.Name}] ({type})");
+                    storageLog.AppendLine($"  Name Fixed: {function.NameFixed}");
+                    storageLog.AppendLine($"  Returning Collection: {function.ReturningCollection}");
+
+                    if (function.Parameters.Count > 0)
+                    {
+                        storageLog.AppendLine($"  Parameters ({function.Parameters.Count}):");
+                        foreach (var param in function.Parameters)
+                        {
+                            storageLog.AppendLine($"    - {param.Name}: {param.Type} ({param.Direction})");
+                        }
+                    }
+
+                    if (function.ReturnColumns.Count > 0)
+                    {
+                        storageLog.AppendLine($"  Return Columns ({function.ReturnColumns.Count}):");
+                        foreach (var col in function.ReturnColumns)
+                        {
+                            storageLog.AppendLine($"    - {col.Name}: {col.Type}");
+                        }
+                    }
+                }
+
+                File.WriteAllText(Path.Combine(logFolder, "StorageModel.txt"), storageLog.ToString());
+                AddLog("Generated: StorageModel.txt");
+
+                // Generate Conceptual Model Log
+                StringBuilder conceptualLog = new StringBuilder();
+                conceptualLog.AppendLine("=".PadRight(80, '='));
+                conceptualLog.AppendLine("CONCEPTUAL MODEL (CSDL) - ENTITY MODEL");
+                conceptualLog.AppendLine("=".PadRight(80, '='));
+                conceptualLog.AppendLine($"Generated: {DateTime.Now}");
+                conceptualLog.AppendLine($"Total Entities: {conceptualModel.Entities.Count}");
+                conceptualLog.AppendLine($"Total Functions: {conceptualModel.Functions.Count}");
+                conceptualLog.AppendLine($"Total Complex Types: {conceptualModel.ComplexTypes.Count}");
+                conceptualLog.AppendLine("ENTITIES:");
+                conceptualLog.AppendLine("-".PadRight(80, '-'));
+                foreach (var entity in conceptualModel.Entities.Values.OrderBy(e => e.Schema).ThenBy(e => e.Name))
+                {
+                    conceptualLog.AppendLine($"\n{entity.Name}");
+                    conceptualLog.AppendLine($"  Schema: {entity.Schema} ---  Name Fixed: [{entity.NameFixed}] -- Table Name: [{entity.TableName}]");
+                    conceptualLog.AppendLine($"  Used: {entity.Used}");
+                    //conceptualLog.AppendLine($"  Properties ({entity.Properties.Count}):");
+                    //foreach (var prop in entity.Properties)
+                    //{
+                    //    string pkMarker = prop.IsPrimaryKey ? " [PK]" : "";
+                    //    string nullable = prop.IsNullable ? "?" : "";
+                    //    string maxLen = prop.MaxLength.HasValue ? $"({prop.MaxLength})" : "";
+                    //
+                    //    conceptualLog.AppendLine($"    - {prop.Name}{pkMarker}: {prop.Type}{nullable}{maxLen}");
+                    //}
+                    if (entity.NavigationProperties.Count > 0)
+                    {
+                        conceptualLog.AppendLine($"  Navigation Properties ({entity.NavigationProperties.Count}):");
+                        foreach (var nav in entity.NavigationProperties)
+                        {
+                            conceptualLog.AppendLine($"    - {nav.TargetNameFixedWithCounter}: {nav.EntityName} ({nav.Multiplicity}) ---   Target: {nav.TargetName} (Schema: {nav.TargetSchema})");
+                        }
+                    }
+                }
+
+                conceptualLog.AppendLine("\n\nFUNCTIONS:");
+                conceptualLog.AppendLine("-".PadRight(80, '-'));
+                foreach (var function in conceptualModel.Functions.Values.OrderBy(f => f.Name))
+                {
+                    string type = function.IsFunction ? "Function" : "Stored Procedure";
+                    conceptualLog.AppendLine($"\n{function.Name} ({type})");
+                    conceptualLog.AppendLine($"  Name Fixed: {function.NameFixed}");
+                    conceptualLog.AppendLine($"  Return Type: {function.ReturnComplexType ?? "void"}");
+
+                    if (function.Parameters.Count > 0)
+                    {
+                        conceptualLog.AppendLine($"  Parameters ({function.Parameters.Count}):");
+                        foreach (var param in function.Parameters)
+                        {
+                            conceptualLog.AppendLine($"    - {param.Name}: {param.Type} ({param.Direction})");
+                        }
+                    }
+                }
+
+                conceptualLog.AppendLine("\n\nCOMPLEX TYPES:");
+                conceptualLog.AppendLine("-".PadRight(80, '-'));
+                foreach (var complexType in conceptualModel.ComplexTypes.Values.OrderBy(c => c.Name))
+                {
+                    conceptualLog.AppendLine($"{complexType.Name} --- Name Fixed: {complexType.NameFixed}");
+                    //conceptualLog.AppendLine($"  Properties ({complexType.Properties.Count}):");
+                    //foreach (var prop in complexType.Properties)
+                    //{
+                    //    string nullable = prop.IsNullable ? "?" : "";
+                    //    conceptualLog.AppendLine($"    - {prop.Name}: {prop.Type}{nullable}");
+                    //}
+                }
+
+                File.WriteAllText(Path.Combine(logFolder, "ConceptualModel.txt"), conceptualLog.ToString());
+                AddLog("Generated: ConceptualModel.txt");
+
+                // Generate Mappings Log
+                StringBuilder mappingLog = new StringBuilder();
+                mappingLog.AppendLine("=".PadRight(80, '='));
+                mappingLog.AppendLine("MAPPING CONTEXT (C-S MAPPING)");
+                mappingLog.AppendLine("=".PadRight(80, '='));
+                mappingLog.AppendLine($"Generated: {DateTime.Now}");
+                mappingLog.AppendLine($"Total Table Mappings: {mappings.Tables.Count}");
+                mappingLog.AppendLine($"Total Function Mappings: {mappings.Function.Count}");
+                mappingLog.AppendLine("TABLE TO ENTITY MAPPINGS:");
+                mappingLog.AppendLine("-".PadRight(80, '-'));
+                foreach (var mapping in mappings.Tables.OrderBy(m => m.TableName))
+                {
+                    mappingLog.AppendLine($"[{mapping.TableName}] -> [{mapping.EntityName}]");
+                    //mappingLog.AppendLine($"  Property Mappings ({mapping.Properties.Count}):");
+                    //foreach (var prop in mapping.Properties)
+                    //{
+                    //    mappingLog.AppendLine($"    {prop.ColumnName} -> {prop.PropertyName}");
+                    //}
+                }
+                //if (mappings.Function.Count > 0)
+                //{
+                //    mappingLog.AppendLine("\n\nFUNCTION MAPPINGS:");
+                //    mappingLog.AppendLine("-".PadRight(80, '-'));
+                //    foreach (var funcMapping in mappings.Function.OrderBy(f => f.StoredProcedureName))
+                //    {
+                //        mappingLog.AppendLine($"{funcMapping.FunctionName} -> {funcMapping.StoredProcedureName}");
+                //    }
+                //}
+
+                File.WriteAllText(Path.Combine(logFolder, "Mappings.txt"), mappingLog.ToString());
+                AddLog("Generated: Mappings.txt");
+
+                // Generate Summary Log
+                StringBuilder summaryLog = new StringBuilder();
+                summaryLog.AppendLine("=".PadRight(80, '='));
+                summaryLog.AppendLine("EDMX MIGRATION SUMMARY");
+                summaryLog.AppendLine("=".PadRight(80, '='));
+                summaryLog.AppendLine($"Generated: {DateTime.Now}");
+                summaryLog.AppendLine($"Source File: {parameters.FilePath}");
+                summaryLog.AppendLine($"Destination: {parameters.DestinationPath}");
+                summaryLog.AppendLine($"Namespace: {parameters.Namespace}");
+                summaryLog.AppendLine($"Database Name: {parameters.DbName}");
+                summaryLog.AppendLine();
+                summaryLog.AppendLine("STATISTICS:");
+                summaryLog.AppendLine("-".PadRight(80, '-'));
+                summaryLog.AppendLine($"Tables/Views: {storageModels.Tables.Count}");
+                summaryLog.AppendLine($"  - Used  : {storageModels.Tables.Values.Count(t => t.Used)}");
+                summaryLog.AppendLine($"  - Tables: {storageModels.Tables.Values.Count(t => t.RepoType == RepoType.Table)}");
+                summaryLog.AppendLine($"  - Views : {storageModels.Tables.Values.Count(t => t.RepoType == RepoType.View)}");
+                summaryLog.AppendLine($"Storage Functions: {storageModels.Functions.Count}");
+                summaryLog.AppendLine($"  - Functions         : {storageModels.Functions.Values.Count(f => f.IsFunction)}");
+                summaryLog.AppendLine($"  - Stored Procedures : {storageModels.Functions.Values.Count(f => !f.IsFunction)}");
+                summaryLog.AppendLine($"Entities: {conceptualModel.Entities.Count}");
+                summaryLog.AppendLine($"  - Used: {conceptualModel.Entities.Values.Count(e => e.Used)}");
+                summaryLog.AppendLine($"Complex Types: {conceptualModel.ComplexTypes.Count}");
+                summaryLog.AppendLine($"Conceptual Functions: {conceptualModel.Functions.Count}");
+                summaryLog.AppendLine($"Mappings: {mappings.Tables.Count}");
+                summaryLog.AppendLine($"Function Mappings: {mappings.Function.Count}");
+                summaryLog.AppendLine();
+                summaryLog.AppendLine("SCHEMAS:");
+                summaryLog.AppendLine("-".PadRight(80, '-'));
+                var schemas = storageModels.Tables.Values.Select(t => t.Schema).Distinct().OrderBy(s => s);
+                foreach (var schema in schemas)
+                {
+                    int tableCount = storageModels.Tables.Values.Count(t => t.Schema == schema);
+                    summaryLog.AppendLine($"  {schema}: {tableCount} tables/views");
+                }
+                File.WriteAllText(Path.Combine(logFolder, "Summary.txt"), summaryLog.ToString());
+                AddLog("Generated: Summary.txt");
+                AddLog($"All log files saved to: {logFolder}");
+            }
+            catch (Exception ex)
+            {
+                AddLog($"Error generating log files: {ex.Message}");
+            }
+        }
+
+        private List<string> CreateSchemaClass(StorageModel storageModel, UIParameters parameters)
         {
             StringBuilder file = new StringBuilder();
             file.AppendLine("using System;");
             file.Append(Environment.NewLine);
             file.Append("namespace ");
             file.Append(parameters.Namespace);
-            file.AppendLine("{");
-            file.AppendLine("   public enum SchemaName {");
-            foreach (string schema in tables.Values.Select(x => x.Schema).Distinct())
+            file.AppendLine("    /// <summary>");
+            file.AppendLine("    /// Provides constant string values for commonly used database schema names within the application.");
+            file.AppendLine("    /// </summary>");
+            file.AppendLine("    /// <remarks>Use these constants to reference database schemas in a consistent and type-safe manner");
+            file.AppendLine("    /// throughout the codebase. This helps prevent errors caused by misspelled schema names and improves");
+            file.AppendLine("    /// maintainability when schema names change.</remarks>");
+            file.Append("   public class SchemaName");
+            file.AppendLine(parameters.DbName);
+            file.AppendLine("    {");
+            List<string> schemas = storageModel.Tables.Values.Select(x => x.Schema)
+                                   .Union(storageModel.Functions.Values.Where(t => HasSchema(t.Schema))
+                                .Select(t => t.Schema)).Distinct().ToList();
+            foreach (string schema in schemas)
             {
+                file.AppendLine("        /// <summary>");
+                file.Append("        /// Represents the constant string value \"");
+                file.Append(schema);
+                file.AppendLine("\".");
+                file.AppendLine("        /// </summary>");
                 file.Append("       public const string ");
                 if (schema.Equals("dbo", StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -137,7 +456,7 @@ namespace EDMXMigrationTool
                 }
                 else
                 {
-                    file.Append(NameInPascalCase(schema));
+                    file.Append(NameInPascalCase(schema, false));
                     file.Append(" = \"");
                     file.Append(schema);
                     file.AppendLine("\";");
@@ -146,73 +465,107 @@ namespace EDMXMigrationTool
             file.AppendLine("   }");
             file.AppendLine("}");
             File.WriteAllText(Path.Combine(txtDestination.Text, "SchemaName.cs"), file.ToString());
+            return schemas;
         }
-
-        private void CreateRepositoriesClasses(IDictionary<string, Table> tables, IDictionary<string, Entity> entities, IList<Mapping> mappings, UIParameters parameters)
+        /// <summary>
+        /// Determines whether the specified schema name represents a non-default schema.
+        /// </summary>
+        /// <remarks>Use this method to check if a schema name refers to a custom or non-default schema,
+        /// as "dbo" is typically the default schema in SQL Server.</remarks>
+        /// <param name="name">The name of the schema to evaluate. Cannot be null or empty.</param>
+        /// <returns>true if the specified schema name is not null, not empty, and not equal to "dbo"; otherwise, false.</returns>
+        private bool HasSchema(string name)
         {
-            foreach (Entity entity in entities.Values)
+            return !string.IsNullOrEmpty(name) && !name.Equals("dbo");
+        }
+        /// <summary>
+        /// Generates repository interface and implementation classes for each used entity and writes them to the
+        /// specified destination paths.
+        /// </summary>
+        /// <remarks>This method creates both interface and concrete repository classes for each entity
+        /// that is marked as used. The generated files are organized by schema and written to the appropriate
+        /// directories based on the provided parameters. Existing files may be overwritten if they already exist at the
+        /// destination path.</remarks>
+        /// <param name="tables">A dictionary containing table definitions, keyed by table name. Used to provide schema information for
+        /// repository generation.</param>
+        /// <param name="entities">A dictionary containing entity definitions, keyed by entity name. Only entities marked as used are processed
+        /// to generate repositories.</param>
+        /// <param name="mappings">A list of mapping objects that define relationships between tables and entities. Used to inform repository
+        /// structure.</param>
+        /// <param name="parameters">An object containing UI and configuration parameters, including namespace and destination paths for
+        /// generated files.</param>
+        private void CreateRepositoriesClasses(IDictionary<string, Table> tables, IDictionary<string, Entity> entities, MappingContext mappings, UIParameters parameters)
+        {
+            foreach (Entity entity in entities.Values.Where(x => x.Used))
             {
+                bool hasSchema = HasSchema(entity.Schema);
                 StringBuilder interfaceFile = new StringBuilder();
-                interfaceFile.AppendLine("using System;");
-                interfaceFile.AppendLine("using System.Collections.Generic;");
-                interfaceFile.AppendLine("using System.Threading.Tasks;");
-                interfaceFile.Append("using ");
-                interfaceFile.Append(parameters.Namespace);
-                interfaceFile.AppendLine(".Models;");
-                interfaceFile.Append(Environment.NewLine);
-                interfaceFile.Append("namespace ");
-                interfaceFile.Append(parameters.Namespace);
-                interfaceFile.Append(".Contracts.Repositories");
-                interfaceFile.AppendLine(" {");
-                interfaceFile.Append("   public interface I");
-                interfaceFile.Append(entity.NameFixed);
-                interfaceFile.Append("Repository : IRepository<");
-                interfaceFile.Append(entity.NameFixed);
-                interfaceFile.AppendLine("> {");
-                interfaceFile.AppendLine("   }");
-                interfaceFile.Append("}");
-                File.WriteAllText(Path.Combine(parameters.DestinationPath, "IRepositories", "I" + entity.NameFixed + "Repository.cs"), interfaceFile.ToString());
-
+                interfaceFile.AppendLine($"using {parameters.Namespace}.Contract;{Environment.NewLine}");
+                interfaceFile.Append($"namespace {parameters.Namespace}.Contracts.Repositories.{(hasSchema ? entity.Schema : DefaultSchema)};");
+                interfaceFile.AppendLine($"public interface I{entity.NameFixed}Repository : IRepository<Domain.{(hasSchema ? entity.Schema : DefaultSchema)}.{entity.NameFixed}> {{");
+                interfaceFile.Append('}');
+                File.WriteAllText(Path.Combine(parameters.DestinationPath, "IRepositories", (hasSchema?entity.Schema: DefaultSchema), "I" + entity.NameFixed + "Repository.cs"), interfaceFile.ToString());
+                
                 StringBuilder repoFile = new StringBuilder();
-                repoFile.AppendLine("using System;");
-                repoFile.AppendLine("using System.Collections.Generic;");
-                repoFile.AppendLine("using System.Threading.Tasks;");
-                repoFile.AppendLine($"using {parameters.Namespace}.Models;");
-                repoFile.AppendLine($"using {parameters.Namespace}.Contracts.Repositories;");
-                repoFile.Append(Environment.NewLine);
-                repoFile.AppendLine($"namespace {parameters.Namespace}.Repositories {{");
-                repoFile.AppendLine($"   public class {entity.NameFixed}Repository : Repository<{entity.NameFixed}>, I{entity.NameFixed}Repository {{");
-                //repoFile.Append($"       private readonly AppDbContext _context;");
-                repoFile.AppendLine($"       public {entity.NameFixed}Repository(AppDbContext context) : base(context) {{");
-                //repoFile.Append($"           _context = context;");
-                repoFile.AppendLine("       }");
+                repoFile.AppendLine($"using {parameters.Namespace}.Contracts.Repositories.{(hasSchema ? entity.Schema : DefaultSchema)};{Environment.NewLine}");
+                repoFile.AppendLine($"namespace {parameters.Namespace}.Repositories.{(hasSchema ? entity.Schema : DefaultSchema)};");
+                repoFile.AppendLine($"public class {entity.NameFixed}Repository : Repositorio<Domain.{(hasSchema ? entity.Schema : DefaultSchema)}.{entity.NameFixed}>, I{entity.NameFixed}Repository {{");
+                repoFile.AppendLine($"   public {entity.NameFixed}Repository(AppDbContext context) : base(context) {{");
                 repoFile.AppendLine("   }");
-                repoFile.AppendLine("}");
-                File.WriteAllText(Path.Combine(parameters.DestinationPath, "Repositories", entity.NameFixed + "Repository.cs"), repoFile.ToString());
+                repoFile.Append('}');
+                File.WriteAllText(Path.Combine(parameters.DestinationPath, "Repositories", (hasSchema?entity.Schema: DefaultSchema), entity.NameFixed + "Repository.cs"), repoFile.ToString());
             }
         }
-        private void CreateModelClasses(IDictionary<string, Table> tables, IDictionary<string, Entity> entities, IList<Mapping> mappings, UIParameters parameters)
+        /// <summary>
+        /// Generates C# model class files for each used entity in the conceptual model, including properties and
+        /// navigation properties, and writes them to the specified destination path.
+        /// </summary>
+        /// <remarks>Each generated class includes XML documentation comments for its members, and
+        /// navigation properties are created for entity relationships. The method writes output files to
+        /// schema-specific subfolders under the destination path. The ToString method in each class provides a
+        /// formatted summary of key property values for debugging or logging purposes.</remarks>
+        /// <param name="storage">The storage model containing database schema information used for mapping entities and properties.</param>
+        /// <param name="conceptualModel">The conceptual model that defines the entities and their relationships to be represented as C# classes.</param>
+        /// <param name="mappings">A list of mapping objects that specify how conceptual entities and properties correspond to storage schema
+        /// elements.</param>
+        /// <param name="parameters">The UI parameters that provide configuration options such as namespace, database name, and destination path
+        /// for generated files.</param>
+        /// <exception cref="Exception">Thrown if an entity property type is unsupported during class generation.</exception>
+        private void CreateModelClasses(StorageModel storage, ConceptualModel conceptualModel, MappingContext mappings, UIParameters parameters)
         {
-            foreach (Entity entity in entities.Values)
+            foreach (Entity entity in conceptualModel.Entities.Values.Where(x => x.Used))
             {
+                bool hasSchema = HasSchema(entity.Schema);
                 StringBuilder file = new StringBuilder();
                 file.AppendLine("using System;");
                 file.Append(Environment.NewLine);
                 file.Append("namespace ");
                 file.Append(parameters.Namespace);
-                file.Append(".Models");
-                file.AppendLine(" {");
-                file.Append("   public class ");
+                file.Append(".Domain.");
+                file.Append(parameters.DbName);
+                file.Append('.');
+                file.Append(hasSchema ? entity.Schema : DefaultSchema);
+                file.AppendLine(";");
+                file.AppendLine("/// <summary>");
+                file.AppendLine($"/// Represents entity from table {entity.TableName}");
+                file.AppendLine("/// </summary>");
+
+                file.Append("public class ");
                 file.Append(entity.NameFixed);
-                file.AppendLine(" {");
-                file.Append("       public ");
+                file.AppendLine(" : Entity {");
+                file.AppendLine("    /// <summary>");
+                file.AppendLine("    /// Initializes a new instance of this class.");
+                file.AppendLine("    /// </summary>");
+                file.Append("    public ");
                 file.Append(entity.NameFixed);
                 file.AppendLine("() { }");
-                file.Append(Environment.NewLine);
-
                 foreach (Property property in entity.Properties)
                 {
-                    file.Append("       public ");
+                    file.AppendLine("    /// <summary>");
+                    file.Append("    /// Gets or sets ");
+                    file.AppendLine(property.Name);
+                    file.AppendLine("    /// </summary>");
+                    file.Append("    public ");
                     switch (property.Type)
                     {
                         case "String":
@@ -220,33 +573,83 @@ namespace EDMXMigrationTool
                             break;
                         case "Int32":
                             file.Append("int");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
                             break;
                         case "Int64":
                             file.Append("long");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
+                            break;
+                        case "Single":
+                            file.Append("Single");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
                             break;
                         case "Boolean":
                             file.Append("bool");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
                             break;
                         case "DateTime":
                             file.Append("DateTime");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
                             break;
                         case "Decimal":
                             file.Append("decimal");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
                             break;
                         case "Double":
                             file.Append("double");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
                             break;
                         case "Guid":
                             file.Append("Guid");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
                             break;
                         case "Byte[]":
                             file.Append("byte[]");
                             break;
                         case "Byte":
                             file.Append("byte");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
                             break;
                         case "Int16":
                             file.Append("short");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
+                            break;
+                        case "Time":
+                            file.Append("TimeSpan");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
                             break;
                         case "Binary":
                             file.Append("byte[]");
@@ -254,33 +657,216 @@ namespace EDMXMigrationTool
                         default:
                             throw new Exception($"Unsupported type: {property.Type}");
                     }
-                    if (!property.IsNullable)
+                    file.Append(" ");
+                    file.Append(property.Name);
+                    file.AppendLine("  { get; set; }");
+                }
+                if (entity.NavigationProperties.Count > 0)
+                {
+                    file.AppendLine("    //-------------------------------------");
+                    file.AppendLine("    // Navigation properties");
+                    file.AppendLine("    //-------------------------------------");
+                    foreach (NavigationProperty nProp in entity.NavigationProperties)
                     {
-                        file.Append("?");
+                        file.AppendLine("    /// <summary>");
+                        file.Append("    /// Gets or sets ");
+                        file.AppendLine(nProp.TargetName);
+                        file.AppendLine("    /// </summary>");
+                        file.Append("    public ");
+                        if (nProp.Multiplicity == Multiplicity.Many || nProp.Multiplicity == Multiplicity.ZeroOrMany)
+                        {
+                            file.Append("ICollection<Domain.");
+                            file.Append(parameters.DbName);
+                            file.Append('.');
+                            file.Append(nProp.TargetSchema == "dbo" ? DefaultSchema : nProp.TargetSchema);
+                            file.Append('.');
+                            file.Append(nProp.TargetNameFixed);
+                            file.Append("> ");
+                        }
+                        else
+                        {
+                            file.Append("Domain.");
+                            file.Append(parameters.DbName);
+                            file.Append('.');
+                            file.Append(nProp.TargetSchema == "dbo" ? DefaultSchema : nProp.TargetSchema);
+                            file.Append('.');
+                            file.Append(nProp.TargetNameFixed);
+                            file.Append(' ');
+                        }
+
+                        file.Append(nProp.TargetNameFixedWithCounter);
+                        file.AppendLine(" { get; set; }");
+                    }
+                }
+                file.AppendLine("    /// <summary>");
+                file.AppendLine("    /// Returns a string that represents the current object, including key property values in a formatted sequence.");
+                file.AppendLine("    /// </summary>");
+                file.AppendLine("    /// <remarks>The returned string provides a concise summary of the object's state, which can be");
+                file.AppendLine("    /// useful for logging or debugging purposes.</remarks>");
+                file.Append("    /// <returns>A string containing the values of: ");
+                file.AppendLine(string.Join(", ", entity.Properties.Select(p => p.Name)));
+                file.AppendLine("    /// separated by hyphens.</returns>");
+                file.AppendLine("    public override string ToString()");
+                file.AppendLine("    {");
+                file.Append("        return $\"");
+                file.Append(string.Join(" - ", entity.Properties.Select(p => "{" + p.Name + "}")));
+                file.AppendLine("\";");
+                file.AppendLine("    }");
+                file.Append('}');
+                File.WriteAllText(Path.Combine(parameters.DestinationPath, "Domain", (hasSchema ? entity.Schema: DefaultSchema), entity.NameFixed + ".cs"), file.ToString());
+            }
+
+            foreach (KeyValuePair<string, ComplexType> item in conceptualModel.ComplexTypes) {
+                ComplexType complexType = item.Value;
+                string functionName = complexType.Name.Replace("_Result", string.Empty);
+                StorageFunction sfn = storage.Functions[functionName];
+                bool hasSchema = HasSchema(sfn.Schema);
+                StringBuilder file = new StringBuilder();
+
+                file.AppendLine("using System;");
+                file.Append(Environment.NewLine);
+                file.AppendLine($"namespace {parameters.Namespace}.Domain.{parameters.DbName}.{(hasSchema ? sfn.Schema : DefaultSchema)}.Procedure;");
+                file.Append(Environment.NewLine);
+                file.AppendLine("/// <summary>");
+                file.AppendLine("/// Represents entity from a store procedure.");
+                file.AppendLine("/// </summary>");
+                file.AppendLine($"public class {complexType.NameFixed}");
+                file.AppendLine("{");
+                file.AppendLine("    /// <summary>");
+                file.AppendLine("    /// Initializes a new instance of this class.");
+                file.AppendLine("    /// </summary>");
+                file.Append($"    public {complexType.NameFixed}() ");
+                file.AppendLine("{ }");
+                foreach (Property property in complexType.Properties)
+                {
+                    file.AppendLine("    /// <summary>");
+                    file.Append("    /// Gets or sets ");
+                    file.AppendLine(property.Name);
+                    file.AppendLine("    /// </summary>");
+                    file.Append("    public ");
+                    switch (property.Type)
+                    {
+                        case "String":
+                            file.Append("string");
+                            break;
+                        case "Int32":
+                            file.Append("int");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
+                            break;
+                        case "Int64":
+                            file.Append("long");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
+                            break;
+                        case "Single":
+                            file.Append("Single");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
+                            break;
+                        case "Boolean":
+                            file.Append("bool");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
+                            break;
+                        case "DateTime":
+                            file.Append("DateTime");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
+                            break;
+                        case "Decimal":
+                            file.Append("decimal");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
+                            break;
+                        case "Double":
+                            file.Append("double");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
+                            break;
+                        case "Guid":
+                            file.Append("Guid");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
+                            break;
+                        case "Byte[]":
+                            file.Append("byte[]");
+                            break;
+                        case "Byte":
+                            file.Append("byte");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
+                            break;
+                        case "Int16":
+                            file.Append("short");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
+                            break;
+                        case "Time":
+                            file.Append("TimeSpan");
+                            if (property.IsNullable)
+                            {
+                                file.Append("?");
+                            }
+                            break;
+                        case "Binary":
+                            file.Append("byte[]");
+                            break;
+                        default:
+                            throw new Exception($"Unsupported type: {property.Type}");
                     }
                     file.Append(" ");
                     file.Append(property.Name);
                     file.AppendLine("  { get; set; }");
                 }
-                file.AppendLine("       public override string ToString(){");
-                file.Append("           return $\"");
-                foreach (Property property in entity.Properties)
-                {
-                    file.Append("{");
-                    file.Append(property.Name);
-                    if (property.IsNullable)
-                    {
-                        file.Append("?.ToString()");
-                    }
-                    file.Append("} - ");
-                }
+                file.AppendLine("    /// <summary>");
+                file.AppendLine("    /// Returns a string that represents the current object, including key property values in a formatted sequence.");
+                file.AppendLine("    /// </summary>");
+                file.AppendLine("    /// <remarks>The returned string provides a concise summary of the object's state, which can be");
+                file.AppendLine("    /// useful for logging or debugging purposes.</remarks>");
+                file.Append("    /// <returns>A string containing the values of:");
+                file.Append(string.Join(", ", complexType.Properties.Select(p => p.Name)));
+                file.AppendLine("    /// separated by hyphens.</returns>");
+                file.AppendLine("    public override string ToString(){");
+                file.Append("        return $\"");
+                file.Append(string.Join(" - ", complexType.Properties.Select(p => "{" + p.Name + "}")));
                 file.AppendLine("\";");
-                file.AppendLine("       }");
-                file.AppendLine("   }");
-                file.Append("}");
-                File.WriteAllText(Path.Combine(parameters.DestinationPath, "Models", entity.NameFixed + ".cs"), file.ToString());
+                file.AppendLine("    }");
+                file.AppendLine("}");
+
+                string folder = Path.Combine(parameters.DestinationPath, "Domain", (hasSchema ? sfn.Schema : DefaultSchema), "Procedure");
+                CreateFolder(folder);
+                File.WriteAllText(Path.Combine(folder, $"{complexType.NameFixed}.cs"), file.ToString());
             }
         }
+        /// <summary>
+        /// Creates a new folder at the specified path if it does not already exist.
+        /// </summary>
+        /// <remarks>If the folder already exists at the specified path, no action is taken. An exception
+        /// is thrown if the path is invalid or if the folder cannot be created due to permission issues or other I/O
+        /// errors.</remarks>
+        /// <param name="path">The file system path where the folder should be created. Cannot be null, empty, or contain invalid path
+        /// characters.</param>
         private void CreateFolder(string path)
         {
             try
@@ -301,175 +887,369 @@ namespace EDMXMigrationTool
                 throw;
             }
         }
-        private void CreateConfigurationClasses(IDictionary<string, Table> tables, IDictionary<string, Entity> entities, IList<Mapping> mappings, UIParameters parameters)
+        /// <summary>
+        /// Generates Entity Framework Core configuration classes for each mapped entity and table, writing them to the
+        /// appropriate destination path.
+        /// </summary>
+        /// <remarks>This method creates configuration classes that define table mappings, primary keys,
+        /// property requirements, and foreign key relationships for use with Entity Framework Core. The generated
+        /// classes are intended to be used within the DbContext's OnModelCreating method to apply entity
+        /// configurations. Each configuration file is written to a path based on the schema and entity name. The method
+        /// is not intended to be called directly from application code.</remarks>
+        /// <param name="tables">A dictionary containing table definitions, keyed by table name. Each entry provides schema and column
+        /// information required for configuration.</param>
+        /// <param name="entities">A dictionary containing entity definitions, keyed by entity name. Each entry represents a domain model to be
+        /// mapped to a table.</param>
+        /// <param name="mappings">A list of mapping objects that define the relationships between entities and tables, including property and
+        /// key mappings.</param>
+        /// <param name="parameters">The UI parameters specifying namespace, database name, and destination path for the generated configuration
+        /// classes.</param>
+        /// <exception cref="Exception">Thrown if an unsupported foreign key multiplicity combination is encountered during configuration
+        /// generation.</exception>
+        private void CreateConfigurationClasses(StorageModel storage, ConceptualModel conceptualModel, MappingContext mappings, UIParameters parameters)
         {
-            foreach (Table table in tables.Values)
+            foreach (Mapping mapping in mappings.Tables)
             {
-                bool hasSchema = !string.IsNullOrEmpty(table.Schema) && !table.Schema.Equals("dbo");
+                Table table = storage.Tables[mapping.TableName];
+                Entity entity = conceptualModel.Entities[mapping.EntityName];
+                bool hasSchema = HasSchema(table.Schema);
                 StringBuilder file = new StringBuilder();
-                file.AppendLine("using System;");
                 file.AppendLine("using Microsoft.EntityFrameworkCore;");
                 file.AppendLine("using Microsoft.EntityFrameworkCore.Metadata.Builders;");
-                if (hasSchema)
-                {
-                    file.Append("using ");
-                    file.Append(parameters.Namespace);
-                    file.Append(".Models.");
-                    file.Append(table.Schema);
-                    file.AppendLine(";");
-                }
                 file.Append(Environment.NewLine);
-                file.Append("namespace ");
-                file.Append(parameters.Namespace);
-                file.Append(".Configuration");
-                if (hasSchema)
+                file.AppendLine($"namespace {parameters.Namespace}.Configuration.{parameters.DbName}.{(hasSchema ? table.Schema : DefaultSchema)};");
+                file.Append(Environment.NewLine);
+                file.AppendLine( "/// <summary>");
+                file.AppendLine($"/// Provides the Entity Framework Core configuration for the {table.Name} table.");
+                file.AppendLine( "/// </summary>");
+                file.AppendLine("/// <remarks>This configuration defines the table mapping, primary key, property requirements, and");
+                file.AppendLine($"///    constraints for the {table.Name} table within the {table.Schema} schema. It is typically used by the");
+                file.AppendLine( "///    Entity Framework Core infrastructure and is not intended to be used directly in application code.");
+                file.AppendLine("/// </remarks>");
+                file.AppendLine($"public class {table.EntityName}Configuration : IEntityTypeConfiguration<Domain.{parameters.DbName}.{(hasSchema ? table.Schema : DefaultSchema)}.{table.EntityName}>");
+                file.AppendLine("{");
+                file.AppendLine("    /// <summary>");
+                file.AppendLine($"    /// Configures the entity type mapping for the {table.NameFixed} domain model.");
+                file.AppendLine("    /// </summary>");
+                file.AppendLine("    /// <remarks>Call this method within the OnModelCreating method of your DbContext to apply entity");
+                file.AppendLine("    /// configuration for this entity. This includes table mapping, property requirements, maximum");
+                file.AppendLine("    /// lengths, and key definitions.</remarks>");
+                file.AppendLine($"    /// <param name=\"builder\" > The builder used to configure the {table.NameFixed} entity type.</param>");
+                file.AppendLine($"    public void Configure(EntityTypeBuilder<Domain.{parameters.DbName}.{(hasSchema ? table.Schema : DefaultSchema)}.{table.EntityName}> builder)");
+                file.AppendLine("    {");
+                if (table.RepoType == RepoType.View)
                 {
-                    file.Append(".");
-                    file.Append(table.Schema);
-                }
-                file.AppendLine(" {");
-                file.Append("   public class ");
-                file.Append(table.NameFixed);
-                file.Append("Configuration : IEntityTypeConfiguration<");
-                file.Append(table.NameFixed);
-                file.AppendLine(">{");
-                file.Append("       public void Configure(EntityTypeBuilder<");
-                file.Append(table.NameFixed);
-                file.AppendLine("> builder){");
-                file.Append("           builder.ToTable(\"");
-                file.Append(table.Name);
-                file.Append("\", SchemaName.");
-                if(string.Equals(table.Schema, "dbo", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    file.Append("General");
+                    file.AppendLine("        builder.HasNoKey();");
+                    file.Append("        builder.ToView(\"");
                 }
                 else
                 {
-                    file.Append(table.Schema);
+                    file.Append("        builder.ToTable(\"");
                 }
+                file.Append(table.Name);
+                file.Append("\", SchemaName");
+                file.Append(parameters.DbName);
+                file.Append('.');
+                file.Append(string.Equals(table.Schema, "dbo", StringComparison.InvariantCultureIgnoreCase)
+                    ? "General"
+                    : table.Schema);
                 file.AppendLine(");");
-                var primaryKeys = table.Columns.Where(c => c.IsPrimaryKey).ToList();
-                if (primaryKeys.Count > 1)
+                if (table.RepoType == RepoType.Table)
                 {
-                    file.Append("           builder.HasKey(x => new { ");
-                    for (int i = 0; i < primaryKeys.Count; i++)
+                    List<Column> primaryKeys = table.Columns.Values.Where(c => c.IsPrimaryKey).ToList();
+                    if (primaryKeys.Count > 1)
                     {
-                        if (i > 0)
+                        file.Append("        builder.HasKey(x => new { ");
+                        for (int i = 0; i < primaryKeys.Count; i++)
                         {
-                            file.Append(", ");
+                            if (i > 0)
+                            {
+                                file.Append(", ");
+                            }
+                            file.Append("x.");
+                            file.Append(primaryKeys[i].PropertyName);
                         }
-                        file.Append("x.");
-                        file.Append(primaryKeys[i].Name);
+                        file.AppendLine(" });");
                     }
-                    file.AppendLine(" });");
+                    else if (primaryKeys.Count == 1)
+                    {
+                        file.Append("        builder.HasKey(x => x.");
+                        file.Append(primaryKeys[0].PropertyName);
+                        file.AppendLine(");");
+                    }
                 }
-                else if (primaryKeys.Count == 1)
+                foreach (MappingProperty prop in mapping.Properties)
                 {
-                    file.Append("           builder.HasKey(x => x.");
-                    file.Append(primaryKeys[0].Name);
-                    file.AppendLine(");");
-                }
-                foreach (Column column in table.Columns)
-                {
-                    file.Append("           builder.Property(x => x.");
-                    file.Append(column.Name);
+                    Column column = table.Columns[prop.ColumnName];
+                    file.Append("        builder.Property(x => x.");
+                    file.Append(prop.PropertyName);
                     file.Append(")");
                     if (!column.IsNullable)
                     {
                         file.Append(".IsRequired()");
                     }
-                    if (column.MaxLength.HasValue && column.MaxLength.Value > 0)
+                    if (prop.PropertyName != prop.ColumnName)
+                    {
+                        file.Append(".HasColumnName(\"");
+                        file.Append(prop.ColumnName);
+                        file.Append("\")");
+                    }
+                    if (column.MaxLength is > 0)
                     {
                         file.Append(".HasMaxLength(");
                         file.Append(column.MaxLength.Value);
                         file.Append(")");
                     }
-                    if (column.Precision.HasValue && column.Precision.Value > 0)
+                    if (column.Precision is > 0)
                     {
                         file.Append(".HasPrecision(");
                         file.Append(column.Precision.Value);
-                        if (column.Scale.HasValue && column.Scale.Value > 0)
+                        if (column.Scale is > 0)
                         {
                             file.Append(", ");
                             file.Append(column.Scale.Value);
                         }
-                        file.AppendLine(")");
+                        file.Append(")");
                     }
-                    if (column.ValueGenerator == "Computed")
+                    switch (column.ValueGenerator)
                     {
-                        file.Append(".ValueGeneratedOnAddOrUpdate()");
-                    }
-                    else if (column.ValueGenerator == "Identity")
-                    {
-                        file.Append(".ValueGeneratedOnAdd()");
+                        case "Computed":
+                            file.Append(".ValueGeneratedOnAddOrUpdate()");
+                            break;
+                        case "Identity":
+                            file.Append(".ValueGeneratedOnAdd()");
+                            break;
                     }
                     file.AppendLine(";");
                 }
-
-                file.AppendLine("       }");
+                if (table.ForeingKeys.Count > 0)
+                {
+                    foreach (ForeingKey fk in table.ForeingKeys)
+                    {
+                        file.Append("        ");
+                        //if(table.NameFixed== table.EntityName)
+                        // many to one
+                        if (
+                            fk.Destination is Multiplicity.Many or Multiplicity.ZeroOrMany &&
+                            fk.Source is Multiplicity.One or Multiplicity.ZeroOrOne
+                        )
+                        {
+                            file.Append($"builder.HasMany(x => x.{fk.TableNameFixedWithCounter}).WithOne(x => x.{table.NameFixed}).HasForeignKey(x => ");
+                            if (fk.Columns.Count == 1)
+                            {
+                                file.AppendLine($"x.{fk.Columns[0].Value});");
+                            }
+                            else
+                            {
+                                file.Append("new {");
+                                file.Append(string.Join(", ", fk.Columns.Select(c => "x." + c.Value)));
+                                file.AppendLine("});");
+                            }
+                        }
+                        else
+                        /* one to many */
+                        if (
+                            fk.Destination is Multiplicity.One or Multiplicity.ZeroOrOne &&
+                            fk.Source is Multiplicity.Many or Multiplicity.ZeroOrMany
+                        )
+                        {
+                            file.Append($"builder.HasOne(x => x.{fk.TableNameFixedWithCounter}).WithMany(x => x.{table.NameFixed}).HasForeignKey(x => ");
+                            if (fk.Columns.Count == 1)
+                            {
+                                file.AppendLine($"x.{fk.Columns[0].Key});");
+                            }
+                            else
+                            {
+                                file.Append("new {");
+                                file.Append(string.Join(", ", fk.Columns.Select(c => "x." + c.Key)));
+                                file.AppendLine("});");
+                            }
+                        }
+                        else
+                        /* one to one */
+                        if (
+                            (fk.Destination == Multiplicity.One || fk.Destination == Multiplicity.ZeroOrOne) &&
+                            (fk.Source == Multiplicity.One || fk.Source == Multiplicity.ZeroOrOne)
+                        )
+                        {
+                            file.Append($"builder.HasOne(x => x.{fk.TableNameFixedWithCounter}).WithOne(x => x.{table.NameFixed}).HasForeignKey<Domain.{parameters.DbName}.{(fk.TableSchema == "dbo" ? DefaultSchema : fk.TableSchema)}.{fk.TableNameFixed}>(x => ");
+                            if (fk.Columns.Count == 1)
+                            {
+                                file.AppendLine($"x.{fk.Columns[0].Value});");
+                            }
+                            else
+                            {
+                                file.Append("new {");
+                                file.Append(string.Join(", ", fk.Columns.Select(c => "x." + c.Value)));
+                                file.AppendLine("});");
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception("WFT!!");
+                        }
+                    }
+                }
                 file.AppendLine("   }");
                 file.AppendLine("}");
-                File.WriteAllText(Path.Combine(parameters.DestinationPath, "Configuration", table.NameFixed + ".cs"), file.ToString());
+                File.WriteAllText(Path.Combine(parameters.DestinationPath, "Configuration",
+                    (hasSchema ? table.Schema : DefaultSchema), table.EntityName + "Configuration.cs")
+                    , file.ToString());
+            }
+
+            foreach (Function fn in conceptualModel.Functions.Where(x => 
+                                                                !x.Value.IsFunction 
+                                                                && !string.IsNullOrEmpty(x.Value.ReturnComplexType) 
+                                                                && x.Value.ReturnComplexType.Contains("Collection")
+                                                            ).Select(x => x.Value))
+            {
+                StorageFunction sfn = storage.Functions[fn.Name];
+                bool hasSchema = HasSchema(sfn.Schema);
+                StringBuilder file = new StringBuilder();
+                string returnType = (fn.ReturnComplexType?.Replace("Collection(", string.Empty).Replace(")", string.Empty) ?? string.Empty).Replace("_", string.Empty);
+                file.AppendLine("using Microsoft.EntityFrameworkCore;");
+                file.AppendLine("using Microsoft.EntityFrameworkCore.Metadata.Builders;");
+                file.Append(Environment.NewLine);
+                file.Append("namespace ");
+                file.Append(parameters.Namespace);
+                file.Append(".Configuration.");
+                file.Append(parameters.DbName);
+                file.Append('.');
+                file.Append(hasSchema ? sfn.Schema : DefaultSchema);
+                file.AppendLine(".Procedure;");
+                file.Append(Environment.NewLine);
+                file.AppendLine("/// <summary>");
+                file.AppendLine("/// Return type for store procedure");
+                file.AppendLine("/// </summary>");
+                file.AppendLine($"public class {returnType}Configuration : IEntityTypeConfiguration<Domain.{parameters.DbName}.{(hasSchema ? sfn.Schema : DefaultSchema)}.Procedure.{returnType}>");
+                file.AppendLine("{");
+                file.AppendLine("    /// <summary>");
+                file.AppendLine("    ///   Configuration of the store procedure");
+                file.AppendLine("    /// </summary>");
+                file.AppendLine($"    public void Configure(EntityTypeBuilder<Domain.{parameters.DbName}.{(hasSchema ? sfn.Schema : DefaultSchema)}.Procedure.{returnType}> builder)");
+                file.AppendLine( "    {");
+                file.AppendLine("        builder.HasNoKey();");
+                file.AppendLine("        //builder.ToView(null);");
+                /*
+                foreach (Column column in sfn.ReturnColumns)
+                {
+                    file.Append("        builder.Property(x => x.");
+                    file.Append(column.PropertyName);
+                    file.Append(")");
+                    if (!column.IsNullable)
+                    {
+                        file.Append(".IsRequired()");
+                    }
+                    file.Append(".HasColumnName(\"");
+                    file.Append(column.Name);
+                    file.Append("\")");
+                }
+                */
+                file.AppendLine("    }");
+                file.AppendLine("}");
+                string folder = Path.Combine(parameters.DestinationPath, "Configuration", (hasSchema ? sfn.Schema : DefaultSchema), "Procedure");
+                CreateFolder(folder);
+                File.WriteAllText(Path.Combine(folder, $"{sfn.NameFixed}Configuration.cs"), file.ToString());
             }
         }
-        private void CreateDbContext(IDictionary<string, Entity> entities, UIParameters parameters, string name, bool hasDbSets)
+        /// <summary>
+        /// Generates the Entity Framework Core database context source code file for the specified data model and
+        /// configuration parameters.
+        /// </summary>
+        /// <remarks>This method creates a C# source file that defines a strongly-typed Entity Framework
+        /// Core DbContext class, including entity sets, configuration, and optional function mappings. The generated
+        /// context is tailored to the provided models and parameters, and should be integrated into the application's
+        /// data access layer. Ensure that all required models and configuration options are supplied to avoid
+        /// incomplete or invalid context generation.</remarks>
+        /// <param name="storageModel">The storage model representing the database schema and physical structure to be used for context generation.
+        /// Cannot be null.</param>
+        /// <param name="conceptualModel">The conceptual model containing the application's entity definitions and relationships. Must include all
+        /// entities to be exposed in the context.</param>
+        /// <param name="parameters">The UI and configuration parameters that specify code generation options, such as namespace, destination
+        /// path, and database name. Cannot be null.</param>
+        /// <param name="name">The name of the generated context source file, excluding the file extension. Must be a valid file name.</param>
+        /// <param name="hasDbSets">A value indicating whether DbSet properties should be generated for the entities in the context. If <see
+        /// langword="true"/>, DbSet properties are included; otherwise, they are omitted.</param>
+        /// <param name="schemas">A list of database schema names to be included in the generated context. Schemas other than 'dbo' will have
+        /// separate configuration imports.</param>
+        private void CreateDbContext(StorageModel storageModel, ConceptualModel conceptualModel, UIParameters parameters, string name, bool hasDbSets, List<string> schemas)
         {
-            StringBuilder file = new StringBuilder();
-            file.AppendLine("using System;");
-            file.AppendLine("using System.Collections.Generic;");
+            StringBuilder file = new();
             file.AppendLine("using System.Data;");
-            file.AppendLine("using System.Data.Common;");
-            file.AppendLine("using System.Linq;");
-            file.AppendLine("using System.Threading;");
-            file.AppendLine("using System.Threading.Tasks;");
+            file.AppendLine("using System.Data.SqlClient;");
+            file.AppendLine("using Microsoft.Data.SqlClient;");
             file.AppendLine("using Microsoft.EntityFrameworkCore;");
-            file.AppendLine("using Microsoft.EntityFrameworkCore.ChangeTracking;");
-            file.AppendLine("using Microsoft.Extensions.Logging;");
             file.Append(Environment.NewLine);
             file.Append("namespace ");
             file.Append(parameters.Namespace);
+            file.AppendLine(";");
+            file.AppendLine("/// <summary>");
+            file.AppendLine("/// Represents the Entity Framework Core database context for the application, providing access to entity sets and");
+            file.AppendLine("/// configuration for the underlying database schema.");
+            file.AppendLine("/// </summary>");
+            file.AppendLine("/// <remarks>AppDbContext manages the application's data model and is used to query and save instances of");
+            file.AppendLine("/// entity types. It exposes DbSet properties for each entity in the domain, enabling LINQ queries and change");
+            file.AppendLine("/// tracking. This context should be registered and managed according to the application's dependency injection and");
+            file.AppendLine("/// lifetime requirements. For advanced configuration, override OnModelCreating or use the provided options in the");
+            file.AppendLine("/// constructor.</remarks>");
+            file.Append("public class DbContext");
+            file.Append(parameters.DbName);
+            file.Append(" : DbContext");
             file.AppendLine("{");
-            file.AppendLine("   public class AppDbContext : DbContext{");
-            file.AppendLine("       public AppDbContext(DbContextOptions<AppDbContext> options) : base(options){");
-            file.AppendLine("       }");
-            file.AppendLine("       protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder){");
-            file.AppendLine("           base.OnConfiguring(optionsBuilder);");
-            file.AppendLine("       }");
+            file.AppendLine("    /// <summary>");
+            file.AppendLine("    /// Initializes a new instance of the DbContext class using the specified options.");
+            file.AppendLine("    /// </summary>");
+            file.AppendLine("    /// <param name=\"options\">The options to be used by the DbContext. Must not be null.</param>");
+            file.Append("    public DbContext");
+            file.Append(parameters.DbName);
+            file.Append("(DbContextOptions<DbContext");
+            file.Append(parameters.DbName);
+            file.AppendLine("> options) : base(options)");
+            file.AppendLine("{");
+            file.AppendLine("    }");
+            file.AppendLine("    /// <summary>");
+            file.AppendLine("    /// Configures the database context options for this context instance.");
+            file.AppendLine("    /// </summary>");
+            file.AppendLine("    /// <param name=\"optionsBuilder\">A builder used to create or modify options for this context. Cannot be null.</param>");
+            file.AppendLine("    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder){");
+            file.AppendLine("        base.OnConfiguring(optionsBuilder);");
+            file.AppendLine("    }");
             if (hasDbSets)
             {
-                foreach (Entity entity in entities.Values.OrderBy(x => x.Name))
+                foreach (Entity entity in conceptualModel.Entities.Values.Where(x => x.Used).OrderBy(x => x.Schema).ThenBy(x => x.Name))
                 {
-                    file.Append("       public DbSet<");
-                    file.Append(entity.NameFixed);
-                    file.Append("> ");
-                    file.Append(entity.NameFixed);
+
+                    file.AppendLine("    /// <summary>");
+                    file.AppendLine($"    /// Gets or sets the collection of <see cref=\"Domain.{parameters.DbName}.{(HasSchema(entity.Schema) ? entity.Schema : DefaultSchema)}.{entity.NameFixed}\"/> entities in the database context. Table: ${entity.Schema}.${entity.TableName}");
+                    file.AppendLine("    /// </summary>");
+                    file.Append($"    public DbSet<Domain.{parameters.DbName}.{(HasSchema(entity.Schema) ? entity.Schema : DefaultSchema)}.{entity.NameFixed}> {entity.NameFixed}");
                     if (
-                        entity.NameFixed.EndsWith("s", StringComparison.InvariantCultureIgnoreCase)
+                        entity.Name.EndsWith("s", StringComparison.InvariantCultureIgnoreCase)
                         //|| entity.NameFixed.EndsWith("1", StringComparison.InvariantCultureIgnoreCase)
                         )
                     {
                         //we dont need to do somthing else...
                     }
-                    else if (entity.NameFixed.EndsWith("a", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("e", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("i", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("o", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("u", StringComparison.InvariantCultureIgnoreCase)
+                    else if (entity.Name.EndsWith("a", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("e", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("i", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("o", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("u", StringComparison.InvariantCultureIgnoreCase)
 
 
-                        || entity.NameFixed.EndsWith("h", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("k", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("c", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("f", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("g", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("r", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("b", StringComparison.InvariantCultureIgnoreCase)
-                        || entity.NameFixed.EndsWith("t", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("h", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("k", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("c", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("f", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("g", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("r", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("b", StringComparison.InvariantCultureIgnoreCase)
+                        || entity.Name.EndsWith("t", StringComparison.InvariantCultureIgnoreCase)
                         )
                     {
                         file.Append("s");
                     }
-                    else if (entity.NameFixed.EndsWith("z", StringComparison.InvariantCultureIgnoreCase))
+                    else if (entity.Name.EndsWith("z", StringComparison.InvariantCultureIgnoreCase))
                     {
                         file.Length--;
                         file.Append("ces");
@@ -481,39 +1261,481 @@ namespace EDMXMigrationTool
                     file.AppendLine(" { get; set; }");
                 }
             }
-            file.Append(Environment.NewLine);
-            file.AppendLine("       protected override void OnModelCreating(ModelBuilder modelBuilder){");
-            file.AppendLine("           base.OnModelCreating(modelBuilder);");
-            foreach (Entity entity in entities.Values.OrderBy(x => x.Name))
+            foreach (Function fn in conceptualModel.Functions.Values.Where(x => !x.IsFunction && !string.IsNullOrEmpty(x.ReturnComplexType)))
             {
-                file.Append("           modelBuilder.ApplyConfiguration(new ");
+                string returnType = (fn.ReturnComplexType?.Replace("Collection(", string.Empty).Replace(")", string.Empty) ?? string.Empty).Replace("_", string.Empty);
+                if (!PrimitiveTypes.Contains(returnType))
+                {
+                    StorageFunction sfn = storageModel.Functions[fn.Name];
+                    file.AppendLine("    /// <summary>");
+                    file.AppendLine("    /// Gets or sets the collection of procedure result");
+                    file.AppendLine("    /// </summary>");
+                    file.AppendLine($"    public DbSet<Domain.{parameters.DbName}.{(HasSchema(sfn.Schema) ? sfn.Schema : DefaultSchema)}.Procedure.{returnType}> {returnType}s {{ get; set; }}");
+                }
+            }
+            file.Append(Environment.NewLine);
+            file.AppendLine("    /// <summary>");
+            file.AppendLine("    /// Configures the entity model for the context by applying entity type configurations.");
+            file.AppendLine("    /// </summary>");
+            file.AppendLine("    /// <remarks>This method is called by Entity Framework when the model for the context is being");
+            file.AppendLine("    /// created. It applies all entity type configurations required for the application's data model. Override this");
+            file.AppendLine("    /// method to customize the model and configure additional mappings or constraints as needed.</remarks>");
+            file.AppendLine("    /// <param name=\"modelBuilder\" > The builder used to construct the model for the context. Cannot be null.</param>");
+            file.AppendLine("    protected override void OnModelCreating(ModelBuilder modelBuilder){");
+            file.AppendLine("        base.OnModelCreating(modelBuilder);");
+            foreach (Entity entity in conceptualModel.Entities.Values.Where(x => x.Used).OrderBy(x => x.Schema).ThenBy(x => x.Name))
+            {
+                file.Append("        modelBuilder.ApplyConfiguration(new Configuration.");
+                file.Append(parameters.DbName);
+                file.Append('.');
+                file.Append(HasSchema(entity.Schema) ? entity.Schema : DefaultSchema);
+                file.Append('.');
                 file.Append(entity.NameFixed);
                 file.AppendLine("Configuration());");
+
             }
-            file.AppendLine("       }");
-            file.AppendLine("   }");
-            file.Append("}");
+            if (conceptualModel.Functions.Count > 0)
+            {
+                file.AppendLine(Environment.NewLine);
+                file.AppendLine("        // Configuration for function or store procedures");
+                foreach (Function fn in conceptualModel.Functions.Values.OrderBy(x => x.IsFunction))
+                {
+                    if (fn.IsFunction)
+                    {
+                        file.Append("        modelBuilder.HasDbFunction(typeof(DbContext");
+                        file.Append(parameters.DbName);
+                        file.Append(").GetMethod(nameof(");
+                        file.Append(fn.NameFixed);
+                        file.Append(')');
+                        if (fn.Parameters.Count > 0)
+                        {
+                            file.AppendLine(",");
+                            file.Append("            new[] { ");
+                            file.Append(string.Join(", ", from i in fn.Parameters select "typeof(" + i.Type + ")"));
+                            file.AppendLine(" }))");
+                        }
+                        file.Append("            .HasName(\"");
+                        file.Append(fn.Name);
+                        file.AppendLine("\")");
+                        file.Append("            .HasSchema(\"");
+                        file.Append(storageModel.Functions[fn.Name].Schema);
+                        file.AppendLine("\");");
+                    }
+                    else
+                    {
+                        StorageFunction sfn = storageModel.Functions[fn.Name];
+                        string returnType = (fn.ReturnComplexType?.Replace("Collection(", string.Empty).Replace(")", string.Empty) ?? string.Empty).Replace("_", string.Empty);
+                        if (!string.IsNullOrEmpty(returnType) && !PrimitiveTypes.Contains(returnType))
+                        {
+                            file.Append("        modelBuilder.ApplyConfiguration(new Configuration.");
+                            file.Append(parameters.DbName);
+                            file.Append('.');
+                            file.Append(HasSchema(sfn.Schema) ? sfn.Schema : DefaultSchema);
+                            file.Append(".Procedure.");
+                            file.Append(returnType);
+                            file.AppendLine("Configuration());");
+                        }
+                    }
+                }
+            }
+            file.AppendLine("    }");
+
+            if (conceptualModel.Functions.Count > 0)
+            {
+                file.AppendLine("    // Function or Store Procedures: ");
+                foreach (Function fn in conceptualModel.Functions.Values)
+                {
+                    StorageFunction sfn = storageModel.Functions[fn.Name];
+                    string returnDataType = fnCalculateReturnType(fn, sfn, parameters);
+                    file.AppendLine("    /// <summary>");
+                    file.Append("    ///    Name: ");
+                    file.AppendLine(fn.Name);
+                    file.AppendLine("    /// </summary>");
+                    file.Append("    public ");
+                    file.Append(FnMapCSharpTypeToAlias(returnDataType));
+                    file.Append(" ");
+                    file.Append(fn.NameFixed);
+                    file.Append("(");
+                    file.Append(
+                        string.Join(", ", fn.Parameters.Where(x => x.Direction != Direction.Out).Select(p => p.Type + "? " + p.Name.ToLower()))
+                    );
+                    file.AppendLine(")");
+                    file.AppendLine("    {");
+                    if (fn.IsFunction)
+                    {
+                        file.AppendLine("        throw new NotSupportedException();");
+                    }
+                    else
+                    {
+                        string returnType = (fn.ReturnComplexType?.Replace("Collection(", string.Empty).Replace(")", string.Empty) ?? string.Empty).Replace("_", string.Empty);
+                        int inputOutCount = 0;
+                        string paramOutCount = string.Empty;
+                        foreach (FunctionParameter parameter in fn.Parameters)
+                        {
+                            file.AppendLine($"        SqlParameter param{parameter.Name} = new(\"@{parameter.Name}\", SqlDbType.{FnMapCSharpTypeToSqlType(parameter.Type)})");
+                            file.AppendLine( "        {");
+                            file.Append($"            Value = {parameter.Name.ToLower()}, Direction = ParameterDirection.");
+                            switch (parameter.Direction)
+                            {
+                                case Direction.In:
+                                    file.AppendLine("Input");
+                                    break;
+                                case Direction.Out:
+                                    file.AppendLine("Output");
+                                    break;
+                                case Direction.InOut:
+                                    file.AppendLine("InputOutput");
+                                    inputOutCount++;
+                                    paramOutCount = $"param{parameter.Name}";
+                                    break;
+                            }
+                            file.AppendLine("        };");
+                        }
+                        file.Append("        ");
+                        if (string.IsNullOrEmpty(returnType))
+                        {
+                            if (inputOutCount != 1)
+                            {
+                                file.Append("return ");
+                            }
+                            file.Append("Database.ExecuteSqlInterpolated($\"EXECUTE ");
+                        }
+                        else
+                        {
+                            if (PrimitiveTypes.Contains(returnType))
+                            {
+                                file.Append($"return Database.SqlQuery<{returnType}>");
+                            }
+                            else
+                            {
+                                file.Append($"return {returnType}s.FromSqlInterpolated");
+                            }
+                            file.Append("($\"EXECUTE ");
+                        }
+                        file.Append(sfn.Schema);
+                        file.Append('.');
+                        file.Append(fn.Name);
+                        file.Append(" ");
+                        file.Append(string.Join(",", from f in fn.Parameters select "{param" + f.Name + "}"));
+                        file.AppendLine("\");");
+                        if (string.IsNullOrEmpty(returnType) && inputOutCount == 1) {
+                            file.Append("        return (");
+                            file.Append(returnDataType);
+                            file.Append(")");
+                            file.Append(paramOutCount);
+                            file.AppendLine(".Value;");
+                        }
+                    }
+                    file.AppendLine("    }");
+                }
+            }
+            file.Append('}');
             File.WriteAllText(Path.Combine(parameters.DestinationPath, name + ".cs"), file.ToString());
         }
-
-        private void AnaliceContext(IDictionary<string, Table> tables, IDictionary<string, Entity> entities, IList<Mapping> mappings)
+        /// <summary>
+        /// Maps a C# type name to its corresponding SQL Server data type name.
+        /// </summary>
+        /// <remarks>Supported type names include: "Int32", "Int64", "Int16", "Byte", "Boolean",
+        /// "Decimal", "Double", "Float", "String", "DateTime", "DateTimeOffset", "TimeSpan", "Guid", and "Byte[]". The
+        /// comparison is case-sensitive.</remarks>
+        /// <param name="parameterType">The name of the C# type to map. For example, "Int32", "String", or "DateTime". Must match a supported type
+        /// name exactly.</param>
+        /// <returns>A string containing the SQL Server data type name that corresponds to the specified C# type.</returns>
+        /// <exception cref="NotImplementedException">Thrown if <paramref name="parameterType"/> does not match a supported C# type name.</exception>
+        private static string FnMapCSharpTypeToSqlType(string parameterType)
         {
-
+            return parameterType switch
+            {
+                "Int32" => "Int",
+                "Int64" => "BigInt",
+                "Int16" => "SmallInt",
+                "Byte" => "TinyInt",
+                "Boolean" => "Bit",
+                "Decimal" => "Decimal",
+                "Double" => "Float",
+                "Float" => "Real",
+                "String" => "NVarChar",
+                "DateTime" => "DateTime",
+                "DateTimeOffset" => "DateTimeOffset",
+                "TimeSpan" => "Time",
+                "Guid" => "UniqueIdentifier",
+                "Byte[]" => "VarBinary",
+                _ => throw new NotImplementedException(),
+            };
+        }
+        /// <summary>
+        /// Maps a C# type name to its corresponding C# language alias, if one exists.
+        /// </summary>
+        /// <remarks>Common C# types such as "Int32" and "Boolean" are mapped to their respective aliases
+        /// like "int" and "bool". If the provided type name does not have a known alias, the method returns the input
+        /// unchanged.</remarks>
+        /// <param name="parameterType">The name of the C# type to map. For example, "Int32" or "String".</param>
+        /// <returns>The C# language alias for the specified type name if a mapping exists; otherwise, returns the original type
+        /// name.</returns>
+        private static string FnMapCSharpTypeToAlias(string parameterType)
+        {
+            return parameterType switch
+            {
+                "Int32" => "int",
+                "Int64" => "long",
+                "Int16" => "short",
+                "Byte" => "byte",
+                "Boolean" => "bool",
+                "Decimal" => "decimal",
+                "Double" => "double",
+                "Float" => "float",
+                "String" => "string",
+                "DateTime" => "DateTime",
+                "IEnumerable<Int32>" => "IEnumerable<int>",
+                "IEnumerable<Decimal>" => "IEnumerable<decimal>",
+                "IEnumerable<Boolean>" => "IEnumerable<bool>",
+                "IEnumerable<String>" => "IEnumerable<string>",
+                "IEnumerable<DateTime>" => "IEnumerable<DateTime>",
+                _ => parameterType,
+            };
+        }
+        /// <summary>
+        /// Determines the return type for the specified function based on its metadata and UI parameters.
+        /// </summary>
+        /// <remarks>If the function does not specify a complex return type, the method infers the return
+        /// type from output or input/output parameters, defaulting to "int" if none are found. For functions with a
+        /// complex return type, the method constructs the appropriate collection or type name using the provided
+        /// database and schema context.</remarks>
+        /// <param name="fn">The function metadata object containing information about parameters, return type, and function
+        /// characteristics.</param>
+        /// <param name="parameters">The UI parameters that provide database and schema context for constructing the return type.</param>
+        /// <returns>A string representing the calculated return type for the function. The value may be a primitive type, a
+        /// complex type, or a collection type depending on the function's metadata.</returns>
+        private string fnCalculateReturnType(Function fn, StorageFunction sfn, UIParameters parameters)
+        {
+            if (string.IsNullOrEmpty(fn.ReturnComplexType) 
+                || fn.ReturnComplexType == "Collection(String)"
+                || fn.ReturnComplexType == "Collection(Int32)"
+                || fn.ReturnComplexType == "Collection(Boolean)"
+                || fn.ReturnComplexType == "Collection(Decimal)"
+                || fn.ReturnComplexType == "Collection(DateTime)"
+                )
+            {
+                List<FunctionParameter> lstOut = fn.Parameters.Where(x => x.Direction == Direction.Out).ToList();
+                List<FunctionParameter> lstInOut = fn.Parameters.Where(x => x.Direction == Direction.InOut).ToList();
+                if (lstOut.Count == 1)
+                {
+                    return lstOut.First().Type ?? "int";
+                }
+                if (lstInOut.Count == 1)
+                {
+                    return lstInOut.First().Type ?? "int";
+                }
+                return string.IsNullOrEmpty(fn.ReturnComplexType) ? "int" : fn.ReturnComplexType.Replace("Collection(", "IEnumerable<").Replace(")", ">");
+            }
+            string collectionType = fn.IsFunction ? "IQueryable" : "IEnumerable";
+            if (fn.ReturnComplexType.StartsWith("Collection("))
+            {
+                return fn.ReturnComplexType.EndsWith("_Result)") ?
+                    $"{collectionType}<Domain.{parameters.DbName}.{(HasSchema(sfn.Schema) ? sfn.Schema : DefaultSchema)}.Procedure.{fn.NameFixed}Result>" :
+                    $"{collectionType}<{fn.ReturnComplexType.Replace("Collection(", string.Empty).Replace(")", string.Empty)}>";
+            }
+            return fn.ReturnComplexType.Replace("Collection(", string.Empty).Replace(")", string.Empty);
+        }
+        /// <summary>
+        /// Determines the multiplicity represented by the specified string value.
+        /// </summary>
+        /// <param name="value">A string that specifies the multiplicity. Supported values are "1", "0..1", "0..*", and "*".</param>
+        /// <returns>A <see cref="Multiplicity"/> value corresponding to the specified string.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if <paramref name="value"/> does not match a recognized multiplicity format.</exception>
+        private Multiplicity GetMultiplicity(string value)
+        {
+            return value switch
+            {
+                "1" => Multiplicity.One,
+                "0..1" => Multiplicity.ZeroOrOne,
+                "0..*" => Multiplicity.ZeroOrMany,
+                "*" => Multiplicity.Many,
+                _ => throw new InvalidOperationException($"The multiplicity value '{value}' is not recognized."),
+            };
+        }
+        /// <summary>
+        /// Analyzes the provided table, entity, and mapping collections to establish relationships and update metadata
+        /// for use in context mapping.
+        /// </summary>
+        /// <remarks>This method updates the 'Used' and naming metadata for tables and entities based on
+        /// the provided mappings. It also ensures that foreign key and navigation property names are unique within
+        /// their respective contexts. All referenced tables and entities must be present in the input dictionaries;
+        /// otherwise, exceptions are thrown to indicate missing definitions.</remarks>
+        /// <param name="tables">A dictionary containing table definitions, keyed by table name. Each table must be defined prior to
+        /// analysis.</param>
+        /// <param name="entities">A dictionary containing entity definitions, keyed by entity name. Each entity must be defined prior to
+        /// analysis.</param>
+        /// <param name="mappings">A list of mapping objects that define the relationships between tables and entities, including property and
+        /// foreign key mappings.</param>
+        /// <exception cref="InvalidOperationException">Thrown if a table referenced in a mapping is not defined in the tables dictionary, or if an entity
+        /// referenced in a mapping or navigation property is not defined in the entities dictionary.</exception>
+        /// <exception cref="Exception">Thrown if a critical error occurs during foreign key or navigation property name assignment, such as an
+        /// incorrect index calculation resulting in a naming conflict.</exception>
+        private void AnaliceContext(StorageModel storageContext, ConceptualModel conceptualModel, MappingContext mappings)
+        {
+            foreach (Mapping map in mappings.Tables)
+            {
+                Table table;
+                Entity entity;
+                if (storageContext.Tables.ContainsKey(map.TableName))
+                {
+                    table = storageContext.Tables[map.TableName];
+                }
+                else
+                {
+                    throw new InvalidOperationException($"The table '{map.TableName}' is not defined in the SSDL context.");
+                }
+                if (conceptualModel.Entities.ContainsKey(map.EntityName))
+                {
+                    entity = conceptualModel.Entities[map.EntityName];
+                }
+                else
+                {
+                    throw new InvalidOperationException($"The entity '{map.EntityName}' is not defined in the C-S mapping context.");
+                }
+                table.Used = true;
+                entity.Used = true;
+                entity.NameFixed = NameInPascalCase(entity.Name, table.RepoType == RepoType.View);
+                table.EntityName = entity.NameFixed;
+                entity.TableName = map.TableName;
+                entity.Schema = table.Schema;
+                foreach (MappingProperty item in map.Properties)
+                {
+                    table.Columns[item.ColumnName].PropertyName = item.PropertyName;
+                }
+                if (table.ForeingKeys.Count > 0)
+                {
+                    HashSet<string> fkNames = new HashSet<string>();
+                    foreach (Property property in entity.Properties)
+                    {
+                        fkNames.Add(property.Name);
+                    }
+                    fkNames.Add(table.NameFixed);
+                    foreach (ForeingKey fk in table.ForeingKeys)
+                    {
+                        if (!fkNames.Contains(fk.TableNameFixedWithCounter))
+                        {
+                            fkNames.Add(fk.TableNameFixedWithCounter);
+                            continue;
+                        }
+                        int index = 1;
+                        while (fkNames.Contains(fk.TableNameFixed + index))
+                        {
+                            index++;
+                        }
+                        fk.TableNameFixedWithCounter = fk.TableNameFixed + index;
+                        if (!fkNames.Contains(fk.TableNameFixedWithCounter))
+                        {
+                            fkNames.Add(fk.TableNameFixedWithCounter);
+                        }
+                        else
+                        {
+                            throw new Exception("critical error, index calculation is incorrect");
+                        }
+                    }
+                }
+            }
+            foreach (Entity entity in conceptualModel.Entities.Values)
+            {
+                if (entity.NavigationProperties.Count > 0)
+                {
+                    int countRefNavProps = 0;
+                    HashSet<string> fkNames = new HashSet<string>();
+                    foreach (Property property in entity.Properties)
+                    {
+                        fkNames.Add(property.Name);
+                    }
+                    fkNames.Add(entity.NameFixed);
+                    foreach (NavigationProperty navProp in entity.NavigationProperties)
+                    {
+                        if (conceptualModel.Entities.ContainsKey(navProp.EntityName))
+                        {
+                            Entity targetEntity = conceptualModel.Entities[navProp.EntityName];
+                            Table targetTable = storageContext.Tables[targetEntity.TableName ?? string.Empty];
+                            targetEntity.Used = true;
+                            targetTable.Used = true;
+                            navProp.TargetName = targetTable.Name;
+                            navProp.TargetNameFixed = targetTable.NameFixed;
+                            navProp.TargetNameFixedWithCounter = targetTable.NameFixed;
+                            navProp.TargetSchema = targetTable.Schema;
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException($"The entity '{navProp.EntityName}' is not defined in the C-S mapping context.");
+                        }
+                        if (!fkNames.Contains(navProp.TargetNameFixedWithCounter))
+                        {
+                            fkNames.Add(navProp.TargetNameFixedWithCounter);
+                            continue;
+                        }
+                        countRefNavProps = 1;
+                        while (fkNames.Contains(navProp.TargetNameFixed + countRefNavProps))
+                        {
+                            countRefNavProps++;
+                        }
+                        navProp.TargetNameFixedWithCounter = navProp.TargetNameFixed + countRefNavProps;
+                        if (!fkNames.Contains(navProp.TargetNameFixedWithCounter))
+                        {
+                            fkNames.Add(navProp.TargetNameFixedWithCounter);
+                        }
+                        else
+                        {
+                            throw new Exception("critical error, index calculation is incorrect");
+                        }
+                    }
+                }
+            }
+            foreach (MappingFunction function in mappings.Function)
+            {
+                if (conceptualModel.Functions.ContainsKey(function.FunctionName))
+                {
+                    Function fn = conceptualModel.Functions[function.FunctionName];
+                    conceptualModel.Functions.Remove(function.FunctionName);
+                    if (conceptualModel.Functions.ContainsKey(function.StoredProcedureName))
+                    {
+                        if (storageContext.Functions.ContainsKey(function.FunctionName)){
+                            storageContext.Functions.Remove(function.FunctionName);
+                        }
+                    }
+                    else
+                    {
+                        conceptualModel.Functions.Add(function.StoredProcedureName, fn);
+                        fn.Name = function.StoredProcedureName;
+                        string preFix = string.Empty;
+                        string temp = fn.Name;
+                        if (temp.StartsWith("SP", StringComparison.InvariantCultureIgnoreCase) ||
+                            temp.StartsWith("PA", StringComparison.InvariantCultureIgnoreCase) ||
+                            temp.StartsWith("FN", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            preFix = temp.Substring(0, 2).ToUpper();
+                            //preFix = preFix[0].ToString().ToUpper() + preFix[1].ToString().ToLower();
+                            temp = temp.Substring(2);
+                        }
+                        fn.NameFixed = preFix + NameInPascalCase(temp, false);
+                    }
+                }
+            }
         }
         /// <summary>
         /// SSDL content
         /// </summary>
         /// <returns>Tables list</returns>
-        private IDictionary<string, Table> GetStorageModels(XElement? edmxRuntime)
+        private StorageModel GetStorageModels(XElement? edmxRuntime)
         {
-            IDictionary<string, Table> data = new Dictionary<string, Table>();
-            XElement? storageModels = edmxRuntime?.Descendants().FirstOrDefault(n => n.Name.LocalName == "StorageModels");
-            XElement? schema = storageModels?.Descendants().FirstOrDefault(n => n.Name.LocalName == "Schema");
+            StorageModel storageModel = new StorageModel
+            {
+                Tables = new Dictionary<string, Table>(),
+                Functions = new Dictionary<string, StorageFunction>()
+            };
+            XElement? storageModels = edmxRuntime?.Elements().FirstOrDefault(n => n.Name.LocalName == "StorageModels");
+            XElement? schema = storageModels?.Elements().FirstOrDefault(n => n.Name.LocalName == "Schema");
+            string alias = (schema.Attribute("Alias")?.Value ?? string.Empty) + ".";
             if (schema == null)
             {
                 throw new InvalidOperationException("The EDMX file does not contain any schemas for SSDL context.");
             }
-            foreach (var entity in schema.Descendants())
+            foreach (XElement entity in schema.Elements())
             {
                 if (entity.Name.LocalName == "EntityType")
                 {
@@ -521,8 +1743,7 @@ namespace EDMXMigrationTool
                     {
                         Name = entity.Attribute("Name")?.Value ?? string.Empty
                     };
-                    table.NameFixed = NameInPascalCase(table.Name);
-                    foreach (var property in entity.Descendants().Where(n => n.Name.LocalName == "Property"))
+                    foreach (XElement? property in entity.Descendants().Where(n => n.Name.LocalName == "Property"))
                     {
                         Column column = new Column
                         {
@@ -539,34 +1760,222 @@ namespace EDMXMigrationTool
                         column.MaxLength = column.Type == "varchar(max)" ? null : column.MaxLength;
                         column.MaxLength = column.Type == "varbinary(max)" ? null : column.MaxLength;
                         column.IsPrimaryKey = entity.Descendants().Any(n => n.Name.LocalName == "Key" && n.Descendants().Any(k => k.Attribute("Name")?.Value == column.Name));
-                        table.Columns.Add(column);
+                        table.Columns.Add(column.Name, column);
                     }
-                    data[table.Name] = table;
+                    storageModel.Tables[table.Name] = table;
+                }
+                else if (entity.Name.LocalName == "Function")
+                {
+                    StorageFunction function = new StorageFunction
+                    {
+                        Name = entity.Attribute("Name")?.Value ?? string.Empty,
+                        Schema = entity.Attribute("Schema")?.Value ?? "dbo",
+                        IsFunction = entity.Attribute("IsComposable")?.Value == "true",
+                        ReturningCollection = false
+                    };
+                    string temp = function.Name;
+                    string preFix = string.Empty;
+                    if (temp.StartsWith("SP", StringComparison.InvariantCultureIgnoreCase) || temp.StartsWith("PA", StringComparison.InvariantCultureIgnoreCase) || temp.StartsWith("FN", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        preFix = temp.Substring(0, 2).ToUpper();
+                        //preFix = preFix[0].ToString().ToUpper() + preFix[1].ToString().ToLower();
+                        temp = temp.Substring(2);
+                    }
+                    function.NameFixed = preFix + NameInPascalCase(temp, false);
+                    foreach (XElement? property in entity.Descendants().Where(n => n.Name.LocalName == "Parameter"))
+                    {
+                        StorageParameter parameter = new StorageParameter
+                        {
+                            Name = property.Attribute("Name")?.Value ?? string.Empty,
+                            Type = property.Attribute("Type")?.Value ?? string.Empty,
+                        };
+                        function.Parameters.Add(parameter);
+                        switch (property.Attribute("Mode")?.Value)
+                        {
+                            case "In":
+                                parameter.Direction = Direction.In;
+                                break;
+                            case "Out":
+                                parameter.Direction = Direction.Out;
+                                break;
+                            case "InOut":
+                                parameter.Direction = Direction.InOut;
+                                break;
+                            default:
+                                parameter.Direction = Direction.In;
+                                break;
+                        }
+                    }
+                    storageModel.Functions.Add(function.Name, function);
+                    XElement? returnType = entity?.Descendants().FirstOrDefault(n => n.Name.LocalName == "ReturnType");
+                    if (returnType != null)
+                    {
+                        XElement? type = returnType.Elements().FirstOrDefault();
+                        if (type != null)
+                        {
+                            function.ReturningCollection = type.Name.LocalName == "CollectionType";
+                            XElement? rowType = type.Elements().FirstOrDefault();
+                            if (rowType != null)
+                            {
+                                foreach (XElement? property in rowType.Descendants().Where(n => n.Name.LocalName == "Property"))
+                                {
+                                    Column column = new Column
+                                    {
+                                        Name = property.Attribute("Name")?.Value ?? string.Empty,
+                                        Type = property.Attribute("Type")?.Value ?? string.Empty,
+                                        //IsNullable = !(property.Attribute("Nullable")?.Value == "false"),
+                                        //MaxLength = Convert.ToInt32(property.Attribute("MaxLength")?.Value ?? "0"),
+                                        //Precision = Convert.ToInt32(property.Attribute("Precision")?.Value ?? "0"),
+                                        //Scale = Convert.ToInt32(property.Attribute("Scale")?.Value ?? "0"),
+                                    };
+                                    //column.MaxLength = column.MaxLength == 0 ? null : column.MaxLength == -1 ? (int?)null : column.MaxLength;
+                                    //column.MaxLength = column.Type == "varchar(max)" ? null : column.MaxLength;
+                                    //column.MaxLength = column.Type == "varbinary(max)" ? null : column.MaxLength;
+                                    function.ReturnColumns.Add(column);
+                                }
+                            }
+                        }
+                    }
                 }
             }
             XElement? schemaNames = storageModels?.Descendants().FirstOrDefault(n => n.Name.LocalName == "EntityContainer");
-            foreach (var entity in schema.Descendants())
+            foreach (XElement entity in schemaNames.Elements())
             {
                 if (entity.Name.LocalName == "EntitySet")
                 {
                     string entityName = entity.Attribute("Name")?.Value ?? string.Empty;
-                    if (data.ContainsKey(entityName))
+                    if (storageModel.Tables.ContainsKey(entityName))
                     {
-                        Table table = data[entityName];
+                        Table table = storageModel.Tables[entityName];
                         table.Schema = entity.Attribute("Schema")?.Value ?? "dbo";
+                        table.RepoType = entity.Attribute(StoreNameSpace + "Type")?.Value.EndsWith("Views", StringComparison.InvariantCultureIgnoreCase) == true ? RepoType.View : RepoType.Table;
+                        table.NameFixed = NameInPascalCase(table.Name, table.RepoType == RepoType.View);
                     }
                 }
             }
-            return data;
+            foreach (XElement entity in schema.Elements())
+            {
+                if (entity.Name.LocalName == "Association")
+                {
+                    string fkName = entity.Attribute("Name")?.Value ?? string.Empty;
+                    List<XElement> elements = entity.Elements().ToList();
+                    if (elements.Count != 3)
+                    {
+                        throw new InvalidOperationException("The EDMX file contains an invalid association definition.");
+                    }
+                    string? tableS = elements[0].Attribute("Type")?.Value.Replace(alias, string.Empty);
+                    string? tableD = elements[1].Attribute("Type")?.Value.Replace(alias, string.Empty);
+                    Multiplicity multiplicityS = GetMultiplicity(elements[0].Attribute("Multiplicity")?.Value);
+                    Multiplicity multiplicityD = GetMultiplicity(elements[1].Attribute("Multiplicity")?.Value);
+
+                    if (string.IsNullOrEmpty(tableS) || string.IsNullOrEmpty(tableD))
+                    {
+                        throw new InvalidOperationException("The EDMX file contains an invalid association definition. [1]");
+                    }
+                    Table tableSou = storageModel.Tables[tableS];
+                    Table tableDes = storageModel.Tables[tableD];
+                    if (tableSou == null || tableDes == null)
+                    {
+                        throw new InvalidOperationException("The EDMX file contains an invalid association definition. [2]");
+                    }
+                    XElement principal = elements[2].Elements().First(entity => entity.Name.LocalName == "Principal");
+                    XElement dependent = elements[2].Elements().First(entity => entity.Name.LocalName == "Dependent");
+                    ForeingKey foreingKeyS = new ForeingKey()
+                    {
+                        Source = multiplicityS,
+                        Destination = multiplicityD,
+                        Table = tableD,
+                        TableSchema = tableDes.Schema,
+                        TableNameFixed = NameInPascalCase(tableD, false),
+                    };
+                    foreingKeyS.TableNameFixedWithCounter = foreingKeyS.TableNameFixed;
+                    ForeingKey foreingKeyD = new ForeingKey()
+                    {
+                        Source = multiplicityD,
+                        Destination = multiplicityS,
+                        Table = tableS,
+                        TableSchema = tableSou.Schema,
+                        TableNameFixed = NameInPascalCase(tableS, false),
+                    };
+                    foreingKeyD.TableNameFixedWithCounter = foreingKeyD.TableNameFixed;
+                    tableSou.ForeingKeys.Add(foreingKeyS);
+                    tableDes.ForeingKeys.Add(foreingKeyD);
+                    List<XElement> propertiesS = principal.Elements().ToList();
+                    List<XElement> propertiesD = dependent.Elements().ToList();
+                    if (propertiesS == null || propertiesD == null || propertiesD.Count == 0 || propertiesD.Count != propertiesS.Count)
+                    {
+                        throw new InvalidOperationException("The EDMX file contains an invalid association definition. [3]");
+                    }
+                    for (int i = 0; i < propertiesS.Count; i++)
+                    {
+                        XElement sourceProp = propertiesS[i];
+                        XElement destProp = propertiesD[i];
+                        string sP = sourceProp.Attribute("Name")?.Value ?? string.Empty;
+                        string dP = destProp.Attribute("Name")?.Value ?? string.Empty;
+                        foreingKeyS.Columns.Add(new KeyValuePair<string, string>(sP, dP));
+                        foreingKeyD.Columns.Add(new KeyValuePair<string, string>(dP, sP));
+                    }
+                }
+            }
+            return storageModel;
         }
-        private string NameInPascalCase(string name)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="isView"></param>
+        /// <returns></returns>
+        private string NameInPascalCase(string name, bool isView)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 return name;
+            }/*
+            if (name.Length < 5)
+            {
+                return name.ToUpper();
+            }*/
+            if (isView)
+            {
+                if (name.StartsWith("view_", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    name = name.Substring(5);
+                }
+                else if (name.StartsWith("vista_", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    name = name.Substring(6);
+                }
+                else if (name.StartsWith("vista", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    name = name.Substring(5);
+                }
+                else if (name.StartsWith("vw_", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    name = name.Substring(3);
+                }
+                else if (name.StartsWith("vw", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    name = name.Substring(2);
+                }
+                else if (name.StartsWith("v", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    name = name.Substring(1);
+                }
             }
             if (IsInPascalCase(name))
             {
+                if (isView)
+                {
+                    name = "View" + name;
+                }
+                else if (name == "FLUJOvsDOCANEXO")
+                {
+                    return "FlujoVsDocAnexo";
+                }
+                else if (name == "FLUJOvsDOCUMENTO")
+                {
+                    return "FlujoVsDocumento";
+                }
                 return name.Replace("_", string.Empty);
             }
             // Replace underscores and spaces with a single space
@@ -576,8 +1985,8 @@ namespace EDMXMigrationTool
                 .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             // Convert each part to PascalCase
-            var pascalName = new StringBuilder();
-            foreach (var part in parts)
+            StringBuilder pascalName = new StringBuilder();
+            foreach (string part in parts)
             {
                 if (part.Length == 0) continue;
                 // Lowercase all except first letter
@@ -587,68 +1996,261 @@ namespace EDMXMigrationTool
             }
             string nameInPascalCase = pascalName.ToString();
             nameInPascalCase = nameInPascalCase.Replace("tms", "TMS", StringComparison.InvariantCultureIgnoreCase);
+            nameInPascalCase = nameInPascalCase.Replace("xml", "XML", StringComparison.InvariantCultureIgnoreCase);
+            nameInPascalCase = nameInPascalCase.Replace("xsl", "XSL", StringComparison.InvariantCultureIgnoreCase);
+            nameInPascalCase = nameInPascalCase.Replace("tsol", "TSOL", StringComparison.InvariantCultureIgnoreCase);
+            nameInPascalCase = nameInPascalCase.Replace("VOLRUTA", "VolRuta", StringComparison.InvariantCultureIgnoreCase);
+            nameInPascalCase = nameInPascalCase.Replace("wsgen", "WSGen", StringComparison.InvariantCultureIgnoreCase);
             nameInPascalCase = nameInPascalCase.EndsWith("doc") ? nameInPascalCase.Replace("doc", "Doc", StringComparison.InvariantCultureIgnoreCase) : nameInPascalCase;
+            if (isView)
+            {
+                nameInPascalCase = "View" + nameInPascalCase;
+            }
             return nameInPascalCase;
         }
+        /// <summary>
+        /// Determines whether the specified string is in Pascal case format.
+        /// </summary>
+        /// <remarks>Pascal case requires the first character to be uppercase, followed by lowercase
+        /// characters. This method performs a heuristic check and may not validate all edge cases of Pascal case
+        /// formatting.</remarks>
+        /// <param name="name">The string to evaluate for Pascal case formatting. Cannot be null or whitespace.</param>
+        /// <returns>true if the input string is in Pascal case; otherwise, false.</returns>
         private bool IsInPascalCase(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 return false;
             }
-            return char.IsUpper(name[0]) && (char.IsLower(name[1]) || (name.Length > 5 && char.IsLower(name[5])));
+            return
+                (char.IsUpper(name[0]) && (char.IsLower(name[1]) || (name.Length > 5 && char.IsLower(name[4]) && char.IsLower(name[5])))) ||
+                (char.IsUpper(name[1]) && (char.IsLower(name[2]) || (name.Length > 6 && char.IsLower(name[5]) && char.IsLower(name[6]))));
+        }
+        /// <summary>
+        /// Creates a new NavigationProperty instance representing a relationship to the specified entity with the given
+        /// multiplicity.
+        /// </summary>
+        /// <param name="entity">The entity to which the navigation property will refer. Cannot be null.</param>
+        /// <param name="multiplicity">The multiplicity of the relationship, indicating how many related entities are allowed.</param>
+        /// <returns>A NavigationProperty object configured with the specified entity name and multiplicity.</returns>
+        private NavigationProperty CreateNavigationProperty(Entity entity, Multiplicity multiplicity)
+        {
+            return new NavigationProperty()
+            {
+                Multiplicity = multiplicity,
+                EntityName = entity.Name
+            };
         }
         /// <summary>
         /// SSDL content
         /// </summary>
         /// <returns>Tables list</returns>
-        private IDictionary<string, Entity> GetConceptualModels(XElement? edmxRuntime)
+        private ConceptualModel GetConceptualModels(XElement? edmxRuntime)
         {
-            IDictionary<string, Entity> data = new Dictionary<string, Entity>();
+            ConceptualModel conceptualModel = new ConceptualModel
+            {
+                Entities = new Dictionary<string, Entity>(),
+                Functions = new Dictionary<string, Function>(),
+                ComplexTypes = new Dictionary<string, ComplexType>(),
+            };
+            HashSet<string> complexTypesNewNames = new HashSet<string>();
             XElement? conceptualModels = edmxRuntime?.Descendants().FirstOrDefault(n => n.Name.LocalName == "ConceptualModels");
             XElement? schema = conceptualModels?.Descendants().FirstOrDefault(n => n.Name.LocalName == "Schema");
+            XElement? namespaceNode = conceptualModels?.Descendants().FirstOrDefault(n => n.Name.LocalName == "Namespace");
             if (schema == null)
             {
                 throw new InvalidOperationException("The EDMX file does not contain any schemas for SSDL context.");
             }
-            string schemaName = schema?.Attribute("Namespace")?.Value ?? string.Empty;
-            foreach (var entityType in schema.Descendants().Where(n => n.Name.LocalName == "EntityType"))
+            string namespaceName = (schema.Attribute("Namespace")?.Value ?? string.Empty) + ".";
+            foreach (XElement? entityType in schema.Elements())
             {
-                Entity e = new Entity
+                if (entityType.Name.LocalName == "EntityType")
                 {
-                    Name = entityType.Attribute("Name")?.Value ?? string.Empty,
-                    TableName = entityType.Attribute("Name")?.Value ?? string.Empty,
-                    Schema = schemaName ?? string.Empty
-                };
-                e.NameFixed = NameInPascalCase(e.Name);
-                foreach (var property in entityType.Descendants().Where(n => n.Name.LocalName == "Property"))
-                {
-                    Property prop = new Property
+                    Entity entity = new Entity
                     {
-                        Name = property.Attribute("Name")?.Value ?? string.Empty,
-                        Type = property.Attribute("Type")?.Value ?? string.Empty,
-                        IsNullable = !(property.Attribute("Nullable")?.Value == "false"),
-                        Precision = Convert.ToInt32(property.Attribute("Precision")?.Value ?? "0"),
-                        Scale = Convert.ToInt32(property.Attribute("Scale")?.Value ?? "0"),
-                        FixedLength = property.Attribute("FixedLength")?.Value == "true",
-                        Unicode = property.Attribute("Unicode")?.Value == "true"
+                        Name = entityType.Attribute("Name")?.Value ?? string.Empty
                     };
-                    string maxLength = property.Attribute("MaxLength")?.Value ?? string.Empty;
-                    prop.MaxLength = maxLength == string.Empty ? null : maxLength == "Max" ? -1 : Convert.ToInt32(maxLength ?? "0");
-                    prop.IsPrimaryKey = entityType.Descendants().Any(n => n.Name.LocalName == "Key" && n.Descendants().Any(k => k.Attribute("Name")?.Value == prop.Name));
-                    e.Properties.Add(prop);
+                    entity.TableName = entity.Name;
+                    if (entity.Name == "Regla1")
+                    {
+                        entity.Name = "REGLA";
+                    }
+                    else if (entity.Name == "REGLA")
+                    {
+                        entity.Name = "Regla1";
+                    }
+                    //entity.NameFixed = NameInPascalCase(entity.Name, false);
+                    foreach (var property in entityType.Descendants().Where(n => n.Name.LocalName == "Property"))
+                    {
+                        Property prop = new Property
+                        {
+                            Name = property.Attribute("Name")?.Value ?? string.Empty,
+                            Type = property.Attribute("Type")?.Value ?? string.Empty,
+                            IsNullable = !(property.Attribute("Nullable")?.Value == "false"),
+                            Precision = Convert.ToInt32(property.Attribute("Precision")?.Value ?? "0"),
+                            Scale = Convert.ToInt32(property.Attribute("Scale")?.Value ?? "0"),
+                            FixedLength = property.Attribute("FixedLength")?.Value == "true",
+                            Unicode = property.Attribute("Unicode")?.Value == "true"
+                        };
+                        string maxLength = property.Attribute("MaxLength")?.Value ?? string.Empty;
+                        prop.MaxLength = maxLength == string.Empty ? null : maxLength == "Max" ? -1 : Convert.ToInt32(maxLength ?? "0");
+                        prop.IsPrimaryKey = entityType.Descendants().Any(n => n.Name.LocalName == "Key" && n.Descendants().Any(k => k.Attribute("Name")?.Value == prop.Name));
+                        entity.Properties.Add(prop);
+                    }
+                    conceptualModel.Entities[entity.Name] = entity;
                 }
-                data[e.Name] = e;
+                else if (entityType.Name.LocalName == "ComplexType")
+                {
+                    ComplexType complexType = new ComplexType
+                    {
+                        Name = entityType.Attribute("Name")?.Value ?? string.Empty
+                    };
+                    string temp = complexType.Name;
+                    string preFix = string.Empty;
+                    if (temp.StartsWith("SP", StringComparison.InvariantCultureIgnoreCase) || temp.StartsWith("PA", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        preFix = temp.Substring(0, 2);
+                        temp = temp.Substring(2);
+                    }
+                    string newName = preFix + NameInPascalCase(temp, false);
+                    string newNameFinal = newName;
+                    int i = 1;
+                    while (complexTypesNewNames.Contains(newNameFinal))
+                    {
+                        newNameFinal = newName + i;
+                        i++;
+                    }
+                    complexTypesNewNames.Add(newNameFinal);
+                    complexType.NameFixed = newNameFinal;
+                    foreach (XElement parameter in entityType.Elements().Where(n => n.Name.LocalName == "Property"))
+                    {
+                        Property param = new Property
+                        {
+                            Name = parameter.Attribute("Name")?.Value ?? string.Empty,
+                            Type = parameter.Attribute("Type")?.Value ?? string.Empty,
+                            IsNullable = !(parameter.Attribute("Nullable")?.Value == "false"),
+                            MaxLength = Convert.ToInt32(parameter.Attribute("MaxLength")?.Value ?? "0"),
+                            Precision = Convert.ToInt32(parameter.Attribute("Precision")?.Value ?? "0"),
+                            Scale = Convert.ToInt32(parameter.Attribute("Scale")?.Value ?? "0"),
+                        };
+                        complexType.Properties.Add(param);
+                    }
+                    conceptualModel.ComplexTypes.Add(complexType.Name, complexType);
+                }
+                else if (entityType.Name.LocalName == "EntityContainer")
+                {
+                    foreach (XElement? functionImport in entityType.Elements().Where(n => n.Name.LocalName == "FunctionImport"))
+                    {
+                        Function function = new Function
+                        {
+                            Name = functionImport.Attribute("Name")?.Value ?? string.Empty,
+                            ReturnComplexType = functionImport.Attribute("ReturnType")?.Value.Replace(namespaceName, string.Empty),
+                            IsFunction = functionImport.Attribute("IsComposable")?.Value == "true"
+                        };
+                        string temp = function.Name;
+                        string preFix = string.Empty;
+                        if (temp.StartsWith("SP", StringComparison.InvariantCultureIgnoreCase) || temp.StartsWith("PA", StringComparison.InvariantCultureIgnoreCase) || temp.StartsWith("FN", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            preFix = temp.Substring(0, 2).ToUpper();
+                            //preFix = preFix[0].ToString().ToUpper() + preFix[1].ToString().ToLower();
+                            temp = temp.Substring(2);
+                        }
+                        function.NameFixed = preFix + NameInPascalCase(temp, false);
+                        conceptualModel.Functions.Add(function.Name, function);
+                        foreach (XElement? parameter in functionImport.Elements().Where(n => n.Name.LocalName == "Parameter"))
+                        {
+                            FunctionParameter param = new FunctionParameter
+                            {
+                                Name = parameter.Attribute("Name")?.Value ?? string.Empty,
+                                Type = parameter.Attribute("Type")?.Value ?? string.Empty,
+                            };
+                            switch (parameter.Attribute("Mode")?.Value)
+                            {
+                                case "In":
+                                    param.Direction = Direction.In;
+                                    break;
+                                case "Out":
+                                    param.Direction = Direction.Out;
+                                    break;
+                                case "InOut":
+                                    param.Direction = Direction.InOut;
+                                    break;
+                                default:
+                                    param.Direction = Direction.In;
+                                    break;
+                            }
+                            function.Parameters.Add(param);
+                        }
+                    }
+                }
             }
-            return data;
+            foreach (XElement? association in schema.Descendants().Where(n => n.Name.LocalName == "Association"))
+            {
+                List<XElement> elements = association.Elements().ToList();
+                if (elements.Count < 2)
+                {
+                    continue;
+                    //throw new InvalidOperationException("The EDMX file contains an invalid association definition.");
+                }
+                string? entityS = elements[0].Attribute("Type")?.Value.Replace(namespaceName, string.Empty);
+                string? entityD = elements[1].Attribute("Type")?.Value.Replace(namespaceName, string.Empty);
+                Multiplicity multiplicityS = GetMultiplicity(elements[0].Attribute("Multiplicity")?.Value ?? string.Empty);
+                Multiplicity multiplicityD = GetMultiplicity(elements[1].Attribute("Multiplicity")?.Value ?? string.Empty);
+                if (string.IsNullOrEmpty(entityS) || string.IsNullOrEmpty(entityD))
+                {
+                    throw new InvalidOperationException("The EDMX file contains an invalid association definition. [1]");
+                }
+                entityS = entityS.Replace("Self.", string.Empty);
+                entityD = entityD.Replace("Self.", string.Empty);
+                Entity entitySou = conceptualModel.Entities[entityS];
+                Entity entityDes = conceptualModel.Entities[entityD];
+                if (entitySou == null || entityDes == null)
+                {
+                    throw new InvalidOperationException("The EDMX file contains an invalid association definition. [2]");
+                }
+                entitySou.NavigationProperties.Add(CreateNavigationProperty(entityDes, multiplicityD));
+                entityDes.NavigationProperties.Add(CreateNavigationProperty(entitySou, multiplicityS));
+                /*
+                XElement principal = elements[2].Elements().First(entity => entity.Name.LocalName == "Principal");
+                XElement dependent = elements[2].Elements().First(entity => entity.Name.LocalName == "Dependent");
+                List<XElement> propertiesS = principal.Elements().ToList();
+                List<XElement> propertiesD = dependent.Elements().ToList();
+                if (propertiesS == null || propertiesD == null || propertiesD.Count == 0 || propertiesD.Count != propertiesS.Count)
+                {
+                    throw new InvalidOperationException("The EDMX file contains an invalid association definition. [3]");
+                }
+                for (int i = 0; i < propertiesS.Count; i++)
+                {
+                    foreingKeyS.FkProperties.Add(propertiesS[i].Attribute("Property")?.Value ?? string.Empty);
+                    foreingKeyD.FkProperties.Add(propertiesD[i].Attribute("Property")?.Value ?? string.Empty);
+                }
+                */
+            }
+            /*
+            foreach (XElement? association in schema.Descendants().Where(n => n.Name.LocalName == "AssociationSet"))
+            {
+                List<XElement> elements = association.Elements().ToList();
+                if (elements.Count != 2)
+                {
+                    continue;
+                }
+                string? entityS = elements[0].Attribute("Type")?.Value.Replace(namespaceName, string.Empty);
+                string? entityD = elements[1].Attribute("Type")?.Value.Replace(namespaceName, string.Empty);
+                Multiplicity multiplicityS = GetMultiplicity(elements[0].Attribute("Multiplicity")?.Value);
+                Multiplicity multiplicityD = GetMultiplicity(elements[1].Attribute("Multiplicity")?.Value);
+
+
+            }
+            */
+            return conceptualModel;
         }
         /// <summary>
         /// C-S mapping content
         /// </summary>
         /// <returns>Tables list</returns>
-        private IList<Mapping> GetMappings(XElement? edmxRuntime)
+        private MappingContext GetMappings(XElement? edmxRuntime)
         {
-            IList<Mapping> data = new List<Mapping>();
+            MappingContext mappingContext = new MappingContext();
             XElement? mappingsRootElement = edmxRuntime?.Descendants().FirstOrDefault(n => n.Name.LocalName == "Mappings");
             XElement? mappingsElement = mappingsRootElement?.Descendants().FirstOrDefault(n => n.Name.LocalName == "Mapping");
             XElement? context = mappingsElement?.Descendants().FirstOrDefault(n => n.Name.LocalName == "EntityContainerMapping");
@@ -667,8 +2269,16 @@ namespace EDMXMigrationTool
                 Mapping mapping = new Mapping
                 {
                     TableName = fragment.Attribute("StoreEntitySet")?.Value ?? string.Empty,
-                    EntityName = mappingElement.Attribute("Name")?.Value ?? string.Empty
+                    EntityName = (storeEntitySet.Attribute("TypeName")?.Value ?? string.Empty).Split(".")[1]
                 };
+                if (mapping.EntityName == "Regla1")
+                {
+                    mapping.EntityName = "REGLA";
+                }
+                else if (mapping.EntityName == "REGLA")
+                {
+                    mapping.EntityName = "Regla1";
+                }
                 foreach (XElement? scalarProperty in mappingElement.Descendants().Where(n => n.Name.LocalName == "ScalarProperty"))
                 {
                     MappingProperty mappingProperty = new MappingProperty
@@ -678,10 +2288,30 @@ namespace EDMXMigrationTool
                     };
                     mapping.Properties.Add(mappingProperty);
                 }
-                data.Add(mapping);
+                mappingContext.Tables.Add(mapping);
             }
-            return data;
+            foreach (XElement? mappingElement in context.Descendants().Where(n => n.Name.LocalName == "FunctionImportMapping"))
+            {
+                string baseFunctionName = mappingElement.Attribute("FunctionImportName")?.Value ?? string.Empty;
+                string realName = (mappingElement.Attribute("FunctionName")?.Value ?? string.Empty);
+                string[] arr = realName.Split('.');
+                realName = arr.Last();
+                if (baseFunctionName != realName)
+                {
+                    mappingContext.Function.Add(new MappingFunction
+                    {
+                        StoredProcedureName = realName,
+                        FunctionName = baseFunctionName
+                    });
+                }
+            }
+            return mappingContext;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void bkWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             txtLog.BeginInvoke(new Action(() =>
@@ -691,12 +2321,38 @@ namespace EDMXMigrationTool
                 btnRun.Enabled = true;
             }));
         }
-
     }
+    /// <summary>
+    /// Represents a set of parameters used to configure user interface-driven code generation operations, including
+    /// file paths, database settings, and generation options.
+    /// </summary>
+    /// <remarks>This class encapsulates options for specifying source and destination file locations, target
+    /// namespace, database name, and flags that control which components are generated (such as DbContext, models,
+    /// repositories, and configurations). Some properties are intended to be set internally by the application logic
+    /// and may not be directly modifiable by consumers. Use this type to pass configuration data between UI layers and
+    /// code generation routines.</remarks>
     public class UIParameters
     {
         public string FilePath { get; set; }
         public string DestinationPath { get; set; }
         public string Namespace { get; set; }
+        public string DbName { get; set; }
+        public bool CreateDbContext { get; internal set; }
+        public bool CreateModels { get; internal set; }
+        public bool CreateRepositories { get; internal set; }
+        public bool CreateConfigurations { get; internal set; }
+        public bool ExportLogs { get; internal set; }
+    }
+    public class StorageModel
+    {
+        public IDictionary<string, Table> Tables { get; set; }
+        public IDictionary<string, StorageFunction> Functions { get; set; }
+    }
+
+    public class ConceptualModel
+    {
+        public IDictionary<string, Entity> Entities { get; set; }
+        public IDictionary<string, Function> Functions { get; set; }
+        public IDictionary<string, ComplexType> ComplexTypes { get; set; }
     }
 }
