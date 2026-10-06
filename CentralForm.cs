@@ -908,6 +908,7 @@ namespace EDMXMigrationTool
         /// generation.</exception>
         private void CreateConfigurationClasses(StorageModel storage, ConceptualModel conceptualModel, MappingContext mappings, UIParameters parameters)
         {
+            Dictionary<string, List<string>> triggersToMap = TriggersToMap.GetMap();
             foreach (Mapping mapping in mappings.Tables)
             {
                 Table table = storage.Tables[mapping.TableName];
@@ -953,6 +954,17 @@ namespace EDMXMigrationTool
                 file.Append(string.Equals(table.Schema, "dbo", StringComparison.InvariantCultureIgnoreCase)
                     ? "General"
                     : table.Schema);
+                string tKey = table.Schema + "." + table.Name;
+                if (triggersToMap.ContainsKey(tKey))
+                {
+                    file.Append(", t => { ");
+                    var listT = triggersToMap[tKey];
+                    foreach (var trigger in listT)
+                    {
+                        file.Append($" t.HasTrigger(\"{trigger}\");");
+                    }
+                    file.Append(" }");
+                }
                 file.AppendLine(");");
                 if (table.RepoType == RepoType.Table)
                 {
@@ -1356,9 +1368,23 @@ namespace EDMXMigrationTool
                     file.Append(" ");
                     file.Append(fn.NameFixed);
                     file.Append("(");
-                    file.Append(
-                        string.Join(", ", fn.Parameters.Where(x => x.Direction != Direction.Out).Select(p => p.Type + "? " + p.Name.ToLower()))
-                    );
+                    var parametersList = fn.Parameters.Where(x => x.Direction != Direction.Out).ToList();
+                    for (int uu = 0; uu < parametersList.Count; uu++)
+                    {
+                        if (uu > 0)
+                        {
+                            file.Append(", ");
+                        }
+                        FunctionParameter p = parametersList[uu];
+                        if (p.Type == "string")
+                        {
+                            file.Append(p.Type + " " + p.Name.ToLower());
+                        }
+                        else
+                        {
+                            file.Append(p.Type + "? " + p.Name.ToLower());
+                        }
+                    }
                     file.AppendLine(")");
                     file.AppendLine("    {");
                     if (fn.IsFunction)
@@ -1374,7 +1400,15 @@ namespace EDMXMigrationTool
                         {
                             file.AppendLine($"        SqlParameter param{parameter.Name} = new(\"@{parameter.Name}\", SqlDbType.{FnMapCSharpTypeToSqlType(parameter.Type)})");
                             file.AppendLine( "        {");
-                            file.Append($"            Value = {parameter.Name.ToLower()}, Direction = ParameterDirection.");
+                            var pLower = parameter.Name.ToLower();
+                            if (parameter.Type == "string")
+                            {
+                                file.Append($"            Value = {pLower}.HasValue ? (object){pLower}.Value : DBNull.Value, Direction = ParameterDirection.");
+                            }
+                            else
+                            {
+                                file.Append($"            Value = {pLower} == null ? (object)DBNull.Value : {pLower}, Direction = ParameterDirection.");
+                            }
                             switch (parameter.Direction)
                             {
                                 case Direction.In:
