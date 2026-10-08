@@ -1,0 +1,2350 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="ORIGEN">
+          <Key>
+            <PropertyRef Name="id_origen" />
+          </Key>
+          <Property Name="id_origen" Type="numeric" Precision="5" Scale="0" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="nom_origen" Type="varchar" MaxLength="100" />
+          <Property Name="modulo" Type="varchar" MaxLength="2" Nullable="false" />
+          <Property Name="activo" Type="bit" Nullable="false" />
+          <Property Name="tipo_origen" Type="varchar" MaxLength="10" />
+          <Property Name="CodigoCanalCliente" Type="varchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="POLITICA_ENVIO_MAILS">
+          <Key>
+            <PropertyRef Name="id_politica" />
+          </Key>
+          <Property Name="id_politica" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id_querytipificado_origen" Type="varchar" MaxLength="15" />
+          <Property Name="tipo_qd_origen" Type="int" />
+          <Property Name="id_query_origen" Type="numeric" Precision="18" Scale="0" />
+          <Property Name="id_usuario_qd" Type="varchar" MaxLength="30" />
+          <Property Name="url_plantilla_email" Type="varchar(max)" />
+          <Property Name="email_origen" Type="varchar" MaxLength="255" />
+          <Property Name="asunto_mail" Type="varchar" MaxLength="255" />
+          <Property Name="sql_envio_mail" Type="varchar" MaxLength="1000" />
+          <Property Name="registro_por_iteracion" Type="int" Nullable="false" />
+          <Property Name="prioridad_ejecucion" Type="int" Nullable="false" />
+          <Property Name="estado_regla" Type="bit" Nullable="false" />
+          <Property Name="id_usuario_ult_modif" Type="varchar" MaxLength="30" />
+          <Property Name="ip_estacion_ult_modif" Type="varchar" MaxLength="50" />
+          <Property Name="fec_estacion_ult_modif" Type="datetime" Nullable="false" />
+          <Property Name="IdProceso" Type="int" />
+          <Property Name="TipoMensaje" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Nombre" Type="varchar" MaxLength="100" />
+          <Property Name="SqlOrigen" Type="varchar(max)" />
+          <Property Name="MinimoAnexos" Type="int" Nullable="false" />
+          <Property Name="NotificacionElectronica" Type="bit" />
+        </EntityType>
+        <EntityType Name="POP_PROCESADOHistorico">
+          <Key>
+            <PropertyRef Name="Id_CorreoProcesado" />
+          </Key>
+          <Property Name="Id_CorreoProcesado" Type="int" Nullable="false" />
+          <Property Name="Servidor" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Usuario" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Remitente" Type="varchar" MaxLength="1000" />
+          <Property Name="Destino" Type="varchar" MaxLength="1000" />
+          <Property Name="Asunto" Type="varchar" MaxLength="1000" />
+          <Property Name="Fecha" Type="varchar" MaxLength="60" Nullable="false" />
+          <Property Name="NumeroAdjuntos" Type="int" />
+          <Property Name="NombreAdjuntos" Type="varchar" MaxLength="2000" />
+          <Property Name="EstadoProceso" Type="varchar" MaxLength="30" />
+          <Property Name="FechaProceso" Type="datetime" Nullable="false" />
+          <Property Name="NumeroRadicado" Type="numeric" Precision="18" Scale="0" />
+          <Property Name="FechaActualizacion" Type="datetime" />
+          <Property Name="IdObjeto" Type="varchar" MaxLength="50" />
+          <Property Name="Mensaje" Type="varchar" MaxLength="5000" />
+          <Property Name="NombreRemitente" Type="varchar" MaxLength="100" />
+          <Property Name="GidOficinaPostal" Type="uniqueidentifier" />
+          <Property Name="ContenidoMensaje" Type="varchar(max)" />
+          <Property Name="Intento" Type="int" />
+          <Property Name="IdCorreoInterno" Type="varchar(max)" />
+          <Property Name="EstadoPDF" Type="varchar" MaxLength="10" />
+          <Property Name="IntentoPDF" Type="int" />
+          <Property Name="DesEstadoPDF" Type="varchar(max)" />
+          <Property Name="IdAnexo" Type="int" />
+          <Property Name="GIdCorreoProcesado" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="FechaEstadoPDF" Type="datetime" />
+          <Property Name="FIEvento" Type="datetime" />
+          <Property Name="FFEvento" Type="datetime" />
+          <Property Name="TimeZone" Type="varchar" MaxLength="200" />
+          <Property Name="LugarEvento" Type="varchar(max)" />
+          <Property Name="FechaCorreo" Type="datetime" />
+          <Property Name="VinculosExternos" Type="bit" Nullable="false" />
+          <Property Name="IdSolicitud" Type="varchar" MaxLength="25" />
+          <Property Name="FechaSolicitud" Type="datetime" />
+          <Property Name="FechaMovimientoHistorico" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="USUARIO">
+          <Key>
+            <PropertyRef Name="id_usuario" />
+          </Key>
+          <Property Name="id_usuario" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="nombre" Type="varchar" MaxLength="200" />
+          <Property Name="telefono" Type="varchar" MaxLength="50" />
+          <Property Name="extension" Type="varchar" MaxLength="30" />
+          <Property Name="e_mail" Type="varchar" MaxLength="200" />
+          <Property Name="clave" Type="varchar" MaxLength="256" />
+          <Property Name="id_depto" Type="numeric" Precision="4" Scale="0" />
+          <Property Name="clase_usuario" Type="varchar" MaxLength="1" Nullable="false" />
+          <Property Name="id_cliente" Type="int" />
+          <Property Name="prioridad" Type="varchar" MaxLength="1" />
+          <Property Name="ntlogin" Type="varchar" MaxLength="50" />
+          <Property Name="aplicacion_defecto" Type="varchar" MaxLength="2" Nullable="false" />
+          <Property Name="localizacion" Type="int" />
+          <Property Name="id_cargo" Type="numeric" Precision="9" Scale="0" />
+          <Property Name="ubicacion" Type="varchar" MaxLength="100" />
+          <Property Name="nivel_autoridad_inmediato" Type="varchar" MaxLength="30" />
+          <Property Name="id_centro_costo" Type="numeric" Precision="4" Scale="0" />
+          <Property Name="activo" Type="bit" Nullable="false" />
+          <Property Name="directorio_activo" Type="bit" Nullable="false" />
+          <Property Name="color_usuario" Type="char" MaxLength="6" />
+          <Property Name="actualizacion_pki" Type="datetime" />
+          <Property Name="idDoc_pki_firmado" Type="int" />
+          <Property Name="fecha_cambioclave" Type="datetime" />
+          <Property Name="DISPONIBLE" Type="bit" />
+          <Property Name="EXCLUIR_CARGUEESTRUC" Type="bit" />
+          <Property Name="claveInicial_regAuto" Type="varchar" MaxLength="50" />
+          <Property Name="finalizacion_regAuto" Type="bit" Nullable="false" />
+          <Property Name="acceso_tms" Type="bit" Nullable="false" />
+          <Property Name="bloqueado" Type="bit" Nullable="false" />
+          <Property Name="PalabraClave" Type="varchar" MaxLength="256" />
+          <Property Name="NumIntentosClave" Type="tinyint" Nullable="false" />
+          <Property Name="ImagenFirma" Type="varbinary(max)" />
+          <Property Name="TipoImagenFirma" Type="varchar" MaxLength="10" />
+          <Property Name="Genero" Type="varchar" MaxLength="1" />
+          <Property Name="Profesion" Type="varchar" MaxLength="50" />
+          <Property Name="TipoVinculacion" Type="varchar" MaxLength="50" />
+          <Property Name="TipoIdentificacion" Type="varchar" MaxLength="3" />
+          <Property Name="identificacion" Type="varchar" MaxLength="30" />
+          <Property Name="IdLocalizacionExpDoc" Type="int" />
+          <Property Name="PrimerNombre" Type="varchar" MaxLength="50" />
+          <Property Name="SegundoNombre" Type="varchar" MaxLength="50" />
+          <Property Name="PrimerApellido" Type="varchar" MaxLength="50" />
+          <Property Name="SegundoApellido" Type="varchar" MaxLength="50" />
+          <Property Name="OrigenRegistro" Type="varchar" MaxLength="3" />
+          <Property Name="id_division" Type="numeric" Precision="6" Scale="0" />
+          <Property Name="Celular" Type="varchar" MaxLength="50" />
+          <Property Name="firma_mecanica" Type="bit" />
+          <Property Name="segunda_clave" Type="varchar" MaxLength="256" />
+          <Property Name="NivelEstudios" Type="varchar" MaxLength="100" />
+          <Property Name="NombreEmpresa" Type="varchar" MaxLength="300" />
+          <Property Name="FechaNacimiento" Type="datetime" />
+          <Property Name="Nacionalidad" Type="varchar" MaxLength="100" />
+          <Property Name="UsuarioRemplazo" Type="varchar" MaxLength="30" />
+          <Property Name="FechaModificacion" Type="datetime" />
+          <Property Name="FechaUltimoAcceso" Type="datetime" />
+          <Property Name="FechaCreacion" Type="datetime" />
+          <Property Name="FechaToken" Type="datetime" />
+          <Property Name="Token" Type="uniqueidentifier" />
+          <Property Name="TipoAcceso" Type="varchar" MaxLength="10" />
+          <Property Name="TmsAuditoria" Type="varchar(max)" />
+          <Property Name="IdGrupoPoblacional" Type="int" />
+          <Property Name="BarrioVeredaCorregimiento" Type="varchar" MaxLength="500" />
+          <Property Name="NotificaCorreo" Type="bit" Nullable="false" />
+          <Property Name="IdTipoPersona" Type="int" />
+        </EntityType>
+        <EntityType Name="CodigosError">
+          <Key>
+            <PropertyRef Name="CodigoError" />
+          </Key>
+          <Property Name="CodigoError" Type="int" Nullable="false" />
+          <Property Name="Error" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Descripcion" Type="varchar(max)" Nullable="false" />
+          <Property Name="ErrorUsuario" Type="varchar" MaxLength="300" />
+          <Property Name="TipoMensaje" Type="varchar" MaxLength="10" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CorreoPermitidoAmbientePrueba">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Correo" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="IdUsuarioCreador" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="FechaCreador" Type="datetime" Nullable="false" />
+          <Property Name="IdUsuarioModificador" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="FechaModificacion" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Enviado">
+          <Key>
+            <PropertyRef Name="IdEnviado" />
+          </Key>
+          <Property Name="IdEnviado" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdTarea" Type="varchar" MaxLength="100" />
+          <Property Name="Remitente" Type="varchar" MaxLength="100" />
+          <Property Name="Destino" Type="varchar(max)" />
+          <Property Name="Asunto" Type="varchar" MaxLength="255" />
+          <Property Name="Cuerpo" Type="varchar(max)" />
+          <Property Name="Anexos" Type="varchar(max)" />
+          <Property Name="NumeroRadicacion" Type="varchar" MaxLength="50" />
+          <Property Name="FechaRegistro" Type="datetime" Nullable="false" />
+          <Property Name="Gid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Intento" Type="int" />
+          <Property Name="IdOriginador" Type="varchar" MaxLength="30" />
+          <Property Name="Originador" Type="varchar" MaxLength="100" />
+          <Property Name="TipoEvento" Type="varchar" MaxLength="50" />
+          <Property Name="UrlDetalle" Type="varchar(max)" />
+          <Property Name="IdPoliticaOrigen" Type="int" />
+          <Property Name="IdResponsable" Type="varchar" MaxLength="30" />
+          <Property Name="TipoMensaje" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="DestinatarioCc" Type="varchar(max)" />
+          <Property Name="DestinatarioCco" Type="varchar(max)" />
+          <Property Name="IdExterno" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Error">
+          <Key>
+            <PropertyRef Name="IdError" />
+          </Key>
+          <Property Name="IdError" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdTarea" Type="varchar" MaxLength="100" />
+          <Property Name="Remitente" Type="varchar" MaxLength="100" />
+          <Property Name="Destino" Type="varchar(max)" />
+          <Property Name="Asunto" Type="varchar" MaxLength="255" />
+          <Property Name="Cuerpo" Type="varchar(max)" />
+          <Property Name="Anexos" Type="varchar(max)" />
+          <Property Name="NumeroRadicacion" Type="varchar" MaxLength="50" />
+          <Property Name="FechaRegistro" Type="datetime" Nullable="false" />
+          <Property Name="Gid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Intento" Type="int" />
+          <Property Name="IdOriginador" Type="varchar" MaxLength="30" />
+          <Property Name="Originador" Type="varchar" MaxLength="100" />
+          <Property Name="TipoEvento" Type="varchar" MaxLength="50" />
+          <Property Name="UrlDetalle" Type="varchar(max)" />
+          <Property Name="IdPoliticaOrigen" Type="int" />
+          <Property Name="IdResponsable" Type="varchar" MaxLength="30" />
+          <Property Name="TipoMensaje" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="DestinatarioCc" Type="varchar(max)" />
+          <Property Name="DestinatarioCco" Type="varchar(max)" />
+          <Property Name="IdExterno" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="HistoricoEnviado">
+          <Key>
+            <PropertyRef Name="IdHistoricoEnviado" />
+          </Key>
+          <Property Name="IdHistoricoEnviado" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdTarea" Type="varchar" MaxLength="100" />
+          <Property Name="Remitente" Type="varchar" MaxLength="100" />
+          <Property Name="Destino" Type="varchar(max)" />
+          <Property Name="Asunto" Type="varchar" MaxLength="255" />
+          <Property Name="Cuerpo" Type="varchar(max)" />
+          <Property Name="Anexos" Type="varchar(max)" />
+          <Property Name="NumeroRadicacion" Type="varchar" MaxLength="50" />
+          <Property Name="FechaRegistro" Type="datetime" Nullable="false" />
+          <Property Name="Gid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Intento" Type="int" />
+          <Property Name="IdOriginador" Type="varchar" MaxLength="30" />
+          <Property Name="Originador" Type="varchar" MaxLength="100" />
+          <Property Name="TipoEvento" Type="varchar" MaxLength="50" />
+          <Property Name="UrlDetalle" Type="varchar(max)" />
+          <Property Name="IdPoliticaOrigen" Type="int" />
+          <Property Name="IdResponsable" Type="varchar" MaxLength="30" />
+          <Property Name="IdEnviado" Type="int" />
+          <Property Name="TipoMensaje" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="DestinatarioCc" Type="varchar(max)" />
+          <Property Name="DestinatarioCco" Type="varchar(max)" />
+          <Property Name="IdExterno" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="HistoricoError">
+          <Key>
+            <PropertyRef Name="IdHistoricoError" />
+          </Key>
+          <Property Name="IdHistoricoError" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdTarea" Type="varchar" MaxLength="100" />
+          <Property Name="Remitente" Type="varchar" MaxLength="100" />
+          <Property Name="Destino" Type="varchar(max)" />
+          <Property Name="Asunto" Type="varchar" MaxLength="255" />
+          <Property Name="Cuerpo" Type="varchar(max)" />
+          <Property Name="Anexos" Type="varchar(max)" />
+          <Property Name="NumeroRadicacion" Type="varchar" MaxLength="50" />
+          <Property Name="FechaRegistro" Type="datetime" Nullable="false" />
+          <Property Name="Gid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Intento" Type="int" />
+          <Property Name="IdOriginador" Type="varchar" MaxLength="30" />
+          <Property Name="Originador" Type="varchar" MaxLength="100" />
+          <Property Name="TipoEvento" Type="varchar" MaxLength="50" />
+          <Property Name="UrlDetalle" Type="varchar(max)" />
+          <Property Name="IdPoliticaOrigen" Type="int" />
+          <Property Name="IdResponsable" Type="varchar" MaxLength="30" />
+          <Property Name="IdError" Type="int" />
+          <Property Name="TipoMensaje" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="DestinatarioCc" Type="varchar(max)" />
+          <Property Name="DestinatarioCco" Type="varchar(max)" />
+          <Property Name="IdExterno" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="HistoricoLogEnviado">
+          <Key>
+            <PropertyRef Name="IdHistoricoLogEnviado" />
+          </Key>
+          <Property Name="IdHistoricoLogEnviado" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdHistoricoEnviado" Type="int" Nullable="false" />
+          <Property Name="IdTarea" Type="varchar" MaxLength="100" />
+          <Property Name="FechaEnvio" Type="datetime" Nullable="false" />
+          <Property Name="Destino" Type="varchar(max)" Nullable="false" />
+          <Property Name="IdEnviado" Type="int" Nullable="false" />
+          <Property Name="Gid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Intento" Type="int" Nullable="false" />
+          <Property Name="Reenvio" Type="bit" />
+          <Property Name="IdResponsable" Type="varchar" MaxLength="30" />
+          <Property Name="TipoMensaje" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="DestinatarioCc" Type="varchar(max)" />
+          <Property Name="DestinatarioCco" Type="varchar(max)" />
+          <Property Name="IdExterno" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="HistoricoLogError">
+          <Key>
+            <PropertyRef Name="IdHistoricoLogError" />
+          </Key>
+          <Property Name="IdHistoricoLogError" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdHistoricoError" Type="int" Nullable="false" />
+          <Property Name="CodigoError" Type="int" Nullable="false" />
+          <Property Name="FechaEnvio" Type="datetime" Nullable="false" />
+          <Property Name="Destino" Type="varchar(max)" />
+          <Property Name="Error" Type="varchar(max)" Nullable="false" />
+          <Property Name="Gid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Intento" Type="int" Nullable="false" />
+          <Property Name="IdError" Type="int" />
+          <Property Name="DestinatarioCc" Type="varchar(max)" />
+          <Property Name="DestinatarioCco" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="HistoricoLogErrorEncabezado">
+          <Key>
+            <PropertyRef Name="IdHistoricoLogError" />
+          </Key>
+          <Property Name="IdHistoricoLogError" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdHistoricoError" Type="int" Nullable="false" />
+          <Property Name="CodigoError" Type="int" Nullable="false" />
+          <Property Name="Descripcion" Type="varchar(max)" Nullable="false" />
+          <Property Name="Intento" Type="int" />
+          <Property Name="FechaEnvio" Type="datetime" />
+          <Property Name="Gid" Type="uniqueidentifier" />
+          <Property Name="IdOriginador" Type="varchar" MaxLength="30" />
+          <Property Name="Originador" Type="varchar" MaxLength="100" />
+          <Property Name="TipoEvento" Type="varchar" MaxLength="50" />
+          <Property Name="UrlDetalle" Type="varchar(max)" />
+          <Property Name="IdPoliticaOrigen" Type="int" />
+          <Property Name="IdLogError" Type="int" />
+          <Property Name="IdError" Type="int" />
+        </EntityType>
+        <EntityType Name="LogEnviado">
+          <Key>
+            <PropertyRef Name="IdLogEnviado" />
+          </Key>
+          <Property Name="IdLogEnviado" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdTarea" Type="varchar" MaxLength="100" />
+          <Property Name="FechaEnvio" Type="datetime" Nullable="false" />
+          <Property Name="Destino" Type="varchar(max)" Nullable="false" />
+          <Property Name="IdEnviado" Type="int" Nullable="false" />
+          <Property Name="Gid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Intento" Type="int" Nullable="false" />
+          <Property Name="Reenvio" Type="bit" />
+          <Property Name="IdResponsable" Type="varchar" MaxLength="30" />
+          <Property Name="TipoMensaje" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="DestinatarioCc" Type="varchar(max)" />
+          <Property Name="DestinatarioCco" Type="varchar(max)" />
+          <Property Name="IdExterno" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="LogError">
+          <Key>
+            <PropertyRef Name="IdLogError" />
+          </Key>
+          <Property Name="IdLogError" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdError" Type="int" Nullable="false" />
+          <Property Name="CodigoError" Type="int" Nullable="false" />
+          <Property Name="FechaEnvio" Type="datetime" Nullable="false" />
+          <Property Name="Destino" Type="varchar" MaxLength="100" />
+          <Property Name="Error" Type="varchar(max)" Nullable="false" />
+          <Property Name="Gid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Intento" Type="int" Nullable="false" />
+          <Property Name="DestinatarioCc" Type="varchar(max)" />
+          <Property Name="DestinatarioCco" Type="varchar(max)" />
+          <Property Name="IdExterno" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="LogErrorEncabezado">
+          <Key>
+            <PropertyRef Name="IdLogError" />
+          </Key>
+          <Property Name="IdLogError" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdError" Type="int" Nullable="false" />
+          <Property Name="CodigoError" Type="int" Nullable="false" />
+          <Property Name="Descripcion" Type="varchar(max)" Nullable="false" />
+          <Property Name="Intento" Type="int" />
+          <Property Name="FechaEnvio" Type="datetime" />
+          <Property Name="Gid" Type="uniqueidentifier" />
+          <Property Name="IdOriginador" Type="varchar" MaxLength="30" />
+          <Property Name="Originador" Type="varchar" MaxLength="100" />
+          <Property Name="TipoEvento" Type="varchar" MaxLength="50" />
+          <Property Name="UrlDetalle" Type="varchar(max)" />
+          <Property Name="IdPoliticaOrigen" Type="int" />
+        </EntityType>
+        <EntityType Name="MarcacionReglasGeneracionProcesos">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdRegla" Type="int" Nullable="false" />
+          <Property Name="IdPopProcesado" Type="int" Nullable="false" />
+          <Property Name="IdTipoSolicitud" Type="int" Nullable="false" />
+          <Property Name="IdPlataforma" Type="int" />
+          <Property Name="IdCategoria" Type="int" />
+          <Property Name="IdSubCategoria" Type="int" />
+          <Property Name="IdComponente" Type="int" />
+          <Property Name="FechaRegistro" Type="datetime" Nullable="false" />
+          <Property Name="IdSolicitud" Type="varchar" MaxLength="25" />
+        </EntityType>
+        <EntityType Name="Notificacion">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdCorreo" Type="int" />
+          <Property Name="IdAnexo" Type="int" />
+          <Property Name="IdDocumentoAnexo" Type="int" />
+          <Property Name="Intentos" Type="int" />
+          <Property Name="FechaIntento" Type="datetime" />
+          <Property Name="Estado" Type="varchar" MaxLength="50" />
+          <Property Name="FechaEstado" Type="datetime" Nullable="false" />
+          <Property Name="EstadoNotificador" Type="int" />
+          <Property Name="DescEstadoNotificador" Type="varchar(max)" />
+          <Property Name="IdArchivoNotificacion" Type="int" />
+          <Property Name="NombreAnexoNotificacion" Type="varchar" MaxLength="100" />
+          <Property Name="NumRadicacion" Type="varchar" MaxLength="50" />
+          <Property Name="GidCorreo" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="RowsFound" Type="int" />
+          <Property Name="RowsOK" Type="int" />
+          <Property Name="RowsKO" Type="int" />
+          <Property Name="Destinatario" Type="varchar" MaxLength="200" />
+          <Property Name="SistemaNotificador" Type="varchar" MaxLength="1" />
+        </EntityType>
+        <EntityType Name="NotificacionFisica">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdDocumentoDestino" Type="int" Nullable="false" />
+          <Property Name="NroGuia" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="FechaRegistro" Type="datetime" Nullable="false" />
+          <Property Name="IdentificadorTransaccion" Type="int" />
+          <Property Name="CodigoRespuesta" Type="varchar" MaxLength="50" />
+          <Property Name="DescEstadoNotificador" Type="varchar(max)" />
+          <Property Name="IdDocumentoAnexo" Type="int" />
+          <Property Name="GidDocumentoAnexo" Type="uniqueidentifier" />
+          <Property Name="Estado" Type="varchar" MaxLength="10" />
+          <Property Name="FechaEstado" Type="datetime" />
+          <Property Name="Intentos" Type="int" Nullable="false" />
+          <Property Name="FechaIntento" Type="datetime" />
+          <Property Name="CodigoEstadoCarga" Type="varchar" MaxLength="50" />
+          <Property Name="NombreArchivoGenerado" Type="varchar" MaxLength="200" />
+          <Property Name="NombreEstadoCarga" Type="varchar" MaxLength="50" />
+          <Property Name="RutaFTP" Type="varchar" MaxLength="200" />
+          <Property Name="EstadoDescarga" Type="varchar" MaxLength="10" />
+          <Property Name="FechaEstadoDescarga" Type="datetime" />
+          <Property Name="IntentosDescarga" Type="int" Nullable="false" />
+          <Property Name="FechaIntentoDescarga" Type="datetime" />
+          <Property Name="CodigoRespuestaDescarga" Type="varchar" MaxLength="50" />
+          <Property Name="DescEstadoNotificadorDescarga" Type="varchar(max)" />
+          <Property Name="Gid" Type="uniqueidentifier" />
+          <Property Name="CiudadOrigen" Type="varchar" MaxLength="100" />
+          <Property Name="CiudadDestino" Type="varchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="NotificacionFisicaTipoMensaje">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CodigoMensaje" Type="varchar" MaxLength="100" />
+          <Property Name="TipoMensaje" Type="varchar" MaxLength="10" />
+          <Property Name="Mensaje" Type="varchar" MaxLength="500" />
+          <Property Name="EstadoDistribucion" Type="varchar" MaxLength="10" />
+          <Property Name="UsuarioModificacion" Type="varchar" MaxLength="30" />
+          <Property Name="FechaModificacion" Type="datetime" />
+        </EntityType>
+        <EntityType Name="NotificacionSeguimiento">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdNotificacion" Type="int" />
+          <Property Name="CodigoEstado" Type="int" />
+          <Property Name="CodigoSubEstado" Type="int" />
+          <Property Name="FechaEstado" Type="datetime" />
+          <Property Name="IdDocumentoAnexo" Type="int" />
+          <Property Name="FechaRegistro" Type="datetime" />
+        </EntityType>
+        <EntityType Name="NotificacionSIPOSTEventos">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Gid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="IdNotificacionSIPOST" Type="int" Nullable="false" />
+          <Property Name="TipoEvento" Type="varchar" MaxLength="50" />
+          <Property Name="Objeto" Type="varchar" MaxLength="50" />
+          <Property Name="IdObjeto" Type="varchar" MaxLength="100" />
+          <Property Name="Fecha" Type="datetime" />
+          <Property Name="Ciudad" Type="varchar" MaxLength="50" />
+          <Property Name="CentroOperativo" Type="varchar" MaxLength="100" />
+          <Property Name="SectorDistribucion" Type="varchar" MaxLength="100" />
+          <Property Name="CodigoSector" Type="varchar" MaxLength="50" />
+          <Property Name="Descripcion" Type="varchar(max)" />
+          <Property Name="Liquidacion" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="NotificacionTipoMensaje">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CodigoMensaje" Type="int" />
+          <Property Name="TipoMensaje" Type="varchar" MaxLength="2" />
+          <Property Name="Mensaje" Type="varchar" MaxLength="500" />
+          <Property Name="DescargaNotificacion" Type="bit" />
+          <Property Name="EtapaEstado" Type="varchar" MaxLength="2" />
+          <Property Name="UsuarioModificacion" Type="varchar" MaxLength="30" />
+          <Property Name="FechaModificacion" Type="datetime" />
+        </EntityType>
+        <EntityType Name="PorEnviar">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdTarea" Type="varchar" MaxLength="100" />
+          <Property Name="Remitente" Type="varchar" MaxLength="100" />
+          <Property Name="Destino" Type="varchar(max)" />
+          <Property Name="Asunto" Type="varchar" MaxLength="255" />
+          <Property Name="Cuerpo" Type="varchar(max)" />
+          <Property Name="Anexos" Type="varchar(max)" />
+          <Property Name="NumeroRadicacion" Type="varchar" MaxLength="50" />
+          <Property Name="FechaRegistro" Type="datetime" Nullable="false" />
+          <Property Name="Gid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Intento" Type="int" />
+          <Property Name="IdOriginador" Type="varchar" MaxLength="30" />
+          <Property Name="Originador" Type="varchar" MaxLength="100" />
+          <Property Name="TipoEvento" Type="varchar" MaxLength="50" />
+          <Property Name="UrlDetalle" Type="varchar(max)" />
+          <Property Name="IdPoliticaOrigen" Type="int" />
+          <Property Name="IdResponsable" Type="varchar" MaxLength="30" />
+          <Property Name="TipoMensaje" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="DestinatarioCc" Type="varchar(max)" />
+          <Property Name="DestinatarioCco" Type="varchar(max)" />
+          <Property Name="IdExterno" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="ReglasGeneracionProcesos">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Descripcion" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="Condiciones" Type="varchar(max)" Nullable="false" />
+          <Property Name="InfoProceso" Type="varchar(max)" Nullable="false" />
+          <Property Name="Orden" Type="int" Nullable="false" />
+          <Property Name="GID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UsuarioCreador" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="FechaCreacion" Type="datetime" Nullable="false" />
+          <Property Name="UsuarioModificacion" Type="varchar" MaxLength="30" />
+          <Property Name="FechaModificacion" Type="datetime" />
+          <Property Name="Activo" Type="bit" Nullable="false" />
+          <Property Name="UsuarioEjecucion" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="FechaInicioEjecucion" Type="datetime" Nullable="false" />
+          <Property Name="IdOrigen" Type="numeric" Precision="5" Scale="0" Nullable="false" />
+          <Property Name="Tipo" Type="char" MaxLength="2" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__Notificac__IdNot__70AAAFC1">
+          <End Role="Notificacion" Type="Self.Notificacion" Multiplicity="0..1" />
+          <End Role="NotificacionSeguimiento" Type="Self.NotificacionSeguimiento" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Notificacion">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="NotificacionSeguimiento">
+              <PropertyRef Name="IdNotificacion" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LogError_PoolError">
+          <End Role="CodigosError" Type="Self.CodigosError" Multiplicity="1" />
+          <End Role="LogError" Type="Self.LogError" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CodigosError">
+              <PropertyRef Name="CodigoError" />
+            </Principal>
+            <Dependent Role="LogError">
+              <PropertyRef Name="CodigoError" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LogErrorEncabezado_Error">
+          <End Role="Error" Type="Self.Error" Multiplicity="1" />
+          <End Role="LogErrorEncabezado" Type="Self.LogErrorEncabezado" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Error">
+              <PropertyRef Name="IdError" />
+            </Principal>
+            <Dependent Role="LogErrorEncabezado">
+              <PropertyRef Name="IdError" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LogErrorEncabezado_PoolError">
+          <End Role="CodigosError" Type="Self.CodigosError" Multiplicity="1" />
+          <End Role="LogErrorEncabezado" Type="Self.LogErrorEncabezado" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CodigosError">
+              <PropertyRef Name="CodigoError" />
+            </Principal>
+            <Dependent Role="LogErrorEncabezado">
+              <PropertyRef Name="CodigoError" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OficinaPostalEnviado_OficinaPostalLogEnviado">
+          <End Role="Enviado" Type="Self.Enviado" Multiplicity="1" />
+          <End Role="LogEnviado" Type="Self.LogEnviado" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Enviado">
+              <PropertyRef Name="IdEnviado" />
+            </Principal>
+            <Dependent Role="LogEnviado">
+              <PropertyRef Name="IdEnviado" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OficinaPostalError_OficinaPostalLogError">
+          <End Role="Error" Type="Self.Error" Multiplicity="1" />
+          <End Role="LogError" Type="Self.LogError" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Error">
+              <PropertyRef Name="IdError" />
+            </Principal>
+            <Dependent Role="LogError">
+              <PropertyRef Name="IdError" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OficinaPostalHistoricoEnviado_OficinaPostalHistoricoLogEnviado">
+          <End Role="HistoricoEnviado" Type="Self.HistoricoEnviado" Multiplicity="1" />
+          <End Role="HistoricoLogEnviado" Type="Self.HistoricoLogEnviado" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="HistoricoEnviado">
+              <PropertyRef Name="IdHistoricoEnviado" />
+            </Principal>
+            <Dependent Role="HistoricoLogEnviado">
+              <PropertyRef Name="IdHistoricoEnviado" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OficinaPostalHistoricoError_OficinaPostalHistoricoLogError">
+          <End Role="HistoricoError" Type="Self.HistoricoError" Multiplicity="1" />
+          <End Role="HistoricoLogError" Type="Self.HistoricoLogError" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="HistoricoError">
+              <PropertyRef Name="IdHistoricoError" />
+            </Principal>
+            <Dependent Role="HistoricoLogError">
+              <PropertyRef Name="IdHistoricoError" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OficinaPostalHistoricoError_OficinaPostalHistoricoLogErrorEncabezado">
+          <End Role="HistoricoError" Type="Self.HistoricoError" Multiplicity="1" />
+          <End Role="HistoricoLogErrorEncabezado" Type="Self.HistoricoLogErrorEncabezado" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="HistoricoError">
+              <PropertyRef Name="IdHistoricoError" />
+            </Principal>
+            <Dependent Role="HistoricoLogErrorEncabezado">
+              <PropertyRef Name="IdHistoricoError" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OficinaPostalNotificacionFisica_OficinaPostalNotificacionSIPOSTEventos">
+          <End Role="NotificacionFisica" Type="Self.NotificacionFisica" Multiplicity="1" />
+          <End Role="NotificacionSIPOSTEventos" Type="Self.NotificacionSIPOSTEventos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="NotificacionFisica">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="NotificacionSIPOSTEventos">
+              <PropertyRef Name="IdNotificacionSIPOST" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OficinaPostalReglasGeneracionProcesosUsuarioCreador">
+          <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="1" />
+          <End Role="ReglasGeneracionProcesos" Type="Self.ReglasGeneracionProcesos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="id_usuario" />
+            </Principal>
+            <Dependent Role="ReglasGeneracionProcesos">
+              <PropertyRef Name="UsuarioCreador" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OficinaPostalReglasGeneracionProcesosUsuarioEjecucion">
+          <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="1" />
+          <End Role="ReglasGeneracionProcesos" Type="Self.ReglasGeneracionProcesos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="id_usuario" />
+            </Principal>
+            <Dependent Role="ReglasGeneracionProcesos">
+              <PropertyRef Name="UsuarioEjecucion" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OficinaPostalReglasGeneracionProcesosUsuarioModificacion">
+          <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="0..1" />
+          <End Role="ReglasGeneracionProcesos" Type="Self.ReglasGeneracionProcesos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="id_usuario" />
+            </Principal>
+            <Dependent Role="ReglasGeneracionProcesos">
+              <PropertyRef Name="UsuarioModificacion" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PoolError_HistoricoLogError">
+          <End Role="CodigosError" Type="Self.CodigosError" Multiplicity="1" />
+          <End Role="HistoricoLogError" Type="Self.HistoricoLogError" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CodigosError">
+              <PropertyRef Name="CodigoError" />
+            </Principal>
+            <Dependent Role="HistoricoLogError">
+              <PropertyRef Name="CodigoError" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PoolError_HistoricoLogErrorEncabezado">
+          <End Role="CodigosError" Type="Self.CodigosError" Multiplicity="1" />
+          <End Role="HistoricoLogErrorEncabezado" Type="Self.HistoricoLogErrorEncabezado" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CodigosError">
+              <PropertyRef Name="CodigoError" />
+            </Principal>
+            <Dependent Role="HistoricoLogErrorEncabezado">
+              <PropertyRef Name="CodigoError" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_USUARIO_USUARIO">
+          <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="0..1" />
+          <End Role="USUARIO1" Type="Self.USUARIO" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="id_usuario" />
+            </Principal>
+            <Dependent Role="USUARIO1">
+              <PropertyRef Name="nivel_autoridad_inmediato" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="PAGetContadoresTabla" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="OficinaPostal" />
+        <Function Name="PAMoverEnviadoToHistorico" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="OficinaPostal">
+          <Parameter Name="Gid" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="Top" Type="int" Mode="In" />
+        </Function>
+        <Function Name="PAMoverErrorToHistorico" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="OficinaPostal">
+          <Parameter Name="Gid" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="Top" Type="int" Mode="In" />
+        </Function>
+        <EntityContainer Name="StoreContainer">
+          <EntitySet Name="ORIGEN" EntityType="Self.ORIGEN" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="POLITICA_ENVIO_MAILS" EntityType="Self.POLITICA_ENVIO_MAILS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="POP_PROCESADOHistorico" EntityType="Self.POP_PROCESADOHistorico" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="USUARIO" EntityType="Self.USUARIO" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CodigosError" EntityType="Self.CodigosError" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="CorreoPermitidoAmbientePrueba" EntityType="Self.CorreoPermitidoAmbientePrueba" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="Enviado" EntityType="Self.Enviado" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="Error" EntityType="Self.Error" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="HistoricoEnviado" EntityType="Self.HistoricoEnviado" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="HistoricoError" EntityType="Self.HistoricoError" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="HistoricoLogEnviado" EntityType="Self.HistoricoLogEnviado" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="HistoricoLogError" EntityType="Self.HistoricoLogError" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="HistoricoLogErrorEncabezado" EntityType="Self.HistoricoLogErrorEncabezado" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="LogEnviado" EntityType="Self.LogEnviado" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="LogError" EntityType="Self.LogError" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="LogErrorEncabezado" EntityType="Self.LogErrorEncabezado" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="MarcacionReglasGeneracionProcesos" EntityType="Self.MarcacionReglasGeneracionProcesos" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="Notificacion" EntityType="Self.Notificacion" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="NotificacionFisica" EntityType="Self.NotificacionFisica" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="NotificacionFisicaTipoMensaje" EntityType="Self.NotificacionFisicaTipoMensaje" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="NotificacionSeguimiento" EntityType="Self.NotificacionSeguimiento" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="NotificacionSIPOSTEventos" EntityType="Self.NotificacionSIPOSTEventos" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="NotificacionTipoMensaje" EntityType="Self.NotificacionTipoMensaje" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="PorEnviar" EntityType="Self.PorEnviar" Schema="OficinaPostal" store:Type="Tables" />
+          <EntitySet Name="ReglasGeneracionProcesos" EntityType="Self.ReglasGeneracionProcesos" Schema="OficinaPostal" store:Type="Tables" />
+          <AssociationSet Name="FK__Notificac__IdNot__70AAAFC1" Association="Self.FK__Notificac__IdNot__70AAAFC1">
+            <End Role="Notificacion" EntitySet="Notificacion" />
+            <End Role="NotificacionSeguimiento" EntitySet="NotificacionSeguimiento" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LogError_PoolError" Association="Self.FK_LogError_PoolError">
+            <End Role="CodigosError" EntitySet="CodigosError" />
+            <End Role="LogError" EntitySet="LogError" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LogErrorEncabezado_Error" Association="Self.FK_LogErrorEncabezado_Error">
+            <End Role="Error" EntitySet="Error" />
+            <End Role="LogErrorEncabezado" EntitySet="LogErrorEncabezado" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LogErrorEncabezado_PoolError" Association="Self.FK_LogErrorEncabezado_PoolError">
+            <End Role="CodigosError" EntitySet="CodigosError" />
+            <End Role="LogErrorEncabezado" EntitySet="LogErrorEncabezado" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OficinaPostalEnviado_OficinaPostalLogEnviado" Association="Self.FK_OficinaPostalEnviado_OficinaPostalLogEnviado">
+            <End Role="Enviado" EntitySet="Enviado" />
+            <End Role="LogEnviado" EntitySet="LogEnviado" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OficinaPostalError_OficinaPostalLogError" Association="Self.FK_OficinaPostalError_OficinaPostalLogError">
+            <End Role="Error" EntitySet="Error" />
+            <End Role="LogError" EntitySet="LogError" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OficinaPostalHistoricoEnviado_OficinaPostalHistoricoLogEnviado" Association="Self.FK_OficinaPostalHistoricoEnviado_OficinaPostalHistoricoLogEnviado">
+            <End Role="HistoricoEnviado" EntitySet="HistoricoEnviado" />
+            <End Role="HistoricoLogEnviado" EntitySet="HistoricoLogEnviado" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OficinaPostalHistoricoError_OficinaPostalHistoricoLogError" Association="Self.FK_OficinaPostalHistoricoError_OficinaPostalHistoricoLogError">
+            <End Role="HistoricoError" EntitySet="HistoricoError" />
+            <End Role="HistoricoLogError" EntitySet="HistoricoLogError" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OficinaPostalHistoricoError_OficinaPostalHistoricoLogErrorEncabezado" Association="Self.FK_OficinaPostalHistoricoError_OficinaPostalHistoricoLogErrorEncabezado">
+            <End Role="HistoricoError" EntitySet="HistoricoError" />
+            <End Role="HistoricoLogErrorEncabezado" EntitySet="HistoricoLogErrorEncabezado" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OficinaPostalNotificacionFisica_OficinaPostalNotificacionSIPOSTEventos" Association="Self.FK_OficinaPostalNotificacionFisica_OficinaPostalNotificacionSIPOSTEventos">
+            <End Role="NotificacionFisica" EntitySet="NotificacionFisica" />
+            <End Role="NotificacionSIPOSTEventos" EntitySet="NotificacionSIPOSTEventos" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OficinaPostalReglasGeneracionProcesosUsuarioCreador" Association="Self.FK_OficinaPostalReglasGeneracionProcesosUsuarioCreador">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="ReglasGeneracionProcesos" EntitySet="ReglasGeneracionProcesos" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OficinaPostalReglasGeneracionProcesosUsuarioEjecucion" Association="Self.FK_OficinaPostalReglasGeneracionProcesosUsuarioEjecucion">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="ReglasGeneracionProcesos" EntitySet="ReglasGeneracionProcesos" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OficinaPostalReglasGeneracionProcesosUsuarioModificacion" Association="Self.FK_OficinaPostalReglasGeneracionProcesosUsuarioModificacion">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="ReglasGeneracionProcesos" EntitySet="ReglasGeneracionProcesos" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PoolError_HistoricoLogError" Association="Self.FK_PoolError_HistoricoLogError">
+            <End Role="CodigosError" EntitySet="CodigosError" />
+            <End Role="HistoricoLogError" EntitySet="HistoricoLogError" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PoolError_HistoricoLogErrorEncabezado" Association="Self.FK_PoolError_HistoricoLogErrorEncabezado">
+            <End Role="CodigosError" EntitySet="CodigosError" />
+            <End Role="HistoricoLogErrorEncabezado" EntitySet="HistoricoLogErrorEncabezado" />
+          </AssociationSet>
+          <AssociationSet Name="FK_USUARIO_USUARIO" Association="Self.FK_USUARIO_USUARIO">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="USUARIO1" EntitySet="USUARIO" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="OficinaPostalModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="OficinaPostal" annotation:LazyLoadingEnabled="false">
+          <EntitySet Name="CodigosError" EntityType="OficinaPostalModel.CodigosError" />
+          <EntitySet Name="Enviado" EntityType="OficinaPostalModel.Enviado" />
+          <EntitySet Name="Error" EntityType="OficinaPostalModel.Error" />
+          <EntitySet Name="PorEnviar" EntityType="OficinaPostalModel.PorEnviar" />
+          <FunctionImport Name="PAMoverEnviadoToHistorico">
+            <Parameter Name="Gid" Mode="In" Type="Guid" />
+            <Parameter Name="Top" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="PAMoverErrorToHistorico">
+            <Parameter Name="Gid" Mode="In" Type="Guid" />
+            <Parameter Name="Top" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <EntitySet Name="LogEnviado" EntityType="OficinaPostalModel.LogEnviado" />
+          <EntitySet Name="LogError" EntityType="OficinaPostalModel.LogError" />
+          <EntitySet Name="LogErrorEncabezado" EntityType="OficinaPostalModel.LogErrorEncabezado" />
+          <AssociationSet Name="FK_LogError_PoolError" Association="OficinaPostalModel.FK_LogError_PoolError">
+            <End Role="CodigosError" EntitySet="CodigosError" />
+            <End Role="LogError" EntitySet="LogError" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LogErrorEncabezado_PoolError" Association="OficinaPostalModel.FK_LogErrorEncabezado_PoolError">
+            <End Role="CodigosError" EntitySet="CodigosError" />
+            <End Role="LogErrorEncabezado" EntitySet="LogErrorEncabezado" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OficinaPostalEnviado_OficinaPostalLogEnviado" Association="OficinaPostalModel.FK_OficinaPostalEnviado_OficinaPostalLogEnviado">
+            <End Role="Enviado" EntitySet="Enviado" />
+            <End Role="LogEnviado" EntitySet="LogEnviado" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LogErrorEncabezado_Error" Association="OficinaPostalModel.FK_LogErrorEncabezado_Error">
+            <End Role="Error" EntitySet="Error" />
+            <End Role="LogErrorEncabezado" EntitySet="LogErrorEncabezado" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OficinaPostalError_OficinaPostalLogError" Association="OficinaPostalModel.FK_OficinaPostalError_OficinaPostalLogError">
+            <End Role="Error" EntitySet="Error" />
+            <End Role="LogError" EntitySet="LogError" />
+          </AssociationSet>
+          <EntitySet Name="HistoricoEnviado" EntityType="OficinaPostalModel.HistoricoEnviado" />
+          <EntitySet Name="HistoricoError" EntityType="OficinaPostalModel.HistoricoError" />
+          <EntitySet Name="HistoricoLogEnviado" EntityType="OficinaPostalModel.HistoricoLogEnviado" />
+          <EntitySet Name="HistoricoLogError" EntityType="OficinaPostalModel.HistoricoLogError" />
+          <EntitySet Name="HistoricoLogErrorEncabezado" EntityType="OficinaPostalModel.HistoricoLogErrorEncabezado" />
+          <AssociationSet Name="FK_PoolError_HistoricoLogError" Association="OficinaPostalModel.FK_PoolError_HistoricoLogError">
+            <End Role="CodigosError" EntitySet="CodigosError" />
+            <End Role="HistoricoLogError" EntitySet="HistoricoLogError" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PoolError_HistoricoLogErrorEncabezado" Association="OficinaPostalModel.FK_PoolError_HistoricoLogErrorEncabezado">
+            <End Role="CodigosError" EntitySet="CodigosError" />
+            <End Role="HistoricoLogErrorEncabezado" EntitySet="HistoricoLogErrorEncabezado" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OficinaPostalHistoricoEnviado_OficinaPostalHistoricoLogEnviado" Association="OficinaPostalModel.FK_OficinaPostalHistoricoEnviado_OficinaPostalHistoricoLogEnviado">
+            <End Role="HistoricoEnviado" EntitySet="HistoricoEnviado" />
+            <End Role="HistoricoLogEnviado" EntitySet="HistoricoLogEnviado" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OficinaPostalHistoricoError_OficinaPostalHistoricoLogError" Association="OficinaPostalModel.FK_OficinaPostalHistoricoError_OficinaPostalHistoricoLogError">
+            <End Role="HistoricoError" EntitySet="HistoricoError" />
+            <End Role="HistoricoLogError" EntitySet="HistoricoLogError" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OficinaPostalHistoricoError_OficinaPostalHistoricoLogErrorEncabezado" Association="OficinaPostalModel.FK_OficinaPostalHistoricoError_OficinaPostalHistoricoLogErrorEncabezado">
+            <End Role="HistoricoError" EntitySet="HistoricoError" />
+            <End Role="HistoricoLogErrorEncabezado" EntitySet="HistoricoLogErrorEncabezado" />
+          </AssociationSet>
+          <FunctionImport Name="PAGetContadoresTabla" ReturnType="Collection(OficinaPostalModel.PAGetContadoresTabla_Result)" />
+          <EntitySet Name="CorreoPermitidoAmbientePrueba" EntityType="OficinaPostalModel.CorreoPermitidoAmbientePrueba" />
+          <EntitySet Name="POLITICA_ENVIO_MAILS2" EntityType="OficinaPostalModel.POLITICA_ENVIO_MAILS2" />
+          <EntitySet Name="Notificacion" EntityType="OficinaPostalModel.Notificacion" />
+          <EntitySet Name="NotificacionFisica" EntityType="OficinaPostalModel.NotificacionFisica" />
+          <EntitySet Name="NotificacionSeguimiento" EntityType="OficinaPostalModel.NotificacionSeguimiento" />
+          <EntitySet Name="NotificacionTipoMensaje" EntityType="OficinaPostalModel.NotificacionTipoMensaje" />
+          <AssociationSet Name="FK__Notificac__IdNot__70AAAFC1" Association="OficinaPostalModel.FK__Notificac__IdNot__70AAAFC1">
+            <End Role="Notificacion" EntitySet="Notificacion" />
+            <End Role="NotificacionSeguimiento" EntitySet="NotificacionSeguimiento" />
+          </AssociationSet>
+          <EntitySet Name="NotificacionSIPOSTEventos" EntityType="OficinaPostalModel.NotificacionSIPOSTEventos" />
+          <AssociationSet Name="FK_OficinaPostalNotificacionFisica_OficinaPostalNotificacionSIPOSTEventos" Association="OficinaPostalModel.FK_OficinaPostalNotificacionFisica_OficinaPostalNotificacionSIPOSTEventos">
+            <End Role="NotificacionFisica" EntitySet="NotificacionFisica" />
+            <End Role="NotificacionSIPOSTEventos" EntitySet="NotificacionSIPOSTEventos" />
+          </AssociationSet>
+          <EntitySet Name="POP_PROCESADOHistorico" EntityType="OficinaPostalModel.POP_PROCESADOHistorico" />
+          <EntitySet Name="NotificacionFisicaTipoMensaje" EntityType="OficinaPostalModel.NotificacionFisicaTipoMensaje" />
+          <EntitySet Name="USUARIO" EntityType="OficinaPostalModel.USUARIO" />
+          <AssociationSet Name="FK_USUARIO_USUARIO" Association="OficinaPostalModel.FK_USUARIO_USUARIO">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="USUARIO1" EntitySet="USUARIO" />
+          </AssociationSet>
+          <EntitySet Name="MarcacionReglasGeneracionProcesos" EntityType="OficinaPostalModel.MarcacionReglasGeneracionProcesos" />
+          <EntitySet Name="ORIGEN2" EntityType="OficinaPostalModel.ORIGEN2" />
+          <EntitySet Name="ReglasGeneracionProcesos" EntityType="OficinaPostalModel.ReglasGeneracionProcesos" />
+          <AssociationSet Name="FK_OficinaPostalReglasGeneracionProcesosUsuarioCreador" Association="OficinaPostalModel.FK_OficinaPostalReglasGeneracionProcesosUsuarioCreador">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="ReglasGeneracionProcesos" EntitySet="ReglasGeneracionProcesos" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OficinaPostalReglasGeneracionProcesosUsuarioEjecucion" Association="OficinaPostalModel.FK_OficinaPostalReglasGeneracionProcesosUsuarioEjecucion">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="ReglasGeneracionProcesos" EntitySet="ReglasGeneracionProcesos" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OficinaPostalReglasGeneracionProcesosUsuarioModificacion" Association="OficinaPostalModel.FK_OficinaPostalReglasGeneracionProcesosUsuarioModificacion">
+            <End Role="USUARIO" EntitySet="USUARIO" />
+            <End Role="ReglasGeneracionProcesos" EntitySet="ReglasGeneracionProcesos" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="CodigosError">
+          <Key>
+            <PropertyRef Name="CodigoError" />
+          </Key>
+          <Property Type="Int32" Name="CodigoError" Nullable="false" />
+          <Property Type="String" Name="Error" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Descripcion" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="LogError" Relationship="OficinaPostalModel.FK_LogError_PoolError" FromRole="CodigosError" ToRole="LogError" />
+          <NavigationProperty Name="LogErrorEncabezado" Relationship="OficinaPostalModel.FK_LogErrorEncabezado_PoolError" FromRole="CodigosError" ToRole="LogErrorEncabezado" />
+          <NavigationProperty Name="HistoricoLogError" Relationship="OficinaPostalModel.FK_PoolError_HistoricoLogError" FromRole="CodigosError" ToRole="HistoricoLogError" />
+          <NavigationProperty Name="HistoricoLogErrorEncabezado" Relationship="OficinaPostalModel.FK_PoolError_HistoricoLogErrorEncabezado" FromRole="CodigosError" ToRole="HistoricoLogErrorEncabezado" />
+          <Property Name="ErrorUsuario" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="TipoMensaje" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Enviado">
+          <Key>
+            <PropertyRef Name="IdEnviado" />
+          </Key>
+          <Property Type="Int32" Name="IdEnviado" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="IdTarea" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Remitente" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Destino" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Asunto" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Cuerpo" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Anexos" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="NumeroRadicacion" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="FechaRegistro" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="Gid" Nullable="false" />
+          <Property Type="Int32" Name="Intento" />
+          <Property Type="String" Name="IdOriginador" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Originador" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="TipoEvento" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="UrlDetalle" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="IdPoliticaOrigen" />
+          <Property Type="String" Name="IdResponsable" MaxLength="30" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="LogEnviado" Relationship="OficinaPostalModel.FK_OficinaPostalEnviado_OficinaPostalLogEnviado" FromRole="Enviado" ToRole="LogEnviado" />
+          <Property Name="TipoMensaje" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="DestinatarioCc" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DestinatarioCco" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IdExterno" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Error">
+          <Key>
+            <PropertyRef Name="IdError" />
+          </Key>
+          <Property Type="Int32" Name="IdError" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="IdTarea" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Remitente" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Destino" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Asunto" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Cuerpo" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Anexos" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="NumeroRadicacion" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="FechaRegistro" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="Gid" Nullable="false" />
+          <Property Type="Int32" Name="Intento" />
+          <Property Type="String" Name="IdOriginador" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Originador" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="TipoEvento" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="UrlDetalle" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="IdPoliticaOrigen" />
+          <Property Type="String" Name="IdResponsable" MaxLength="30" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="LogErrorEncabezado" Relationship="OficinaPostalModel.FK_LogErrorEncabezado_Error" FromRole="Error" ToRole="LogErrorEncabezado" />
+          <NavigationProperty Name="LogError" Relationship="OficinaPostalModel.FK_OficinaPostalError_OficinaPostalLogError" FromRole="Error" ToRole="LogError" />
+          <Property Name="TipoMensaje" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="DestinatarioCc" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DestinatarioCco" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IdExterno" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="PorEnviar">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="IdTarea" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Remitente" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Destino" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Asunto" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Cuerpo" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Anexos" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="NumeroRadicacion" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="FechaRegistro" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="Gid" Nullable="false" />
+          <Property Type="Int32" Name="Intento" />
+          <Property Type="String" Name="IdOriginador" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Originador" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="TipoEvento" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="UrlDetalle" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="IdPoliticaOrigen" />
+          <Property Type="String" Name="IdResponsable" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="TipoMensaje" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="DestinatarioCc" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DestinatarioCco" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IdExterno" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="LogEnviado">
+          <Key>
+            <PropertyRef Name="IdLogEnviado" />
+          </Key>
+          <Property Type="Int32" Name="IdLogEnviado" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="IdTarea" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="FechaEnvio" Nullable="false" Precision="3" />
+          <Property Type="String" Name="Destino" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="IdEnviado" Nullable="false" />
+          <Property Type="Guid" Name="Gid" Nullable="false" />
+          <Property Type="Int32" Name="Intento" Nullable="false" />
+          <Property Type="Boolean" Name="Reenvio" />
+          <Property Type="String" Name="IdResponsable" MaxLength="30" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Enviado" Relationship="OficinaPostalModel.FK_OficinaPostalEnviado_OficinaPostalLogEnviado" FromRole="LogEnviado" ToRole="Enviado" />
+          <Property Name="TipoMensaje" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="DestinatarioCc" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DestinatarioCco" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IdExterno" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="LogError">
+          <Key>
+            <PropertyRef Name="IdLogError" />
+          </Key>
+          <Property Type="Int32" Name="IdLogError" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="IdError" Nullable="false" />
+          <Property Type="Int32" Name="CodigoError" Nullable="false" />
+          <Property Type="DateTime" Name="FechaEnvio" Nullable="false" Precision="3" />
+          <Property Type="String" Name="Destino" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Error" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Guid" Name="Gid" Nullable="false" />
+          <Property Type="Int32" Name="Intento" Nullable="false" />
+          <NavigationProperty Name="CodigosError" Relationship="OficinaPostalModel.FK_LogError_PoolError" FromRole="LogError" ToRole="CodigosError" />
+          <NavigationProperty Name="Error1" Relationship="OficinaPostalModel.FK_OficinaPostalError_OficinaPostalLogError" FromRole="LogError" ToRole="Error" />
+          <Property Name="DestinatarioCc" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DestinatarioCco" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IdExterno" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="LogErrorEncabezado">
+          <Key>
+            <PropertyRef Name="IdLogError" />
+          </Key>
+          <Property Type="Int32" Name="IdLogError" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="IdError" Nullable="false" />
+          <Property Type="Int32" Name="CodigoError" Nullable="false" />
+          <Property Type="String" Name="Descripcion" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="Intento" />
+          <Property Type="DateTime" Name="FechaEnvio" Precision="3" />
+          <Property Type="Guid" Name="Gid" />
+          <Property Type="String" Name="IdOriginador" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Originador" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="TipoEvento" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="UrlDetalle" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="IdPoliticaOrigen" />
+          <NavigationProperty Name="CodigosError" Relationship="OficinaPostalModel.FK_LogErrorEncabezado_PoolError" FromRole="LogErrorEncabezado" ToRole="CodigosError" />
+          <NavigationProperty Name="Error" Relationship="OficinaPostalModel.FK_LogErrorEncabezado_Error" FromRole="LogErrorEncabezado" ToRole="Error" />
+        </EntityType>
+        <Association Name="FK_LogError_PoolError">
+          <End Type="OficinaPostalModel.CodigosError" Role="CodigosError" Multiplicity="1" />
+          <End Type="OficinaPostalModel.LogError" Role="LogError" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CodigosError">
+              <PropertyRef Name="CodigoError" />
+            </Principal>
+            <Dependent Role="LogError">
+              <PropertyRef Name="CodigoError" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LogErrorEncabezado_PoolError">
+          <End Type="OficinaPostalModel.CodigosError" Role="CodigosError" Multiplicity="1" />
+          <End Type="OficinaPostalModel.LogErrorEncabezado" Role="LogErrorEncabezado" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CodigosError">
+              <PropertyRef Name="CodigoError" />
+            </Principal>
+            <Dependent Role="LogErrorEncabezado">
+              <PropertyRef Name="CodigoError" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OficinaPostalEnviado_OficinaPostalLogEnviado">
+          <End Type="OficinaPostalModel.Enviado" Role="Enviado" Multiplicity="1" />
+          <End Type="OficinaPostalModel.LogEnviado" Role="LogEnviado" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Enviado">
+              <PropertyRef Name="IdEnviado" />
+            </Principal>
+            <Dependent Role="LogEnviado">
+              <PropertyRef Name="IdEnviado" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LogErrorEncabezado_Error">
+          <End Type="OficinaPostalModel.Error" Role="Error" Multiplicity="1" />
+          <End Type="OficinaPostalModel.LogErrorEncabezado" Role="LogErrorEncabezado" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Error">
+              <PropertyRef Name="IdError" />
+            </Principal>
+            <Dependent Role="LogErrorEncabezado">
+              <PropertyRef Name="IdError" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OficinaPostalError_OficinaPostalLogError">
+          <End Type="OficinaPostalModel.Error" Role="Error" Multiplicity="1" />
+          <End Type="OficinaPostalModel.LogError" Role="LogError" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Error">
+              <PropertyRef Name="IdError" />
+            </Principal>
+            <Dependent Role="LogError">
+              <PropertyRef Name="IdError" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="HistoricoEnviado">
+          <Key>
+            <PropertyRef Name="IdHistoricoEnviado" />
+          </Key>
+          <Property Type="Int32" Name="IdHistoricoEnviado" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="IdTarea" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Remitente" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Destino" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Asunto" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Cuerpo" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Anexos" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="NumeroRadicacion" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="FechaRegistro" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="Gid" Nullable="false" />
+          <Property Type="Int32" Name="Intento" />
+          <Property Type="String" Name="IdOriginador" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Originador" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="TipoEvento" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="UrlDetalle" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="IdPoliticaOrigen" />
+          <Property Type="String" Name="IdResponsable" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="IdEnviado" />
+          <NavigationProperty Name="HistoricoLogEnviado" Relationship="OficinaPostalModel.FK_OficinaPostalHistoricoEnviado_OficinaPostalHistoricoLogEnviado" FromRole="HistoricoEnviado" ToRole="HistoricoLogEnviado" />
+          <Property Name="TipoMensaje" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="DestinatarioCc" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DestinatarioCco" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IdExterno" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="HistoricoError">
+          <Key>
+            <PropertyRef Name="IdHistoricoError" />
+          </Key>
+          <Property Type="Int32" Name="IdHistoricoError" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="IdTarea" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Remitente" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Destino" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Asunto" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Cuerpo" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Anexos" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="NumeroRadicacion" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="FechaRegistro" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="Gid" Nullable="false" />
+          <Property Type="Int32" Name="Intento" />
+          <Property Type="String" Name="IdOriginador" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Originador" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="TipoEvento" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="UrlDetalle" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="IdPoliticaOrigen" />
+          <Property Type="String" Name="IdResponsable" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="IdError" />
+          <NavigationProperty Name="HistoricoLogError" Relationship="OficinaPostalModel.FK_OficinaPostalHistoricoError_OficinaPostalHistoricoLogError" FromRole="HistoricoError" ToRole="HistoricoLogError" />
+          <NavigationProperty Name="HistoricoLogErrorEncabezado" Relationship="OficinaPostalModel.FK_OficinaPostalHistoricoError_OficinaPostalHistoricoLogErrorEncabezado" FromRole="HistoricoError" ToRole="HistoricoLogErrorEncabezado" />
+          <Property Name="TipoMensaje" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="DestinatarioCc" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DestinatarioCco" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IdExterno" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="HistoricoLogEnviado">
+          <Key>
+            <PropertyRef Name="IdHistoricoLogEnviado" />
+          </Key>
+          <Property Type="Int32" Name="IdHistoricoLogEnviado" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="IdHistoricoEnviado" Nullable="false" />
+          <Property Type="String" Name="IdTarea" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="FechaEnvio" Nullable="false" Precision="3" />
+          <Property Type="String" Name="Destino" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="IdEnviado" Nullable="false" />
+          <Property Type="Guid" Name="Gid" Nullable="false" />
+          <Property Type="Int32" Name="Intento" Nullable="false" />
+          <Property Type="Boolean" Name="Reenvio" />
+          <Property Type="String" Name="IdResponsable" MaxLength="30" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="HistoricoEnviado" Relationship="OficinaPostalModel.FK_OficinaPostalHistoricoEnviado_OficinaPostalHistoricoLogEnviado" FromRole="HistoricoLogEnviado" ToRole="HistoricoEnviado" />
+          <Property Name="TipoMensaje" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="DestinatarioCc" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DestinatarioCco" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IdExterno" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="HistoricoLogError">
+          <Key>
+            <PropertyRef Name="IdHistoricoLogError" />
+          </Key>
+          <Property Type="Int32" Name="IdHistoricoLogError" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="IdHistoricoError" Nullable="false" />
+          <Property Type="Int32" Name="CodigoError" Nullable="false" />
+          <Property Type="DateTime" Name="FechaEnvio" Nullable="false" Precision="3" />
+          <Property Type="String" Name="Destino" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Error" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Guid" Name="Gid" Nullable="false" />
+          <Property Type="Int32" Name="Intento" Nullable="false" />
+          <Property Type="Int32" Name="IdError" />
+          <NavigationProperty Name="CodigosError" Relationship="OficinaPostalModel.FK_PoolError_HistoricoLogError" FromRole="HistoricoLogError" ToRole="CodigosError" />
+          <NavigationProperty Name="HistoricoError" Relationship="OficinaPostalModel.FK_OficinaPostalHistoricoError_OficinaPostalHistoricoLogError" FromRole="HistoricoLogError" ToRole="HistoricoError" />
+          <Property Name="DestinatarioCc" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DestinatarioCco" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="HistoricoLogErrorEncabezado">
+          <Key>
+            <PropertyRef Name="IdHistoricoLogError" />
+          </Key>
+          <Property Type="Int32" Name="IdHistoricoLogError" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="IdHistoricoError" Nullable="false" />
+          <Property Type="Int32" Name="CodigoError" Nullable="false" />
+          <Property Type="String" Name="Descripcion" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="Intento" />
+          <Property Type="DateTime" Name="FechaEnvio" Precision="3" />
+          <Property Type="Guid" Name="Gid" />
+          <Property Type="String" Name="IdOriginador" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Originador" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="TipoEvento" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="UrlDetalle" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="IdPoliticaOrigen" />
+          <Property Type="Int32" Name="IdLogError" />
+          <Property Type="Int32" Name="IdError" />
+          <NavigationProperty Name="CodigosError" Relationship="OficinaPostalModel.FK_PoolError_HistoricoLogErrorEncabezado" FromRole="HistoricoLogErrorEncabezado" ToRole="CodigosError" />
+          <NavigationProperty Name="HistoricoError" Relationship="OficinaPostalModel.FK_OficinaPostalHistoricoError_OficinaPostalHistoricoLogErrorEncabezado" FromRole="HistoricoLogErrorEncabezado" ToRole="HistoricoError" />
+        </EntityType>
+        <Association Name="FK_PoolError_HistoricoLogError">
+          <End Type="OficinaPostalModel.CodigosError" Role="CodigosError" Multiplicity="1" />
+          <End Type="OficinaPostalModel.HistoricoLogError" Role="HistoricoLogError" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CodigosError">
+              <PropertyRef Name="CodigoError" />
+            </Principal>
+            <Dependent Role="HistoricoLogError">
+              <PropertyRef Name="CodigoError" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PoolError_HistoricoLogErrorEncabezado">
+          <End Type="OficinaPostalModel.CodigosError" Role="CodigosError" Multiplicity="1" />
+          <End Type="OficinaPostalModel.HistoricoLogErrorEncabezado" Role="HistoricoLogErrorEncabezado" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CodigosError">
+              <PropertyRef Name="CodigoError" />
+            </Principal>
+            <Dependent Role="HistoricoLogErrorEncabezado">
+              <PropertyRef Name="CodigoError" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OficinaPostalHistoricoEnviado_OficinaPostalHistoricoLogEnviado">
+          <End Type="OficinaPostalModel.HistoricoEnviado" Role="HistoricoEnviado" Multiplicity="1" />
+          <End Type="OficinaPostalModel.HistoricoLogEnviado" Role="HistoricoLogEnviado" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="HistoricoEnviado">
+              <PropertyRef Name="IdHistoricoEnviado" />
+            </Principal>
+            <Dependent Role="HistoricoLogEnviado">
+              <PropertyRef Name="IdHistoricoEnviado" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OficinaPostalHistoricoError_OficinaPostalHistoricoLogError">
+          <End Type="OficinaPostalModel.HistoricoError" Role="HistoricoError" Multiplicity="1" />
+          <End Type="OficinaPostalModel.HistoricoLogError" Role="HistoricoLogError" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="HistoricoError">
+              <PropertyRef Name="IdHistoricoError" />
+            </Principal>
+            <Dependent Role="HistoricoLogError">
+              <PropertyRef Name="IdHistoricoError" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OficinaPostalHistoricoError_OficinaPostalHistoricoLogErrorEncabezado">
+          <End Type="OficinaPostalModel.HistoricoError" Role="HistoricoError" Multiplicity="1" />
+          <End Type="OficinaPostalModel.HistoricoLogErrorEncabezado" Role="HistoricoLogErrorEncabezado" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="HistoricoError">
+              <PropertyRef Name="IdHistoricoError" />
+            </Principal>
+            <Dependent Role="HistoricoLogErrorEncabezado">
+              <PropertyRef Name="IdHistoricoError" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <ComplexType Name="PAGetContadoresTabla_Result">
+          <Property Type="Int32" Name="RegistrosHistoricoEnviado" Nullable="true" />
+          <Property Type="Int32" Name="RegistrosHistoricoError" Nullable="true" />
+          <Property Type="Int32" Name="RegistrosError" Nullable="true" />
+          <Property Type="Int32" Name="RegistroEnviado" Nullable="true" />
+          <Property Type="Int32" Name="RegistroPorEnviar" Nullable="true" />
+          <Property Type="Int32" Name="RegistroProcesoEnvioEmails" Nullable="true" />
+        </ComplexType>
+        <EntityType Name="CorreoPermitidoAmbientePrueba">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Correo" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="IdUsuarioCreador" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="FechaCreador" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IdUsuarioModificador" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="FechaModificacion" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="POLITICA_ENVIO_MAILS2">
+          <Key>
+            <PropertyRef Name="id_politica" />
+          </Key>
+          <Property Name="id_politica" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id_querytipificado_origen" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="tipo_qd_origen" Type="Int32" />
+          <Property Name="id_query_origen" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="id_usuario_qd" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="url_plantilla_email" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="email_origen" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="asunto_mail" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="sql_envio_mail" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="registro_por_iteracion" Type="Int32" Nullable="false" />
+          <Property Name="prioridad_ejecucion" Type="Int32" Nullable="false" />
+          <Property Name="estado_regla" Type="Boolean" Nullable="false" />
+          <Property Name="id_usuario_ult_modif" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="ip_estacion_ult_modif" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="fec_estacion_ult_modif" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IdProceso" Type="Int32" />
+          <Property Name="TipoMensaje" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Nombre" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="SqlOrigen" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="MinimoAnexos" Type="Int32" Nullable="false" />
+          <Property Name="NotificacionElectronica" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="Notificacion">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdCorreo" Type="Int32" />
+          <Property Name="IdAnexo" Type="Int32" />
+          <Property Name="IdDocumentoAnexo" Type="Int32" />
+          <Property Name="Intentos" Type="Int32" />
+          <Property Name="FechaIntento" Type="DateTime" Precision="3" />
+          <Property Name="Estado" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="FechaEstado" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EstadoNotificador" Type="Int32" />
+          <Property Name="DescEstadoNotificador" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IdArchivoNotificacion" Type="Int32" />
+          <Property Name="NombreAnexoNotificacion" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="NumRadicacion" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="GidCorreo" Type="Guid" Nullable="false" />
+          <Property Name="RowsFound" Type="Int32" />
+          <Property Name="RowsOK" Type="Int32" />
+          <Property Name="RowsKO" Type="Int32" />
+          <Property Name="Destinatario" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="SistemaNotificador" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="NotificacionSeguimiento" Relationship="OficinaPostalModel.FK__Notificac__IdNot__70AAAFC1" FromRole="Notificacion" ToRole="NotificacionSeguimiento" />
+        </EntityType>
+        <EntityType Name="NotificacionFisica">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdDocumentoDestino" Type="Int32" Nullable="false" />
+          <Property Name="NroGuia" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="FechaRegistro" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IdentificadorTransaccion" Type="Int32" />
+          <Property Name="CodigoRespuesta" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DescEstadoNotificador" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IdDocumentoAnexo" Type="Int32" />
+          <Property Name="GidDocumentoAnexo" Type="Guid" />
+          <Property Name="Estado" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="FechaEstado" Type="DateTime" Precision="3" />
+          <Property Name="Intentos" Type="Int32" Nullable="false" />
+          <Property Name="FechaIntento" Type="DateTime" Precision="3" />
+          <Property Name="CodigoEstadoCarga" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="NombreArchivoGenerado" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="NombreEstadoCarga" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="RutaFTP" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="EstadoDescarga" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="FechaEstadoDescarga" Type="DateTime" Precision="3" />
+          <Property Name="IntentosDescarga" Type="Int32" Nullable="false" />
+          <Property Name="FechaIntentoDescarga" Type="DateTime" Precision="3" />
+          <Property Name="CodigoRespuestaDescarga" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DescEstadoNotificadorDescarga" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Gid" Type="Guid" />
+          <Property Name="CiudadOrigen" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="CiudadDestino" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="NotificacionSIPOSTEventos" Relationship="OficinaPostalModel.FK_OficinaPostalNotificacionFisica_OficinaPostalNotificacionSIPOSTEventos" FromRole="NotificacionFisica" ToRole="NotificacionSIPOSTEventos" />
+        </EntityType>
+        <EntityType Name="NotificacionSeguimiento">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdNotificacion" Type="Int32" />
+          <Property Name="CodigoEstado" Type="Int32" />
+          <Property Name="CodigoSubEstado" Type="Int32" />
+          <Property Name="FechaEstado" Type="DateTime" Precision="3" />
+          <Property Name="IdDocumentoAnexo" Type="Int32" />
+          <Property Name="FechaRegistro" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Notificacion" Relationship="OficinaPostalModel.FK__Notificac__IdNot__70AAAFC1" FromRole="NotificacionSeguimiento" ToRole="Notificacion" />
+        </EntityType>
+        <EntityType Name="NotificacionTipoMensaje">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CodigoMensaje" Type="Int32" />
+          <Property Name="TipoMensaje" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Name="Mensaje" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="DescargaNotificacion" Type="Boolean" />
+          <Property Name="EtapaEstado" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Name="UsuarioModificacion" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="FechaModificacion" Type="DateTime" Precision="3" />
+        </EntityType>
+        <Association Name="FK__Notificac__IdNot__70AAAFC1">
+          <End Type="OficinaPostalModel.Notificacion" Role="Notificacion" Multiplicity="0..1" />
+          <End Type="OficinaPostalModel.NotificacionSeguimiento" Role="NotificacionSeguimiento" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Notificacion">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="NotificacionSeguimiento">
+              <PropertyRef Name="IdNotificacion" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="NotificacionSIPOSTEventos">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Gid" Type="Guid" Nullable="false" />
+          <Property Name="IdNotificacionSIPOST" Type="Int32" Nullable="false" />
+          <Property Name="TipoEvento" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Objeto" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="IdObjeto" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Fecha" Type="DateTime" Precision="3" />
+          <Property Name="Ciudad" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CentroOperativo" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="SectorDistribucion" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="CodigoSector" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Descripcion" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Liquidacion" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="NotificacionFisica" Relationship="OficinaPostalModel.FK_OficinaPostalNotificacionFisica_OficinaPostalNotificacionSIPOSTEventos" FromRole="NotificacionSIPOSTEventos" ToRole="NotificacionFisica" />
+        </EntityType>
+        <Association Name="FK_OficinaPostalNotificacionFisica_OficinaPostalNotificacionSIPOSTEventos">
+          <End Type="OficinaPostalModel.NotificacionFisica" Role="NotificacionFisica" Multiplicity="1" />
+          <End Type="OficinaPostalModel.NotificacionSIPOSTEventos" Role="NotificacionSIPOSTEventos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="NotificacionFisica">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="NotificacionSIPOSTEventos">
+              <PropertyRef Name="IdNotificacionSIPOST" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="POP_PROCESADOHistorico">
+          <Key>
+            <PropertyRef Name="Id_CorreoProcesado" />
+          </Key>
+          <Property Name="Id_CorreoProcesado" Type="Int32" Nullable="false" />
+          <Property Name="Servidor" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Usuario" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Remitente" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="Destino" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="Asunto" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="Fecha" Type="String" Nullable="false" MaxLength="60" FixedLength="false" Unicode="false" />
+          <Property Name="NumeroAdjuntos" Type="Int32" />
+          <Property Name="NombreAdjuntos" Type="String" MaxLength="2000" FixedLength="false" Unicode="false" />
+          <Property Name="EstadoProceso" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="FechaProceso" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="NumeroRadicado" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="FechaActualizacion" Type="DateTime" Precision="3" />
+          <Property Name="IdObjeto" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Mensaje" Type="String" MaxLength="5000" FixedLength="false" Unicode="false" />
+          <Property Name="NombreRemitente" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="GidOficinaPostal" Type="Guid" />
+          <Property Name="ContenidoMensaje" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Intento" Type="Int32" />
+          <Property Name="IdCorreoInterno" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="EstadoPDF" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="IntentoPDF" Type="Int32" />
+          <Property Name="DesEstadoPDF" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IdAnexo" Type="Int32" />
+          <Property Name="GIdCorreoProcesado" Type="Guid" Nullable="false" />
+          <Property Name="FechaEstadoPDF" Type="DateTime" Precision="3" />
+          <Property Name="FIEvento" Type="DateTime" Precision="3" />
+          <Property Name="FFEvento" Type="DateTime" Precision="3" />
+          <Property Name="TimeZone" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="LugarEvento" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="FechaCorreo" Type="DateTime" Precision="3" />
+          <Property Name="VinculosExternos" Type="Boolean" Nullable="false" />
+          <Property Name="IdSolicitud" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="FechaSolicitud" Type="DateTime" Precision="3" />
+          <Property Name="FechaMovimientoHistorico" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="NotificacionFisicaTipoMensaje">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CodigoMensaje" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="TipoMensaje" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Mensaje" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="EstadoDistribucion" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="UsuarioModificacion" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="FechaModificacion" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="USUARIO">
+          <Key>
+            <PropertyRef Name="id_usuario" />
+          </Key>
+          <Property Name="id_usuario" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="nombre" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="telefono" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="extension" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="e_mail" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="clave" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="id_depto" Type="Decimal" Precision="4" Scale="0" />
+          <Property Name="clase_usuario" Type="String" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="id_cliente" Type="Int32" />
+          <Property Name="prioridad" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="ntlogin" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="aplicacion_defecto" Type="String" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Name="localizacion" Type="Int32" />
+          <Property Name="id_cargo" Type="Decimal" Precision="9" Scale="0" />
+          <Property Name="ubicacion" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="nivel_autoridad_inmediato" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="id_centro_costo" Type="Decimal" Precision="4" Scale="0" />
+          <Property Name="activo" Type="Boolean" Nullable="false" />
+          <Property Name="directorio_activo" Type="Boolean" Nullable="false" />
+          <Property Name="color_usuario" Type="String" MaxLength="6" FixedLength="true" Unicode="false" />
+          <Property Name="actualizacion_pki" Type="DateTime" Precision="3" />
+          <Property Name="idDoc_pki_firmado" Type="Int32" />
+          <Property Name="fecha_cambioclave" Type="DateTime" Precision="3" />
+          <Property Name="DISPONIBLE" Type="Boolean" />
+          <Property Name="EXCLUIR_CARGUEESTRUC" Type="Boolean" />
+          <Property Name="claveInicial_regAuto" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="finalizacion_regAuto" Type="Boolean" Nullable="false" />
+          <Property Name="acceso_tms" Type="Boolean" Nullable="false" />
+          <Property Name="bloqueado" Type="Boolean" Nullable="false" />
+          <Property Name="PalabraClave" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="NumIntentosClave" Type="Byte" Nullable="false" />
+          <Property Name="ImagenFirma" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="TipoImagenFirma" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Genero" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="Profesion" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="TipoVinculacion" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="TipoIdentificacion" Type="String" MaxLength="3" FixedLength="false" Unicode="false" />
+          <Property Name="identificacion" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="IdLocalizacionExpDoc" Type="Int32" />
+          <Property Name="PrimerNombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="SegundoNombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PrimerApellido" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="SegundoApellido" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="OrigenRegistro" Type="String" MaxLength="3" FixedLength="false" Unicode="false" />
+          <Property Name="id_division" Type="Decimal" Precision="6" Scale="0" />
+          <Property Name="Celular" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="firma_mecanica" Type="Boolean" />
+          <Property Name="segunda_clave" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="NivelEstudios" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="NombreEmpresa" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="FechaNacimiento" Type="DateTime" Precision="3" />
+          <Property Name="Nacionalidad" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="UsuarioRemplazo" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="FechaModificacion" Type="DateTime" Precision="3" />
+          <Property Name="FechaUltimoAcceso" Type="DateTime" Precision="3" />
+          <Property Name="FechaCreacion" Type="DateTime" Precision="3" />
+          <Property Name="FechaToken" Type="DateTime" Precision="3" />
+          <Property Name="Token" Type="Guid" />
+          <Property Name="TipoAcceso" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="TmsAuditoria" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IdGrupoPoblacional" Type="Int32" />
+          <Property Name="BarrioVeredaCorregimiento" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="NotificaCorreo" Type="Boolean" Nullable="false" />
+          <Property Name="IdTipoPersona" Type="Int32" />
+          <NavigationProperty Name="USUARIO1" Relationship="OficinaPostalModel.FK_USUARIO_USUARIO" FromRole="USUARIO" ToRole="USUARIO1" />
+          <NavigationProperty Name="USUARIO2" Relationship="OficinaPostalModel.FK_USUARIO_USUARIO" FromRole="USUARIO1" ToRole="USUARIO" />
+          <NavigationProperty Name="ReglasGeneracionProcesos" Relationship="OficinaPostalModel.FK_OficinaPostalReglasGeneracionProcesosUsuarioCreador" FromRole="USUARIO" ToRole="ReglasGeneracionProcesos" />
+          <NavigationProperty Name="ReglasGeneracionProcesos1" Relationship="OficinaPostalModel.FK_OficinaPostalReglasGeneracionProcesosUsuarioEjecucion" FromRole="USUARIO" ToRole="ReglasGeneracionProcesos" />
+          <NavigationProperty Name="ReglasGeneracionProcesos2" Relationship="OficinaPostalModel.FK_OficinaPostalReglasGeneracionProcesosUsuarioModificacion" FromRole="USUARIO" ToRole="ReglasGeneracionProcesos" />
+        </EntityType>
+        <Association Name="FK_USUARIO_USUARIO">
+          <End Type="OficinaPostalModel.USUARIO" Role="USUARIO" Multiplicity="0..1" />
+          <End Type="OficinaPostalModel.USUARIO" Role="USUARIO1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="id_usuario" />
+            </Principal>
+            <Dependent Role="USUARIO1">
+              <PropertyRef Name="nivel_autoridad_inmediato" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="MarcacionReglasGeneracionProcesos">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdRegla" Type="Int32" Nullable="false" />
+          <Property Name="IdPopProcesado" Type="Int32" Nullable="false" />
+          <Property Name="IdTipoSolicitud" Type="Int32" Nullable="false" />
+          <Property Name="IdPlataforma" Type="Int32" />
+          <Property Name="IdCategoria" Type="Int32" />
+          <Property Name="IdSubCategoria" Type="Int32" />
+          <Property Name="IdComponente" Type="Int32" />
+          <Property Name="FechaRegistro" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IdSolicitud" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="ORIGEN2">
+          <Key>
+            <PropertyRef Name="id_origen" />
+          </Key>
+          <Property Name="id_origen" Type="Decimal" Nullable="false" Precision="5" Scale="0" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="nom_origen" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="modulo" Type="String" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Name="activo" Type="Boolean" Nullable="false" />
+          <Property Name="tipo_origen" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="CodigoCanalCliente" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="ReglasGeneracionProcesos">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Descripcion" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="Condiciones" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="InfoProceso" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Orden" Type="Int32" Nullable="false" />
+          <Property Name="GID" Type="Guid" Nullable="false" />
+          <Property Name="UsuarioCreador" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="FechaCreacion" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UsuarioModificacion" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="FechaModificacion" Type="DateTime" Precision="3" />
+          <Property Name="Activo" Type="Boolean" Nullable="false" />
+          <Property Name="UsuarioEjecucion" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="FechaInicioEjecucion" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IdOrigen" Type="Decimal" Nullable="false" Precision="5" Scale="0" />
+          <Property Name="Tipo" Type="String" Nullable="false" MaxLength="2" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="USUARIO" Relationship="OficinaPostalModel.FK_OficinaPostalReglasGeneracionProcesosUsuarioCreador" FromRole="ReglasGeneracionProcesos" ToRole="USUARIO" />
+          <NavigationProperty Name="USUARIO1" Relationship="OficinaPostalModel.FK_OficinaPostalReglasGeneracionProcesosUsuarioEjecucion" FromRole="ReglasGeneracionProcesos" ToRole="USUARIO" />
+          <NavigationProperty Name="USUARIO2" Relationship="OficinaPostalModel.FK_OficinaPostalReglasGeneracionProcesosUsuarioModificacion" FromRole="ReglasGeneracionProcesos" ToRole="USUARIO" />
+        </EntityType>
+        <Association Name="FK_OficinaPostalReglasGeneracionProcesosUsuarioCreador">
+          <End Type="OficinaPostalModel.USUARIO" Role="USUARIO" Multiplicity="1" />
+          <End Type="OficinaPostalModel.ReglasGeneracionProcesos" Role="ReglasGeneracionProcesos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="id_usuario" />
+            </Principal>
+            <Dependent Role="ReglasGeneracionProcesos">
+              <PropertyRef Name="UsuarioCreador" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OficinaPostalReglasGeneracionProcesosUsuarioEjecucion">
+          <End Type="OficinaPostalModel.USUARIO" Role="USUARIO" Multiplicity="1" />
+          <End Type="OficinaPostalModel.ReglasGeneracionProcesos" Role="ReglasGeneracionProcesos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="id_usuario" />
+            </Principal>
+            <Dependent Role="ReglasGeneracionProcesos">
+              <PropertyRef Name="UsuarioEjecucion" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OficinaPostalReglasGeneracionProcesosUsuarioModificacion">
+          <End Type="OficinaPostalModel.USUARIO" Role="USUARIO" Multiplicity="0..1" />
+          <End Type="OficinaPostalModel.ReglasGeneracionProcesos" Role="ReglasGeneracionProcesos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USUARIO">
+              <PropertyRef Name="id_usuario" />
+            </Principal>
+            <Dependent Role="ReglasGeneracionProcesos">
+              <PropertyRef Name="UsuarioModificacion" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="StoreContainer" CdmEntityContainer="OficinaPostal" >
+          <EntitySetMapping Name="CodigosError">
+            <EntityTypeMapping TypeName="OficinaPostalModel.CodigosError">
+              <MappingFragment StoreEntitySet="CodigosError">
+                <ScalarProperty Name="TipoMensaje" ColumnName="TipoMensaje" />
+                <ScalarProperty Name="ErrorUsuario" ColumnName="ErrorUsuario" />
+                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+                <ScalarProperty Name="Error" ColumnName="Error" />
+                <ScalarProperty Name="CodigoError" ColumnName="CodigoError" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Enviado">
+            <EntityTypeMapping TypeName="OficinaPostalModel.Enviado">
+              <MappingFragment StoreEntitySet="Enviado">
+                <ScalarProperty Name="IdExterno" ColumnName="IdExterno" />
+                <ScalarProperty Name="DestinatarioCco" ColumnName="DestinatarioCco" />
+                <ScalarProperty Name="DestinatarioCc" ColumnName="DestinatarioCc" />
+                <ScalarProperty Name="TipoMensaje" ColumnName="TipoMensaje" />
+                <ScalarProperty Name="IdResponsable" ColumnName="IdResponsable" />
+                <ScalarProperty Name="IdPoliticaOrigen" ColumnName="IdPoliticaOrigen" />
+                <ScalarProperty Name="UrlDetalle" ColumnName="UrlDetalle" />
+                <ScalarProperty Name="TipoEvento" ColumnName="TipoEvento" />
+                <ScalarProperty Name="Originador" ColumnName="Originador" />
+                <ScalarProperty Name="IdOriginador" ColumnName="IdOriginador" />
+                <ScalarProperty Name="Intento" ColumnName="Intento" />
+                <ScalarProperty Name="Gid" ColumnName="Gid" />
+                <ScalarProperty Name="FechaRegistro" ColumnName="FechaRegistro" />
+                <ScalarProperty Name="NumeroRadicacion" ColumnName="NumeroRadicacion" />
+                <ScalarProperty Name="Anexos" ColumnName="Anexos" />
+                <ScalarProperty Name="Cuerpo" ColumnName="Cuerpo" />
+                <ScalarProperty Name="Asunto" ColumnName="Asunto" />
+                <ScalarProperty Name="Destino" ColumnName="Destino" />
+                <ScalarProperty Name="Remitente" ColumnName="Remitente" />
+                <ScalarProperty Name="IdTarea" ColumnName="IdTarea" />
+                <ScalarProperty Name="IdEnviado" ColumnName="IdEnviado" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Error">
+            <EntityTypeMapping TypeName="OficinaPostalModel.Error">
+              <MappingFragment StoreEntitySet="Error">
+                <ScalarProperty Name="IdExterno" ColumnName="IdExterno" />
+                <ScalarProperty Name="DestinatarioCco" ColumnName="DestinatarioCco" />
+                <ScalarProperty Name="DestinatarioCc" ColumnName="DestinatarioCc" />
+                <ScalarProperty Name="TipoMensaje" ColumnName="TipoMensaje" />
+                <ScalarProperty Name="IdResponsable" ColumnName="IdResponsable" />
+                <ScalarProperty Name="IdPoliticaOrigen" ColumnName="IdPoliticaOrigen" />
+                <ScalarProperty Name="UrlDetalle" ColumnName="UrlDetalle" />
+                <ScalarProperty Name="TipoEvento" ColumnName="TipoEvento" />
+                <ScalarProperty Name="Originador" ColumnName="Originador" />
+                <ScalarProperty Name="IdOriginador" ColumnName="IdOriginador" />
+                <ScalarProperty Name="Intento" ColumnName="Intento" />
+                <ScalarProperty Name="Gid" ColumnName="Gid" />
+                <ScalarProperty Name="FechaRegistro" ColumnName="FechaRegistro" />
+                <ScalarProperty Name="NumeroRadicacion" ColumnName="NumeroRadicacion" />
+                <ScalarProperty Name="Anexos" ColumnName="Anexos" />
+                <ScalarProperty Name="Cuerpo" ColumnName="Cuerpo" />
+                <ScalarProperty Name="Asunto" ColumnName="Asunto" />
+                <ScalarProperty Name="Destino" ColumnName="Destino" />
+                <ScalarProperty Name="Remitente" ColumnName="Remitente" />
+                <ScalarProperty Name="IdTarea" ColumnName="IdTarea" />
+                <ScalarProperty Name="IdError" ColumnName="IdError" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PorEnviar">
+            <EntityTypeMapping TypeName="OficinaPostalModel.PorEnviar">
+              <MappingFragment StoreEntitySet="PorEnviar">
+                <ScalarProperty Name="IdExterno" ColumnName="IdExterno" />
+                <ScalarProperty Name="DestinatarioCco" ColumnName="DestinatarioCco" />
+                <ScalarProperty Name="DestinatarioCc" ColumnName="DestinatarioCc" />
+                <ScalarProperty Name="TipoMensaje" ColumnName="TipoMensaje" />
+                <ScalarProperty Name="IdResponsable" ColumnName="IdResponsable" />
+                <ScalarProperty Name="IdPoliticaOrigen" ColumnName="IdPoliticaOrigen" />
+                <ScalarProperty Name="UrlDetalle" ColumnName="UrlDetalle" />
+                <ScalarProperty Name="TipoEvento" ColumnName="TipoEvento" />
+                <ScalarProperty Name="Originador" ColumnName="Originador" />
+                <ScalarProperty Name="IdOriginador" ColumnName="IdOriginador" />
+                <ScalarProperty Name="Intento" ColumnName="Intento" />
+                <ScalarProperty Name="Gid" ColumnName="Gid" />
+                <ScalarProperty Name="FechaRegistro" ColumnName="FechaRegistro" />
+                <ScalarProperty Name="NumeroRadicacion" ColumnName="NumeroRadicacion" />
+                <ScalarProperty Name="Anexos" ColumnName="Anexos" />
+                <ScalarProperty Name="Cuerpo" ColumnName="Cuerpo" />
+                <ScalarProperty Name="Asunto" ColumnName="Asunto" />
+                <ScalarProperty Name="Destino" ColumnName="Destino" />
+                <ScalarProperty Name="Remitente" ColumnName="Remitente" />
+                <ScalarProperty Name="IdTarea" ColumnName="IdTarea" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="PAMoverErrorToHistorico" FunctionName="Store.PAMoverErrorToHistorico" />
+          <FunctionImportMapping FunctionImportName="PAMoverEnviadoToHistorico" FunctionName="Store.PAMoverEnviadoToHistorico" />
+          <EntitySetMapping Name="LogEnviado">
+            <EntityTypeMapping TypeName="OficinaPostalModel.LogEnviado">
+              <MappingFragment StoreEntitySet="LogEnviado">
+                <ScalarProperty Name="IdExterno" ColumnName="IdExterno" />
+                <ScalarProperty Name="DestinatarioCco" ColumnName="DestinatarioCco" />
+                <ScalarProperty Name="DestinatarioCc" ColumnName="DestinatarioCc" />
+                <ScalarProperty Name="TipoMensaje" ColumnName="TipoMensaje" />
+                <ScalarProperty Name="IdResponsable" ColumnName="IdResponsable" />
+                <ScalarProperty Name="Reenvio" ColumnName="Reenvio" />
+                <ScalarProperty Name="Intento" ColumnName="Intento" />
+                <ScalarProperty Name="Gid" ColumnName="Gid" />
+                <ScalarProperty Name="IdEnviado" ColumnName="IdEnviado" />
+                <ScalarProperty Name="Destino" ColumnName="Destino" />
+                <ScalarProperty Name="FechaEnvio" ColumnName="FechaEnvio" />
+                <ScalarProperty Name="IdTarea" ColumnName="IdTarea" />
+                <ScalarProperty Name="IdLogEnviado" ColumnName="IdLogEnviado" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LogError">
+            <EntityTypeMapping TypeName="OficinaPostalModel.LogError">
+              <MappingFragment StoreEntitySet="LogError">
+                <ScalarProperty Name="IdExterno" ColumnName="IdExterno" />
+                <ScalarProperty Name="DestinatarioCco" ColumnName="DestinatarioCco" />
+                <ScalarProperty Name="DestinatarioCc" ColumnName="DestinatarioCc" />
+                <ScalarProperty Name="Intento" ColumnName="Intento" />
+                <ScalarProperty Name="Gid" ColumnName="Gid" />
+                <ScalarProperty Name="Error" ColumnName="Error" />
+                <ScalarProperty Name="Destino" ColumnName="Destino" />
+                <ScalarProperty Name="FechaEnvio" ColumnName="FechaEnvio" />
+                <ScalarProperty Name="CodigoError" ColumnName="CodigoError" />
+                <ScalarProperty Name="IdError" ColumnName="IdError" />
+                <ScalarProperty Name="IdLogError" ColumnName="IdLogError" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LogErrorEncabezado">
+            <EntityTypeMapping TypeName="OficinaPostalModel.LogErrorEncabezado">
+              <MappingFragment StoreEntitySet="LogErrorEncabezado">
+                <ScalarProperty Name="IdPoliticaOrigen" ColumnName="IdPoliticaOrigen" />
+                <ScalarProperty Name="UrlDetalle" ColumnName="UrlDetalle" />
+                <ScalarProperty Name="TipoEvento" ColumnName="TipoEvento" />
+                <ScalarProperty Name="Originador" ColumnName="Originador" />
+                <ScalarProperty Name="IdOriginador" ColumnName="IdOriginador" />
+                <ScalarProperty Name="Gid" ColumnName="Gid" />
+                <ScalarProperty Name="FechaEnvio" ColumnName="FechaEnvio" />
+                <ScalarProperty Name="Intento" ColumnName="Intento" />
+                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+                <ScalarProperty Name="CodigoError" ColumnName="CodigoError" />
+                <ScalarProperty Name="IdError" ColumnName="IdError" />
+                <ScalarProperty Name="IdLogError" ColumnName="IdLogError" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HistoricoEnviado">
+            <EntityTypeMapping TypeName="OficinaPostalModel.HistoricoEnviado">
+              <MappingFragment StoreEntitySet="HistoricoEnviado">
+                <ScalarProperty Name="IdExterno" ColumnName="IdExterno" />
+                <ScalarProperty Name="DestinatarioCco" ColumnName="DestinatarioCco" />
+                <ScalarProperty Name="DestinatarioCc" ColumnName="DestinatarioCc" />
+                <ScalarProperty Name="TipoMensaje" ColumnName="TipoMensaje" />
+                <ScalarProperty Name="IdEnviado" ColumnName="IdEnviado" />
+                <ScalarProperty Name="IdResponsable" ColumnName="IdResponsable" />
+                <ScalarProperty Name="IdPoliticaOrigen" ColumnName="IdPoliticaOrigen" />
+                <ScalarProperty Name="UrlDetalle" ColumnName="UrlDetalle" />
+                <ScalarProperty Name="TipoEvento" ColumnName="TipoEvento" />
+                <ScalarProperty Name="Originador" ColumnName="Originador" />
+                <ScalarProperty Name="IdOriginador" ColumnName="IdOriginador" />
+                <ScalarProperty Name="Intento" ColumnName="Intento" />
+                <ScalarProperty Name="Gid" ColumnName="Gid" />
+                <ScalarProperty Name="FechaRegistro" ColumnName="FechaRegistro" />
+                <ScalarProperty Name="NumeroRadicacion" ColumnName="NumeroRadicacion" />
+                <ScalarProperty Name="Anexos" ColumnName="Anexos" />
+                <ScalarProperty Name="Cuerpo" ColumnName="Cuerpo" />
+                <ScalarProperty Name="Asunto" ColumnName="Asunto" />
+                <ScalarProperty Name="Destino" ColumnName="Destino" />
+                <ScalarProperty Name="Remitente" ColumnName="Remitente" />
+                <ScalarProperty Name="IdTarea" ColumnName="IdTarea" />
+                <ScalarProperty Name="IdHistoricoEnviado" ColumnName="IdHistoricoEnviado" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HistoricoError">
+            <EntityTypeMapping TypeName="OficinaPostalModel.HistoricoError">
+              <MappingFragment StoreEntitySet="HistoricoError">
+                <ScalarProperty Name="IdExterno" ColumnName="IdExterno" />
+                <ScalarProperty Name="DestinatarioCco" ColumnName="DestinatarioCco" />
+                <ScalarProperty Name="DestinatarioCc" ColumnName="DestinatarioCc" />
+                <ScalarProperty Name="TipoMensaje" ColumnName="TipoMensaje" />
+                <ScalarProperty Name="IdError" ColumnName="IdError" />
+                <ScalarProperty Name="IdResponsable" ColumnName="IdResponsable" />
+                <ScalarProperty Name="IdPoliticaOrigen" ColumnName="IdPoliticaOrigen" />
+                <ScalarProperty Name="UrlDetalle" ColumnName="UrlDetalle" />
+                <ScalarProperty Name="TipoEvento" ColumnName="TipoEvento" />
+                <ScalarProperty Name="Originador" ColumnName="Originador" />
+                <ScalarProperty Name="IdOriginador" ColumnName="IdOriginador" />
+                <ScalarProperty Name="Intento" ColumnName="Intento" />
+                <ScalarProperty Name="Gid" ColumnName="Gid" />
+                <ScalarProperty Name="FechaRegistro" ColumnName="FechaRegistro" />
+                <ScalarProperty Name="NumeroRadicacion" ColumnName="NumeroRadicacion" />
+                <ScalarProperty Name="Anexos" ColumnName="Anexos" />
+                <ScalarProperty Name="Cuerpo" ColumnName="Cuerpo" />
+                <ScalarProperty Name="Asunto" ColumnName="Asunto" />
+                <ScalarProperty Name="Destino" ColumnName="Destino" />
+                <ScalarProperty Name="Remitente" ColumnName="Remitente" />
+                <ScalarProperty Name="IdTarea" ColumnName="IdTarea" />
+                <ScalarProperty Name="IdHistoricoError" ColumnName="IdHistoricoError" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HistoricoLogEnviado">
+            <EntityTypeMapping TypeName="OficinaPostalModel.HistoricoLogEnviado">
+              <MappingFragment StoreEntitySet="HistoricoLogEnviado">
+                <ScalarProperty Name="IdExterno" ColumnName="IdExterno" />
+                <ScalarProperty Name="DestinatarioCco" ColumnName="DestinatarioCco" />
+                <ScalarProperty Name="DestinatarioCc" ColumnName="DestinatarioCc" />
+                <ScalarProperty Name="TipoMensaje" ColumnName="TipoMensaje" />
+                <ScalarProperty Name="IdResponsable" ColumnName="IdResponsable" />
+                <ScalarProperty Name="Reenvio" ColumnName="Reenvio" />
+                <ScalarProperty Name="Intento" ColumnName="Intento" />
+                <ScalarProperty Name="Gid" ColumnName="Gid" />
+                <ScalarProperty Name="IdEnviado" ColumnName="IdEnviado" />
+                <ScalarProperty Name="Destino" ColumnName="Destino" />
+                <ScalarProperty Name="FechaEnvio" ColumnName="FechaEnvio" />
+                <ScalarProperty Name="IdTarea" ColumnName="IdTarea" />
+                <ScalarProperty Name="IdHistoricoEnviado" ColumnName="IdHistoricoEnviado" />
+                <ScalarProperty Name="IdHistoricoLogEnviado" ColumnName="IdHistoricoLogEnviado" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HistoricoLogError">
+            <EntityTypeMapping TypeName="OficinaPostalModel.HistoricoLogError">
+              <MappingFragment StoreEntitySet="HistoricoLogError">
+                <ScalarProperty Name="DestinatarioCco" ColumnName="DestinatarioCco" />
+                <ScalarProperty Name="DestinatarioCc" ColumnName="DestinatarioCc" />
+                <ScalarProperty Name="IdError" ColumnName="IdError" />
+                <ScalarProperty Name="Intento" ColumnName="Intento" />
+                <ScalarProperty Name="Gid" ColumnName="Gid" />
+                <ScalarProperty Name="Error" ColumnName="Error" />
+                <ScalarProperty Name="Destino" ColumnName="Destino" />
+                <ScalarProperty Name="FechaEnvio" ColumnName="FechaEnvio" />
+                <ScalarProperty Name="CodigoError" ColumnName="CodigoError" />
+                <ScalarProperty Name="IdHistoricoError" ColumnName="IdHistoricoError" />
+                <ScalarProperty Name="IdHistoricoLogError" ColumnName="IdHistoricoLogError" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HistoricoLogErrorEncabezado">
+            <EntityTypeMapping TypeName="OficinaPostalModel.HistoricoLogErrorEncabezado">
+              <MappingFragment StoreEntitySet="HistoricoLogErrorEncabezado">
+                <ScalarProperty Name="IdError" ColumnName="IdError" />
+                <ScalarProperty Name="IdLogError" ColumnName="IdLogError" />
+                <ScalarProperty Name="IdPoliticaOrigen" ColumnName="IdPoliticaOrigen" />
+                <ScalarProperty Name="UrlDetalle" ColumnName="UrlDetalle" />
+                <ScalarProperty Name="TipoEvento" ColumnName="TipoEvento" />
+                <ScalarProperty Name="Originador" ColumnName="Originador" />
+                <ScalarProperty Name="IdOriginador" ColumnName="IdOriginador" />
+                <ScalarProperty Name="Gid" ColumnName="Gid" />
+                <ScalarProperty Name="FechaEnvio" ColumnName="FechaEnvio" />
+                <ScalarProperty Name="Intento" ColumnName="Intento" />
+                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+                <ScalarProperty Name="CodigoError" ColumnName="CodigoError" />
+                <ScalarProperty Name="IdHistoricoError" ColumnName="IdHistoricoError" />
+                <ScalarProperty Name="IdHistoricoLogError" ColumnName="IdHistoricoLogError" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="PAGetContadoresTabla" FunctionName="Store.PAGetContadoresTabla">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OficinaPostalModel.PAGetContadoresTabla_Result">
+                <ScalarProperty Name="RegistrosHistoricoEnviado" ColumnName="RegistrosHistoricoEnviado" />
+                <ScalarProperty Name="RegistrosHistoricoError" ColumnName="RegistrosHistoricoError" />
+                <ScalarProperty Name="RegistrosError" ColumnName="RegistrosError" />
+                <ScalarProperty Name="RegistroEnviado" ColumnName="RegistroEnviado" />
+                <ScalarProperty Name="RegistroPorEnviar" ColumnName="RegistroPorEnviar" />
+                <ScalarProperty Name="RegistroProcesoEnvioEmails" ColumnName="RegistroProcesoEnvioEmails" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="CorreoPermitidoAmbientePrueba">
+            <EntityTypeMapping TypeName="OficinaPostalModel.CorreoPermitidoAmbientePrueba">
+              <MappingFragment StoreEntitySet="CorreoPermitidoAmbientePrueba">
+                <ScalarProperty Name="FechaModificacion" ColumnName="FechaModificacion" />
+                <ScalarProperty Name="IdUsuarioModificador" ColumnName="IdUsuarioModificador" />
+                <ScalarProperty Name="FechaCreador" ColumnName="FechaCreador" />
+                <ScalarProperty Name="IdUsuarioCreador" ColumnName="IdUsuarioCreador" />
+                <ScalarProperty Name="Correo" ColumnName="Correo" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="POLITICA_ENVIO_MAILS2">
+            <EntityTypeMapping TypeName="OficinaPostalModel.POLITICA_ENVIO_MAILS2">
+              <MappingFragment StoreEntitySet="POLITICA_ENVIO_MAILS">
+                <ScalarProperty Name="NotificacionElectronica" ColumnName="NotificacionElectronica" />
+                <ScalarProperty Name="MinimoAnexos" ColumnName="MinimoAnexos" />
+                <ScalarProperty Name="SqlOrigen" ColumnName="SqlOrigen" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="TipoMensaje" ColumnName="TipoMensaje" />
+                <ScalarProperty Name="IdProceso" ColumnName="IdProceso" />
+                <ScalarProperty Name="fec_estacion_ult_modif" ColumnName="fec_estacion_ult_modif" />
+                <ScalarProperty Name="ip_estacion_ult_modif" ColumnName="ip_estacion_ult_modif" />
+                <ScalarProperty Name="id_usuario_ult_modif" ColumnName="id_usuario_ult_modif" />
+                <ScalarProperty Name="estado_regla" ColumnName="estado_regla" />
+                <ScalarProperty Name="prioridad_ejecucion" ColumnName="prioridad_ejecucion" />
+                <ScalarProperty Name="registro_por_iteracion" ColumnName="registro_por_iteracion" />
+                <ScalarProperty Name="sql_envio_mail" ColumnName="sql_envio_mail" />
+                <ScalarProperty Name="asunto_mail" ColumnName="asunto_mail" />
+                <ScalarProperty Name="email_origen" ColumnName="email_origen" />
+                <ScalarProperty Name="url_plantilla_email" ColumnName="url_plantilla_email" />
+                <ScalarProperty Name="id_usuario_qd" ColumnName="id_usuario_qd" />
+                <ScalarProperty Name="id_query_origen" ColumnName="id_query_origen" />
+                <ScalarProperty Name="tipo_qd_origen" ColumnName="tipo_qd_origen" />
+                <ScalarProperty Name="id_querytipificado_origen" ColumnName="id_querytipificado_origen" />
+                <ScalarProperty Name="id_politica" ColumnName="id_politica" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Notificacion">
+            <EntityTypeMapping TypeName="OficinaPostalModel.Notificacion">
+              <MappingFragment StoreEntitySet="Notificacion">
+                <ScalarProperty Name="SistemaNotificador" ColumnName="SistemaNotificador" />
+                <ScalarProperty Name="Destinatario" ColumnName="Destinatario" />
+                <ScalarProperty Name="RowsKO" ColumnName="RowsKO" />
+                <ScalarProperty Name="RowsOK" ColumnName="RowsOK" />
+                <ScalarProperty Name="RowsFound" ColumnName="RowsFound" />
+                <ScalarProperty Name="GidCorreo" ColumnName="GidCorreo" />
+                <ScalarProperty Name="NumRadicacion" ColumnName="NumRadicacion" />
+                <ScalarProperty Name="NombreAnexoNotificacion" ColumnName="NombreAnexoNotificacion" />
+                <ScalarProperty Name="IdArchivoNotificacion" ColumnName="IdArchivoNotificacion" />
+                <ScalarProperty Name="DescEstadoNotificador" ColumnName="DescEstadoNotificador" />
+                <ScalarProperty Name="EstadoNotificador" ColumnName="EstadoNotificador" />
+                <ScalarProperty Name="FechaEstado" ColumnName="FechaEstado" />
+                <ScalarProperty Name="Estado" ColumnName="Estado" />
+                <ScalarProperty Name="FechaIntento" ColumnName="FechaIntento" />
+                <ScalarProperty Name="Intentos" ColumnName="Intentos" />
+                <ScalarProperty Name="IdDocumentoAnexo" ColumnName="IdDocumentoAnexo" />
+                <ScalarProperty Name="IdAnexo" ColumnName="IdAnexo" />
+                <ScalarProperty Name="IdCorreo" ColumnName="IdCorreo" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="NotificacionFisica">
+            <EntityTypeMapping TypeName="OficinaPostalModel.NotificacionFisica">
+              <MappingFragment StoreEntitySet="NotificacionFisica">
+                <ScalarProperty Name="CiudadDestino" ColumnName="CiudadDestino" />
+                <ScalarProperty Name="CiudadOrigen" ColumnName="CiudadOrigen" />
+                <ScalarProperty Name="Gid" ColumnName="Gid" />
+                <ScalarProperty Name="DescEstadoNotificadorDescarga" ColumnName="DescEstadoNotificadorDescarga" />
+                <ScalarProperty Name="CodigoRespuestaDescarga" ColumnName="CodigoRespuestaDescarga" />
+                <ScalarProperty Name="FechaIntentoDescarga" ColumnName="FechaIntentoDescarga" />
+                <ScalarProperty Name="IntentosDescarga" ColumnName="IntentosDescarga" />
+                <ScalarProperty Name="FechaEstadoDescarga" ColumnName="FechaEstadoDescarga" />
+                <ScalarProperty Name="EstadoDescarga" ColumnName="EstadoDescarga" />
+                <ScalarProperty Name="RutaFTP" ColumnName="RutaFTP" />
+                <ScalarProperty Name="NombreEstadoCarga" ColumnName="NombreEstadoCarga" />
+                <ScalarProperty Name="NombreArchivoGenerado" ColumnName="NombreArchivoGenerado" />
+                <ScalarProperty Name="CodigoEstadoCarga" ColumnName="CodigoEstadoCarga" />
+                <ScalarProperty Name="FechaIntento" ColumnName="FechaIntento" />
+                <ScalarProperty Name="Intentos" ColumnName="Intentos" />
+                <ScalarProperty Name="FechaEstado" ColumnName="FechaEstado" />
+                <ScalarProperty Name="Estado" ColumnName="Estado" />
+                <ScalarProperty Name="GidDocumentoAnexo" ColumnName="GidDocumentoAnexo" />
+                <ScalarProperty Name="IdDocumentoAnexo" ColumnName="IdDocumentoAnexo" />
+                <ScalarProperty Name="DescEstadoNotificador" ColumnName="DescEstadoNotificador" />
+                <ScalarProperty Name="CodigoRespuesta" ColumnName="CodigoRespuesta" />
+                <ScalarProperty Name="IdentificadorTransaccion" ColumnName="IdentificadorTransaccion" />
+                <ScalarProperty Name="FechaRegistro" ColumnName="FechaRegistro" />
+                <ScalarProperty Name="NroGuia" ColumnName="NroGuia" />
+                <ScalarProperty Name="IdDocumentoDestino" ColumnName="IdDocumentoDestino" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="NotificacionSeguimiento">
+            <EntityTypeMapping TypeName="OficinaPostalModel.NotificacionSeguimiento">
+              <MappingFragment StoreEntitySet="NotificacionSeguimiento">
+                <ScalarProperty Name="FechaRegistro" ColumnName="FechaRegistro" />
+                <ScalarProperty Name="IdDocumentoAnexo" ColumnName="IdDocumentoAnexo" />
+                <ScalarProperty Name="FechaEstado" ColumnName="FechaEstado" />
+                <ScalarProperty Name="CodigoSubEstado" ColumnName="CodigoSubEstado" />
+                <ScalarProperty Name="CodigoEstado" ColumnName="CodigoEstado" />
+                <ScalarProperty Name="IdNotificacion" ColumnName="IdNotificacion" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="NotificacionTipoMensaje">
+            <EntityTypeMapping TypeName="OficinaPostalModel.NotificacionTipoMensaje">
+              <MappingFragment StoreEntitySet="NotificacionTipoMensaje">
+                <ScalarProperty Name="FechaModificacion" ColumnName="FechaModificacion" />
+                <ScalarProperty Name="UsuarioModificacion" ColumnName="UsuarioModificacion" />
+                <ScalarProperty Name="EtapaEstado" ColumnName="EtapaEstado" />
+                <ScalarProperty Name="DescargaNotificacion" ColumnName="DescargaNotificacion" />
+                <ScalarProperty Name="Mensaje" ColumnName="Mensaje" />
+                <ScalarProperty Name="TipoMensaje" ColumnName="TipoMensaje" />
+                <ScalarProperty Name="CodigoMensaje" ColumnName="CodigoMensaje" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="NotificacionSIPOSTEventos">
+            <EntityTypeMapping TypeName="OficinaPostalModel.NotificacionSIPOSTEventos">
+              <MappingFragment StoreEntitySet="NotificacionSIPOSTEventos">
+                <ScalarProperty Name="Liquidacion" ColumnName="Liquidacion" />
+                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+                <ScalarProperty Name="CodigoSector" ColumnName="CodigoSector" />
+                <ScalarProperty Name="SectorDistribucion" ColumnName="SectorDistribucion" />
+                <ScalarProperty Name="CentroOperativo" ColumnName="CentroOperativo" />
+                <ScalarProperty Name="Ciudad" ColumnName="Ciudad" />
+                <ScalarProperty Name="Fecha" ColumnName="Fecha" />
+                <ScalarProperty Name="IdObjeto" ColumnName="IdObjeto" />
+                <ScalarProperty Name="Objeto" ColumnName="Objeto" />
+                <ScalarProperty Name="TipoEvento" ColumnName="TipoEvento" />
+                <ScalarProperty Name="IdNotificacionSIPOST" ColumnName="IdNotificacionSIPOST" />
+                <ScalarProperty Name="Gid" ColumnName="Gid" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="POP_PROCESADOHistorico">
+            <EntityTypeMapping TypeName="OficinaPostalModel.POP_PROCESADOHistorico">
+              <MappingFragment StoreEntitySet="POP_PROCESADOHistorico">
+                <ScalarProperty Name="FechaMovimientoHistorico" ColumnName="FechaMovimientoHistorico" />
+                <ScalarProperty Name="FechaSolicitud" ColumnName="FechaSolicitud" />
+                <ScalarProperty Name="IdSolicitud" ColumnName="IdSolicitud" />
+                <ScalarProperty Name="VinculosExternos" ColumnName="VinculosExternos" />
+                <ScalarProperty Name="FechaCorreo" ColumnName="FechaCorreo" />
+                <ScalarProperty Name="LugarEvento" ColumnName="LugarEvento" />
+                <ScalarProperty Name="TimeZone" ColumnName="TimeZone" />
+                <ScalarProperty Name="FFEvento" ColumnName="FFEvento" />
+                <ScalarProperty Name="FIEvento" ColumnName="FIEvento" />
+                <ScalarProperty Name="FechaEstadoPDF" ColumnName="FechaEstadoPDF" />
+                <ScalarProperty Name="GIdCorreoProcesado" ColumnName="GIdCorreoProcesado" />
+                <ScalarProperty Name="IdAnexo" ColumnName="IdAnexo" />
+                <ScalarProperty Name="DesEstadoPDF" ColumnName="DesEstadoPDF" />
+                <ScalarProperty Name="IntentoPDF" ColumnName="IntentoPDF" />
+                <ScalarProperty Name="EstadoPDF" ColumnName="EstadoPDF" />
+                <ScalarProperty Name="IdCorreoInterno" ColumnName="IdCorreoInterno" />
+                <ScalarProperty Name="Intento" ColumnName="Intento" />
+                <ScalarProperty Name="ContenidoMensaje" ColumnName="ContenidoMensaje" />
+                <ScalarProperty Name="GidOficinaPostal" ColumnName="GidOficinaPostal" />
+                <ScalarProperty Name="NombreRemitente" ColumnName="NombreRemitente" />
+                <ScalarProperty Name="Mensaje" ColumnName="Mensaje" />
+                <ScalarProperty Name="IdObjeto" ColumnName="IdObjeto" />
+                <ScalarProperty Name="FechaActualizacion" ColumnName="FechaActualizacion" />
+                <ScalarProperty Name="NumeroRadicado" ColumnName="NumeroRadicado" />
+                <ScalarProperty Name="FechaProceso" ColumnName="FechaProceso" />
+                <ScalarProperty Name="EstadoProceso" ColumnName="EstadoProceso" />
+                <ScalarProperty Name="NombreAdjuntos" ColumnName="NombreAdjuntos" />
+                <ScalarProperty Name="NumeroAdjuntos" ColumnName="NumeroAdjuntos" />
+                <ScalarProperty Name="Fecha" ColumnName="Fecha" />
+                <ScalarProperty Name="Asunto" ColumnName="Asunto" />
+                <ScalarProperty Name="Destino" ColumnName="Destino" />
+                <ScalarProperty Name="Remitente" ColumnName="Remitente" />
+                <ScalarProperty Name="Usuario" ColumnName="Usuario" />
+                <ScalarProperty Name="Servidor" ColumnName="Servidor" />
+                <ScalarProperty Name="Id_CorreoProcesado" ColumnName="Id_CorreoProcesado" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="NotificacionFisicaTipoMensaje">
+            <EntityTypeMapping TypeName="OficinaPostalModel.NotificacionFisicaTipoMensaje">
+              <MappingFragment StoreEntitySet="NotificacionFisicaTipoMensaje">
+                <ScalarProperty Name="FechaModificacion" ColumnName="FechaModificacion" />
+                <ScalarProperty Name="UsuarioModificacion" ColumnName="UsuarioModificacion" />
+                <ScalarProperty Name="EstadoDistribucion" ColumnName="EstadoDistribucion" />
+                <ScalarProperty Name="Mensaje" ColumnName="Mensaje" />
+                <ScalarProperty Name="TipoMensaje" ColumnName="TipoMensaje" />
+                <ScalarProperty Name="CodigoMensaje" ColumnName="CodigoMensaje" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="USUARIO">
+            <EntityTypeMapping TypeName="OficinaPostalModel.USUARIO">
+              <MappingFragment StoreEntitySet="USUARIO">
+                <ScalarProperty Name="IdTipoPersona" ColumnName="IdTipoPersona" />
+                <ScalarProperty Name="NotificaCorreo" ColumnName="NotificaCorreo" />
+                <ScalarProperty Name="BarrioVeredaCorregimiento" ColumnName="BarrioVeredaCorregimiento" />
+                <ScalarProperty Name="IdGrupoPoblacional" ColumnName="IdGrupoPoblacional" />
+                <ScalarProperty Name="TmsAuditoria" ColumnName="TmsAuditoria" />
+                <ScalarProperty Name="TipoAcceso" ColumnName="TipoAcceso" />
+                <ScalarProperty Name="Token" ColumnName="Token" />
+                <ScalarProperty Name="FechaToken" ColumnName="FechaToken" />
+                <ScalarProperty Name="FechaCreacion" ColumnName="FechaCreacion" />
+                <ScalarProperty Name="FechaUltimoAcceso" ColumnName="FechaUltimoAcceso" />
+                <ScalarProperty Name="FechaModificacion" ColumnName="FechaModificacion" />
+                <ScalarProperty Name="UsuarioRemplazo" ColumnName="UsuarioRemplazo" />
+                <ScalarProperty Name="Nacionalidad" ColumnName="Nacionalidad" />
+                <ScalarProperty Name="FechaNacimiento" ColumnName="FechaNacimiento" />
+                <ScalarProperty Name="NombreEmpresa" ColumnName="NombreEmpresa" />
+                <ScalarProperty Name="NivelEstudios" ColumnName="NivelEstudios" />
+                <ScalarProperty Name="segunda_clave" ColumnName="segunda_clave" />
+                <ScalarProperty Name="firma_mecanica" ColumnName="firma_mecanica" />
+                <ScalarProperty Name="Celular" ColumnName="Celular" />
+                <ScalarProperty Name="id_division" ColumnName="id_division" />
+                <ScalarProperty Name="OrigenRegistro" ColumnName="OrigenRegistro" />
+                <ScalarProperty Name="SegundoApellido" ColumnName="SegundoApellido" />
+                <ScalarProperty Name="PrimerApellido" ColumnName="PrimerApellido" />
+                <ScalarProperty Name="SegundoNombre" ColumnName="SegundoNombre" />
+                <ScalarProperty Name="PrimerNombre" ColumnName="PrimerNombre" />
+                <ScalarProperty Name="IdLocalizacionExpDoc" ColumnName="IdLocalizacionExpDoc" />
+                <ScalarProperty Name="identificacion" ColumnName="identificacion" />
+                <ScalarProperty Name="TipoIdentificacion" ColumnName="TipoIdentificacion" />
+                <ScalarProperty Name="TipoVinculacion" ColumnName="TipoVinculacion" />
+                <ScalarProperty Name="Profesion" ColumnName="Profesion" />
+                <ScalarProperty Name="Genero" ColumnName="Genero" />
+                <ScalarProperty Name="TipoImagenFirma" ColumnName="TipoImagenFirma" />
+                <ScalarProperty Name="ImagenFirma" ColumnName="ImagenFirma" />
+                <ScalarProperty Name="NumIntentosClave" ColumnName="NumIntentosClave" />
+                <ScalarProperty Name="PalabraClave" ColumnName="PalabraClave" />
+                <ScalarProperty Name="bloqueado" ColumnName="bloqueado" />
+                <ScalarProperty Name="acceso_tms" ColumnName="acceso_tms" />
+                <ScalarProperty Name="finalizacion_regAuto" ColumnName="finalizacion_regAuto" />
+                <ScalarProperty Name="claveInicial_regAuto" ColumnName="claveInicial_regAuto" />
+                <ScalarProperty Name="EXCLUIR_CARGUEESTRUC" ColumnName="EXCLUIR_CARGUEESTRUC" />
+                <ScalarProperty Name="DISPONIBLE" ColumnName="DISPONIBLE" />
+                <ScalarProperty Name="fecha_cambioclave" ColumnName="fecha_cambioclave" />
+                <ScalarProperty Name="idDoc_pki_firmado" ColumnName="idDoc_pki_firmado" />
+                <ScalarProperty Name="actualizacion_pki" ColumnName="actualizacion_pki" />
+                <ScalarProperty Name="color_usuario" ColumnName="color_usuario" />
+                <ScalarProperty Name="directorio_activo" ColumnName="directorio_activo" />
+                <ScalarProperty Name="activo" ColumnName="activo" />
+                <ScalarProperty Name="id_centro_costo" ColumnName="id_centro_costo" />
+                <ScalarProperty Name="nivel_autoridad_inmediato" ColumnName="nivel_autoridad_inmediato" />
+                <ScalarProperty Name="ubicacion" ColumnName="ubicacion" />
+                <ScalarProperty Name="id_cargo" ColumnName="id_cargo" />
+                <ScalarProperty Name="localizacion" ColumnName="localizacion" />
+                <ScalarProperty Name="aplicacion_defecto" ColumnName="aplicacion_defecto" />
+                <ScalarProperty Name="ntlogin" ColumnName="ntlogin" />
+                <ScalarProperty Name="prioridad" ColumnName="prioridad" />
+                <ScalarProperty Name="id_cliente" ColumnName="id_cliente" />
+                <ScalarProperty Name="clase_usuario" ColumnName="clase_usuario" />
+                <ScalarProperty Name="id_depto" ColumnName="id_depto" />
+                <ScalarProperty Name="clave" ColumnName="clave" />
+                <ScalarProperty Name="e_mail" ColumnName="e_mail" />
+                <ScalarProperty Name="extension" ColumnName="extension" />
+                <ScalarProperty Name="telefono" ColumnName="telefono" />
+                <ScalarProperty Name="nombre" ColumnName="nombre" />
+                <ScalarProperty Name="id_usuario" ColumnName="id_usuario" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MarcacionReglasGeneracionProcesos">
+            <EntityTypeMapping TypeName="OficinaPostalModel.MarcacionReglasGeneracionProcesos">
+              <MappingFragment StoreEntitySet="MarcacionReglasGeneracionProcesos">
+                <ScalarProperty Name="IdSolicitud" ColumnName="IdSolicitud" />
+                <ScalarProperty Name="FechaRegistro" ColumnName="FechaRegistro" />
+                <ScalarProperty Name="IdComponente" ColumnName="IdComponente" />
+                <ScalarProperty Name="IdSubCategoria" ColumnName="IdSubCategoria" />
+                <ScalarProperty Name="IdCategoria" ColumnName="IdCategoria" />
+                <ScalarProperty Name="IdPlataforma" ColumnName="IdPlataforma" />
+                <ScalarProperty Name="IdTipoSolicitud" ColumnName="IdTipoSolicitud" />
+                <ScalarProperty Name="IdPopProcesado" ColumnName="IdPopProcesado" />
+                <ScalarProperty Name="IdRegla" ColumnName="IdRegla" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ORIGEN2">
+            <EntityTypeMapping TypeName="OficinaPostalModel.ORIGEN2">
+              <MappingFragment StoreEntitySet="ORIGEN">
+                <ScalarProperty Name="CodigoCanalCliente" ColumnName="CodigoCanalCliente" />
+                <ScalarProperty Name="tipo_origen" ColumnName="tipo_origen" />
+                <ScalarProperty Name="activo" ColumnName="activo" />
+                <ScalarProperty Name="modulo" ColumnName="modulo" />
+                <ScalarProperty Name="nom_origen" ColumnName="nom_origen" />
+                <ScalarProperty Name="id_origen" ColumnName="id_origen" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ReglasGeneracionProcesos">
+            <EntityTypeMapping TypeName="OficinaPostalModel.ReglasGeneracionProcesos">
+              <MappingFragment StoreEntitySet="ReglasGeneracionProcesos">
+                <ScalarProperty Name="Tipo" ColumnName="Tipo" />
+                <ScalarProperty Name="IdOrigen" ColumnName="IdOrigen" />
+                <ScalarProperty Name="FechaInicioEjecucion" ColumnName="FechaInicioEjecucion" />
+                <ScalarProperty Name="UsuarioEjecucion" ColumnName="UsuarioEjecucion" />
+                <ScalarProperty Name="Activo" ColumnName="Activo" />
+                <ScalarProperty Name="FechaModificacion" ColumnName="FechaModificacion" />
+                <ScalarProperty Name="UsuarioModificacion" ColumnName="UsuarioModificacion" />
+                <ScalarProperty Name="FechaCreacion" ColumnName="FechaCreacion" />
+                <ScalarProperty Name="UsuarioCreador" ColumnName="UsuarioCreador" />
+                <ScalarProperty Name="GID" ColumnName="GID" />
+                <ScalarProperty Name="Orden" ColumnName="Orden" />
+                <ScalarProperty Name="InfoProceso" ColumnName="InfoProceso" />
+                <ScalarProperty Name="Condiciones" ColumnName="Condiciones" />
+                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+</Mapping></edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

@@ -1,0 +1,2781 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="BPMNProcessTMSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="BPMNCollaboration">
+          <Key>
+            <PropertyRef Name="CollaborationId" />
+          </Key>
+          <Property Name="CollaborationId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="30" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+          <Property Name="IdProceso" Type="int" />
+        </EntityType>
+        <EntityType Name="BPMNDataObject">
+          <Key>
+            <PropertyRef Name="DataObjectId" />
+          </Key>
+          <Property Name="DataObjectId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="30" />
+          <Property Name="DataObjectRef" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+          <Property Name="IdTipoDoc" Type="int" />
+        </EntityType>
+        <EntityType Name="BPMNDefinitions">
+          <Key>
+            <PropertyRef Name="DefinitionId" />
+          </Key>
+          <Property Name="DefinitionId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Id" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Exporter" Type="varchar" MaxLength="200" />
+          <Property Name="ExporterVersion" Type="varchar" MaxLength="10" />
+          <Property Name="CollaborationId" Type="int" />
+        </EntityType>
+        <EntityType Name="BPMNEvent">
+          <Key>
+            <PropertyRef Name="EventId" />
+          </Key>
+          <Property Name="EventId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" />
+          <Property Name="Event" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="Type" Type="varchar" MaxLength="30" />
+          <Property Name="TypeId" Type="varchar" MaxLength="50" />
+          <Property Name="ProcessId" Type="int" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+          <Property Name="IdTipoSol" Type="numeric" Precision="4" Scale="0" />
+          <Property Name="SubProcessId" Type="int" />
+          <Property Name="IdTipoDoc" Type="int" />
+        </EntityType>
+        <EntityType Name="BPMNEventAssociation">
+          <Key>
+            <PropertyRef Name="EventId" />
+            <PropertyRef Name="TextAnnotationId" />
+          </Key>
+          <Property Name="EventAssociationId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EventId" Type="int" Nullable="false" />
+          <Property Name="TextAnnotationId" Type="int" Nullable="false" />
+          <Property Name="Id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="SourceRef" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="TargetRef" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BPMNEventDataObject">
+          <Key>
+            <PropertyRef Name="EventId" />
+            <PropertyRef Name="DataObjectId" />
+          </Key>
+          <Property Name="EventDataObjectId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EventId" Type="int" Nullable="false" />
+          <Property Name="DataObjectId" Type="int" Nullable="false" />
+          <Property Name="SourceRef" Type="varchar" MaxLength="50" />
+          <Property Name="TargetRef" Type="varchar" MaxLength="50" />
+          <Property Name="DataInputAssociationId" Type="varchar" MaxLength="50" />
+          <Property Name="DataOutputAssociationId" Type="varchar" MaxLength="50" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BPMNFlowNode">
+          <Key>
+            <PropertyRef Name="FlowNodeRefId" />
+          </Key>
+          <Property Name="FlowNodeRefId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="LaneId" Type="int" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BPMNGateway">
+          <Key>
+            <PropertyRef Name="GatewayId" />
+          </Key>
+          <Property Name="GatewayId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" />
+          <Property Name="Type" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="Direction" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="DefaultFlow" Type="varchar" MaxLength="50" />
+          <Property Name="ProcessId" Type="int" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+          <Property Name="SubProcessId" Type="int" />
+        </EntityType>
+        <EntityType Name="BPMNIncomingEvent">
+          <Key>
+            <PropertyRef Name="IncomingTaskId" />
+          </Key>
+          <Property Name="IncomingTaskId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EventId" Type="int" Nullable="false" />
+          <Property Name="Incoming" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BPMNIncomingGateway">
+          <Key>
+            <PropertyRef Name="IncomingGatewayId" />
+          </Key>
+          <Property Name="IncomingGatewayId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="GatewayId" Type="int" Nullable="false" />
+          <Property Name="Incoming" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BPMNIncomingTask">
+          <Key>
+            <PropertyRef Name="IncomingTaskId" />
+          </Key>
+          <Property Name="IncomingTaskId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TaskId" Type="int" Nullable="false" />
+          <Property Name="Incoming" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BPMNLane">
+          <Key>
+            <PropertyRef Name="LaneId" />
+          </Key>
+          <Property Name="LaneId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="LaneSetId" Type="int" Nullable="false" />
+          <Property Name="LaneParentId" Type="int" />
+          <Property Name="ChildLaneSet" Type="bit" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+          <Property Name="IdCargo" Type="numeric" Precision="9" Scale="0" />
+          <Property Name="IdRol" Type="numeric" Precision="4" Scale="0" />
+        </EntityType>
+        <EntityType Name="BPMNLaneSet">
+          <Key>
+            <PropertyRef Name="LaneSetId" />
+          </Key>
+          <Property Name="LaneSetId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ProcessId" Type="int" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BPMNMessageFlow">
+          <Key>
+            <PropertyRef Name="MessageFlowId" />
+          </Key>
+          <Property Name="MessageFlowId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="SourceRef" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="TargetRef" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="CollaborationId" Type="int" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BPMNModel">
+          <Key>
+            <PropertyRef Name="ModelId" />
+          </Key>
+          <Property Name="ModelId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="GID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="FileName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="XMLFile" Type="varchar(max)" Nullable="false" />
+          <Property Name="Date" Type="datetime" Nullable="false" />
+          <Property Name="Active" Type="bit" Nullable="false" />
+          <Property Name="Version" Type="int" Nullable="false" />
+          <Property Name="DefinitionId" Type="int" />
+          <Property Name="IdProceso" Type="int" />
+          <Property Name="Procesado" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BPMNOutgoingEvent">
+          <Key>
+            <PropertyRef Name="OutgoingEventId" />
+          </Key>
+          <Property Name="OutgoingEventId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EventId" Type="int" Nullable="false" />
+          <Property Name="Outgoing" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BPMNOutgoingGateway">
+          <Key>
+            <PropertyRef Name="OutgoingGatewayId" />
+          </Key>
+          <Property Name="OutgoingGatewayId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="GatewayId" Type="int" Nullable="false" />
+          <Property Name="Outgoing" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BPMNOutgoingTask">
+          <Key>
+            <PropertyRef Name="OutgoingTaskId" />
+          </Key>
+          <Property Name="OutgoingTaskId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TaskId" Type="int" Nullable="false" />
+          <Property Name="Outgoing" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BPMNParticipant">
+          <Key>
+            <PropertyRef Name="ParticipantId" />
+          </Key>
+          <Property Name="ParticipantId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="30" />
+          <Property Name="ProcessRef" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CollaborationId" Type="int" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+          <Property Name="IdProceso" Type="int" />
+        </EntityType>
+        <EntityType Name="BPMNProcess">
+          <Key>
+            <PropertyRef Name="ProcessId" />
+          </Key>
+          <Property Name="ProcessId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="DefinitionId" Type="int" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+          <Property Name="IdProceso" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BPMNSequenceFlow">
+          <Key>
+            <PropertyRef Name="SequenceId" />
+          </Key>
+          <Property Name="SequenceId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="SourceRef" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="TargetRef" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ConditionId" Type="varchar" MaxLength="50" />
+          <Property Name="ConditionExpression" Type="varchar" MaxLength="1000" />
+          <Property Name="ProcessId" Type="int" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+          <Property Name="SourceRefType" Type="varchar" MaxLength="15" Nullable="false" />
+          <Property Name="TargetRefType" Type="varchar" MaxLength="15" Nullable="false" />
+          <Property Name="SubProcessId" Type="int" />
+          <Property Name="IdCausa" Type="numeric" Precision="5" Scale="0" />
+          <Property Name="IdCausaTipificacion" Type="numeric" Precision="5" Scale="0" />
+        </EntityType>
+        <EntityType Name="BPMNSubProcess">
+          <Key>
+            <PropertyRef Name="SubProcessId" />
+          </Key>
+          <Property Name="SubProcessId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" />
+          <Property Name="SubProcessParentId" Type="int" />
+          <Property Name="ProcessId" Type="int" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+          <Property Name="IdTipoSol" Type="numeric" Precision="4" Scale="0" />
+        </EntityType>
+        <EntityType Name="BPMNTask">
+          <Key>
+            <PropertyRef Name="TaskId" />
+          </Key>
+          <Property Name="TaskId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" />
+          <Property Name="Type" Type="varchar" MaxLength="20" />
+          <Property Name="StandardLoopCharacteristics" Type="bit" Nullable="false" />
+          <Property Name="MultiInstanceLoopCharacteristics" Type="bit" Nullable="false" />
+          <Property Name="IsSequential" Type="bit" Nullable="false" />
+          <Property Name="DefaultFlow" Type="varchar" MaxLength="50" />
+          <Property Name="ProcessId" Type="int" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+          <Property Name="IdTipoSol" Type="numeric" Precision="4" Scale="0" />
+          <Property Name="SubProcessId" Type="int" />
+        </EntityType>
+        <EntityType Name="BPMNTaskAssociation">
+          <Key>
+            <PropertyRef Name="TaskId" />
+            <PropertyRef Name="TextAnnotationId" />
+          </Key>
+          <Property Name="TaskAssociationId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TaskId" Type="int" Nullable="false" />
+          <Property Name="TextAnnotationId" Type="int" Nullable="false" />
+          <Property Name="Id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="SourceRef" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="TargetRef" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BPMNTaskDataObject">
+          <Key>
+            <PropertyRef Name="TaskId" />
+            <PropertyRef Name="DataObjectId" />
+          </Key>
+          <Property Name="TaskDataObjectId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TaskId" Type="int" Nullable="false" />
+          <Property Name="DataObjectId" Type="int" Nullable="false" />
+          <Property Name="SourceRef" Type="varchar" MaxLength="50" />
+          <Property Name="TargetRef" Type="varchar" MaxLength="50" />
+          <Property Name="DataInputAssociationId" Type="varchar" MaxLength="50" />
+          <Property Name="DataOutputAssociationId" Type="varchar" MaxLength="50" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BPMNTextAnnotation">
+          <Key>
+            <PropertyRef Name="TextAnnotationId" />
+          </Key>
+          <Property Name="TextAnnotationId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Id" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Text" Type="varchar" MaxLength="2000" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ExecDataObject">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BPMNDataObjectId" Type="int" Nullable="false" />
+          <Property Name="ExecModelProcessId" Type="int" Nullable="false" />
+          <Property Name="ObjectId" Type="int" />
+          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="Generated" Type="bit" />
+          <Property Name="GeneratedDate" Type="datetime" />
+          <Property Name="CycleNumber" Type="int" />
+          <Property Name="GeneratedDetails" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="ExecEvent">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BPMNEventId" Type="int" Nullable="false" />
+          <Property Name="ExecModelProcessId" Type="int" Nullable="false" />
+          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="Generated" Type="bit" />
+          <Property Name="GeneratedDate" Type="datetime" />
+          <Property Name="CycleNumber" Type="int" />
+          <Property Name="GeneratedDetails" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="ExecModelProcess">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+          <Property Name="ProcessRadicationNumber" Type="varchar" MaxLength="30" />
+          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="UserId" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="Close" Type="bit" />
+          <Property Name="Generated" Type="bit" />
+          <Property Name="GeneratedDate" Type="datetime" />
+          <Property Name="CycleNumber" Type="int" />
+          <Property Name="GeneratedDetails" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="ExecSequenceFlow">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BPMNSequenceFlowId" Type="int" Nullable="false" />
+          <Property Name="ExecModelProcessId" Type="int" Nullable="false" />
+          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="Generated" Type="bit" />
+          <Property Name="GeneratedDate" Type="datetime" />
+          <Property Name="CycleNumber" Type="int" />
+          <Property Name="GeneratedDetails" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="ExecTask">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BPMNTaskId" Type="int" Nullable="false" />
+          <Property Name="ExecModelProcessId" Type="int" Nullable="false" />
+          <Property Name="TaskRadicationNumber" Type="varchar" MaxLength="30" />
+          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="Close" Type="bit" />
+          <Property Name="Generated" Type="bit" />
+          <Property Name="GeneratedDate" Type="datetime" />
+          <Property Name="CycleNumber" Type="int" />
+          <Property Name="GeneratedDetails" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="Proceso">
+          <Key>
+            <PropertyRef Name="IdProceso" />
+          </Key>
+          <Property Name="IdProceso" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Nombre" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="Descripcion" Type="varchar(max)" Nullable="false" />
+          <Property Name="FechaCreacion" Type="datetime" Nullable="false" />
+          <Property Name="UsuarioCreacion" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="Version" Type="int" Nullable="false" />
+          <Property Name="Estado" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="GidProceso" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="FechaModificacion" Type="datetime" />
+          <Property Name="UsuarioModificacion" Type="varchar" MaxLength="30" />
+          <Property Name="Aplicacion" Type="varchar" MaxLength="2" Nullable="false" />
+          <Property Name="Ambiente" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="EstaBloqueado" Type="bit" Nullable="false" />
+          <Property Name="TipoProceso" Type="varchar" MaxLength="20" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_BPMNDefinitions_BPMNCollaboration">
+          <End Role="BPMNCollaboration" Type="Self.BPMNCollaboration" Multiplicity="0..1" />
+          <End Role="BPMNDefinitions" Type="Self.BPMNDefinitions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNCollaboration">
+              <PropertyRef Name="CollaborationId" />
+            </Principal>
+            <Dependent Role="BPMNDefinitions">
+              <PropertyRef Name="CollaborationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNEvent_BPMNProcess">
+          <End Role="BPMNProcess" Type="Self.BPMNProcess" Multiplicity="1" />
+          <End Role="BPMNEvent" Type="Self.BPMNEvent" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNProcess">
+              <PropertyRef Name="ProcessId" />
+            </Principal>
+            <Dependent Role="BPMNEvent">
+              <PropertyRef Name="ProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNEvent_BPMNSubProcess">
+          <End Role="BPMNSubProcess" Type="Self.BPMNSubProcess" Multiplicity="0..1" />
+          <End Role="BPMNEvent" Type="Self.BPMNEvent" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNSubProcess">
+              <PropertyRef Name="SubProcessId" />
+            </Principal>
+            <Dependent Role="BPMNEvent">
+              <PropertyRef Name="SubProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNEventAssociation_BPMNEvent">
+          <End Role="BPMNEvent" Type="Self.BPMNEvent" Multiplicity="1" />
+          <End Role="BPMNEventAssociation" Type="Self.BPMNEventAssociation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNEvent">
+              <PropertyRef Name="EventId" />
+            </Principal>
+            <Dependent Role="BPMNEventAssociation">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNEventAssociation_BPMNTextAnnotation">
+          <End Role="BPMNTextAnnotation" Type="Self.BPMNTextAnnotation" Multiplicity="1" />
+          <End Role="BPMNEventAssociation" Type="Self.BPMNEventAssociation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNTextAnnotation">
+              <PropertyRef Name="TextAnnotationId" />
+            </Principal>
+            <Dependent Role="BPMNEventAssociation">
+              <PropertyRef Name="TextAnnotationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNEventDataObject_BPMNDataObject">
+          <End Role="BPMNDataObject" Type="Self.BPMNDataObject" Multiplicity="1" />
+          <End Role="BPMNEventDataObject" Type="Self.BPMNEventDataObject" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNDataObject">
+              <PropertyRef Name="DataObjectId" />
+            </Principal>
+            <Dependent Role="BPMNEventDataObject">
+              <PropertyRef Name="DataObjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNEventDataObject_BPMNEvent">
+          <End Role="BPMNEvent" Type="Self.BPMNEvent" Multiplicity="1" />
+          <End Role="BPMNEventDataObject" Type="Self.BPMNEventDataObject" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNEvent">
+              <PropertyRef Name="EventId" />
+            </Principal>
+            <Dependent Role="BPMNEventDataObject">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNFlowNode_BPMNLane">
+          <End Role="BPMNLane" Type="Self.BPMNLane" Multiplicity="1" />
+          <End Role="BPMNFlowNode" Type="Self.BPMNFlowNode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNLane">
+              <PropertyRef Name="LaneId" />
+            </Principal>
+            <Dependent Role="BPMNFlowNode">
+              <PropertyRef Name="LaneId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNGateway_BPMNProcess">
+          <End Role="BPMNProcess" Type="Self.BPMNProcess" Multiplicity="1" />
+          <End Role="BPMNGateway" Type="Self.BPMNGateway" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNProcess">
+              <PropertyRef Name="ProcessId" />
+            </Principal>
+            <Dependent Role="BPMNGateway">
+              <PropertyRef Name="ProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNGateway_BPMNSubProcess">
+          <End Role="BPMNSubProcess" Type="Self.BPMNSubProcess" Multiplicity="0..1" />
+          <End Role="BPMNGateway" Type="Self.BPMNGateway" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNSubProcess">
+              <PropertyRef Name="SubProcessId" />
+            </Principal>
+            <Dependent Role="BPMNGateway">
+              <PropertyRef Name="SubProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNIncomingEvent_BPMNEvent">
+          <End Role="BPMNEvent" Type="Self.BPMNEvent" Multiplicity="1" />
+          <End Role="BPMNIncomingEvent" Type="Self.BPMNIncomingEvent" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNEvent">
+              <PropertyRef Name="EventId" />
+            </Principal>
+            <Dependent Role="BPMNIncomingEvent">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNIncomingGateway_BPMNGateway">
+          <End Role="BPMNGateway" Type="Self.BPMNGateway" Multiplicity="1" />
+          <End Role="BPMNIncomingGateway" Type="Self.BPMNIncomingGateway" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNGateway">
+              <PropertyRef Name="GatewayId" />
+            </Principal>
+            <Dependent Role="BPMNIncomingGateway">
+              <PropertyRef Name="GatewayId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNIncomingTask_BPMNTask">
+          <End Role="BPMNTask" Type="Self.BPMNTask" Multiplicity="1" />
+          <End Role="BPMNIncomingTask" Type="Self.BPMNIncomingTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNTask">
+              <PropertyRef Name="TaskId" />
+            </Principal>
+            <Dependent Role="BPMNIncomingTask">
+              <PropertyRef Name="TaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNLane_BPMNLaneParent">
+          <End Role="BPMNLane" Type="Self.BPMNLane" Multiplicity="0..1" />
+          <End Role="BPMNLane1" Type="Self.BPMNLane" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNLane">
+              <PropertyRef Name="LaneId" />
+            </Principal>
+            <Dependent Role="BPMNLane1">
+              <PropertyRef Name="LaneParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNLane_BPMNLaneSet">
+          <End Role="BPMNLaneSet" Type="Self.BPMNLaneSet" Multiplicity="1" />
+          <End Role="BPMNLane" Type="Self.BPMNLane" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNLaneSet">
+              <PropertyRef Name="LaneSetId" />
+            </Principal>
+            <Dependent Role="BPMNLane">
+              <PropertyRef Name="LaneSetId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNLaneSet_BPMNProcess">
+          <End Role="BPMNProcess" Type="Self.BPMNProcess" Multiplicity="1" />
+          <End Role="BPMNLaneSet" Type="Self.BPMNLaneSet" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNProcess">
+              <PropertyRef Name="ProcessId" />
+            </Principal>
+            <Dependent Role="BPMNLaneSet">
+              <PropertyRef Name="ProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNMessageFlow_BPMNCollaboration">
+          <End Role="BPMNCollaboration" Type="Self.BPMNCollaboration" Multiplicity="1" />
+          <End Role="BPMNMessageFlow" Type="Self.BPMNMessageFlow" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNCollaboration">
+              <PropertyRef Name="CollaborationId" />
+            </Principal>
+            <Dependent Role="BPMNMessageFlow">
+              <PropertyRef Name="CollaborationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNModel_BPMNDefinitions">
+          <End Role="BPMNDefinitions" Type="Self.BPMNDefinitions" Multiplicity="0..1" />
+          <End Role="BPMNModel" Type="Self.BPMNModel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNDefinitions">
+              <PropertyRef Name="DefinitionId" />
+            </Principal>
+            <Dependent Role="BPMNModel">
+              <PropertyRef Name="DefinitionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNModel_Proceso">
+          <End Role="Proceso" Type="Self.Proceso" Multiplicity="0..1" />
+          <End Role="BPMNModel" Type="Self.BPMNModel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proceso">
+              <PropertyRef Name="IdProceso" />
+            </Principal>
+            <Dependent Role="BPMNModel">
+              <PropertyRef Name="IdProceso" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNOutgoingEvent_BPMNEvent">
+          <End Role="BPMNEvent" Type="Self.BPMNEvent" Multiplicity="1" />
+          <End Role="BPMNOutgoingEvent" Type="Self.BPMNOutgoingEvent" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNEvent">
+              <PropertyRef Name="EventId" />
+            </Principal>
+            <Dependent Role="BPMNOutgoingEvent">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNOutgoingGateway_BPMNGateway">
+          <End Role="BPMNGateway" Type="Self.BPMNGateway" Multiplicity="1" />
+          <End Role="BPMNOutgoingGateway" Type="Self.BPMNOutgoingGateway" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNGateway">
+              <PropertyRef Name="GatewayId" />
+            </Principal>
+            <Dependent Role="BPMNOutgoingGateway">
+              <PropertyRef Name="GatewayId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNOutgoingTask_BPMNTask">
+          <End Role="BPMNTask" Type="Self.BPMNTask" Multiplicity="1" />
+          <End Role="BPMNOutgoingTask" Type="Self.BPMNOutgoingTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNTask">
+              <PropertyRef Name="TaskId" />
+            </Principal>
+            <Dependent Role="BPMNOutgoingTask">
+              <PropertyRef Name="TaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNParticipant_BPMNCollaboration">
+          <End Role="BPMNCollaboration" Type="Self.BPMNCollaboration" Multiplicity="1" />
+          <End Role="BPMNParticipant" Type="Self.BPMNParticipant" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNCollaboration">
+              <PropertyRef Name="CollaborationId" />
+            </Principal>
+            <Dependent Role="BPMNParticipant">
+              <PropertyRef Name="CollaborationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNProcess_BPMNDefinitions">
+          <End Role="BPMNDefinitions" Type="Self.BPMNDefinitions" Multiplicity="1" />
+          <End Role="BPMNProcess" Type="Self.BPMNProcess" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNDefinitions">
+              <PropertyRef Name="DefinitionId" />
+            </Principal>
+            <Dependent Role="BPMNProcess">
+              <PropertyRef Name="DefinitionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNSequenceFlow_BPMNProcess">
+          <End Role="BPMNProcess" Type="Self.BPMNProcess" Multiplicity="1" />
+          <End Role="BPMNSequenceFlow" Type="Self.BPMNSequenceFlow" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNProcess">
+              <PropertyRef Name="ProcessId" />
+            </Principal>
+            <Dependent Role="BPMNSequenceFlow">
+              <PropertyRef Name="ProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNSequenceFlow_BPMNSubProcess">
+          <End Role="BPMNSubProcess" Type="Self.BPMNSubProcess" Multiplicity="0..1" />
+          <End Role="BPMNSequenceFlow" Type="Self.BPMNSequenceFlow" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNSubProcess">
+              <PropertyRef Name="SubProcessId" />
+            </Principal>
+            <Dependent Role="BPMNSequenceFlow">
+              <PropertyRef Name="SubProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNSubProcess_BPMNProcess">
+          <End Role="BPMNProcess" Type="Self.BPMNProcess" Multiplicity="1" />
+          <End Role="BPMNSubProcess" Type="Self.BPMNSubProcess" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNProcess">
+              <PropertyRef Name="ProcessId" />
+            </Principal>
+            <Dependent Role="BPMNSubProcess">
+              <PropertyRef Name="ProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNSubProcess_BPMNSubProcess">
+          <End Role="BPMNSubProcess" Type="Self.BPMNSubProcess" Multiplicity="0..1" />
+          <End Role="BPMNSubProcess1" Type="Self.BPMNSubProcess" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNSubProcess">
+              <PropertyRef Name="SubProcessId" />
+            </Principal>
+            <Dependent Role="BPMNSubProcess1">
+              <PropertyRef Name="SubProcessParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNTask_BPMNProcess">
+          <End Role="BPMNProcess" Type="Self.BPMNProcess" Multiplicity="1" />
+          <End Role="BPMNTask" Type="Self.BPMNTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNProcess">
+              <PropertyRef Name="ProcessId" />
+            </Principal>
+            <Dependent Role="BPMNTask">
+              <PropertyRef Name="ProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNTask_BPMNSubProcess">
+          <End Role="BPMNSubProcess" Type="Self.BPMNSubProcess" Multiplicity="0..1" />
+          <End Role="BPMNTask" Type="Self.BPMNTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNSubProcess">
+              <PropertyRef Name="SubProcessId" />
+            </Principal>
+            <Dependent Role="BPMNTask">
+              <PropertyRef Name="SubProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNTaskAssociation_BPMNTask">
+          <End Role="BPMNTask" Type="Self.BPMNTask" Multiplicity="1" />
+          <End Role="BPMNTaskAssociation" Type="Self.BPMNTaskAssociation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNTask">
+              <PropertyRef Name="TaskId" />
+            </Principal>
+            <Dependent Role="BPMNTaskAssociation">
+              <PropertyRef Name="TaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNTaskAssociation_BPMNTextAnnotation">
+          <End Role="BPMNTextAnnotation" Type="Self.BPMNTextAnnotation" Multiplicity="1" />
+          <End Role="BPMNTaskAssociation" Type="Self.BPMNTaskAssociation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNTextAnnotation">
+              <PropertyRef Name="TextAnnotationId" />
+            </Principal>
+            <Dependent Role="BPMNTaskAssociation">
+              <PropertyRef Name="TextAnnotationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNTaskDataObject_BPMNDataObject">
+          <End Role="BPMNDataObject" Type="Self.BPMNDataObject" Multiplicity="1" />
+          <End Role="BPMNTaskDataObject" Type="Self.BPMNTaskDataObject" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNDataObject">
+              <PropertyRef Name="DataObjectId" />
+            </Principal>
+            <Dependent Role="BPMNTaskDataObject">
+              <PropertyRef Name="DataObjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNTaskDataObject_BPMNTask">
+          <End Role="BPMNTask" Type="Self.BPMNTask" Multiplicity="1" />
+          <End Role="BPMNTaskDataObject" Type="Self.BPMNTaskDataObject" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNTask">
+              <PropertyRef Name="TaskId" />
+            </Principal>
+            <Dependent Role="BPMNTaskDataObject">
+              <PropertyRef Name="TaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExecDataObject_BPMNDataObject">
+          <End Role="BPMNDataObject" Type="Self.BPMNDataObject" Multiplicity="1" />
+          <End Role="ExecDataObject" Type="Self.ExecDataObject" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNDataObject">
+              <PropertyRef Name="DataObjectId" />
+            </Principal>
+            <Dependent Role="ExecDataObject">
+              <PropertyRef Name="BPMNDataObjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExecDataObject_ExecModelProcess">
+          <End Role="ExecModelProcess" Type="Self.ExecModelProcess" Multiplicity="1" />
+          <End Role="ExecDataObject" Type="Self.ExecDataObject" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExecModelProcess">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ExecDataObject">
+              <PropertyRef Name="ExecModelProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExecEvent_BPMNEvent">
+          <End Role="BPMNEvent" Type="Self.BPMNEvent" Multiplicity="1" />
+          <End Role="ExecEvent" Type="Self.ExecEvent" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNEvent">
+              <PropertyRef Name="EventId" />
+            </Principal>
+            <Dependent Role="ExecEvent">
+              <PropertyRef Name="BPMNEventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExecEvent_ExecModelProcess">
+          <End Role="ExecModelProcess" Type="Self.ExecModelProcess" Multiplicity="1" />
+          <End Role="ExecEvent" Type="Self.ExecEvent" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExecModelProcess">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ExecEvent">
+              <PropertyRef Name="ExecModelProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExecModelProcess_BPMNModel">
+          <End Role="BPMNModel" Type="Self.BPMNModel" Multiplicity="1" />
+          <End Role="ExecModelProcess" Type="Self.ExecModelProcess" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNModel">
+              <PropertyRef Name="ModelId" />
+            </Principal>
+            <Dependent Role="ExecModelProcess">
+              <PropertyRef Name="ModelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExecSequenceFlow_BPMNSequenceFlow">
+          <End Role="BPMNSequenceFlow" Type="Self.BPMNSequenceFlow" Multiplicity="1" />
+          <End Role="ExecSequenceFlow" Type="Self.ExecSequenceFlow" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNSequenceFlow">
+              <PropertyRef Name="SequenceId" />
+            </Principal>
+            <Dependent Role="ExecSequenceFlow">
+              <PropertyRef Name="BPMNSequenceFlowId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExecSequenceFlow_ExecModelProcess">
+          <End Role="ExecModelProcess" Type="Self.ExecModelProcess" Multiplicity="1" />
+          <End Role="ExecSequenceFlow" Type="Self.ExecSequenceFlow" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExecModelProcess">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ExecSequenceFlow">
+              <PropertyRef Name="ExecModelProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExecTask_BPMNTask">
+          <End Role="BPMNTask" Type="Self.BPMNTask" Multiplicity="1" />
+          <End Role="ExecTask" Type="Self.ExecTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNTask">
+              <PropertyRef Name="TaskId" />
+            </Principal>
+            <Dependent Role="ExecTask">
+              <PropertyRef Name="BPMNTaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExecTask_ExecModelProcess">
+          <End Role="ExecModelProcess" Type="Self.ExecModelProcess" Multiplicity="1" />
+          <End Role="ExecTask" Type="Self.ExecTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExecModelProcess">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ExecTask">
+              <PropertyRef Name="ExecModelProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="BPMNProcessTMSModelStoreContainer">
+          <EntitySet Name="BPMNCollaboration" EntityType="Self.BPMNCollaboration" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNDataObject" EntityType="Self.BPMNDataObject" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNDefinitions" EntityType="Self.BPMNDefinitions" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNEvent" EntityType="Self.BPMNEvent" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNEventAssociation" EntityType="Self.BPMNEventAssociation" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNEventDataObject" EntityType="Self.BPMNEventDataObject" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNFlowNode" EntityType="Self.BPMNFlowNode" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNGateway" EntityType="Self.BPMNGateway" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNIncomingEvent" EntityType="Self.BPMNIncomingEvent" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNIncomingGateway" EntityType="Self.BPMNIncomingGateway" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNIncomingTask" EntityType="Self.BPMNIncomingTask" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNLane" EntityType="Self.BPMNLane" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNLaneSet" EntityType="Self.BPMNLaneSet" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNMessageFlow" EntityType="Self.BPMNMessageFlow" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNModel" EntityType="Self.BPMNModel" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNOutgoingEvent" EntityType="Self.BPMNOutgoingEvent" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNOutgoingGateway" EntityType="Self.BPMNOutgoingGateway" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNOutgoingTask" EntityType="Self.BPMNOutgoingTask" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNParticipant" EntityType="Self.BPMNParticipant" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNProcess" EntityType="Self.BPMNProcess" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNSequenceFlow" EntityType="Self.BPMNSequenceFlow" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNSubProcess" EntityType="Self.BPMNSubProcess" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNTask" EntityType="Self.BPMNTask" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNTaskAssociation" EntityType="Self.BPMNTaskAssociation" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNTaskDataObject" EntityType="Self.BPMNTaskDataObject" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="BPMNTextAnnotation" EntityType="Self.BPMNTextAnnotation" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="ExecDataObject" EntityType="Self.ExecDataObject" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="ExecEvent" EntityType="Self.ExecEvent" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="ExecModelProcess" EntityType="Self.ExecModelProcess" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="ExecSequenceFlow" EntityType="Self.ExecSequenceFlow" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="ExecTask" EntityType="Self.ExecTask" Schema="Proceso" store:Type="Tables" />
+          <EntitySet Name="Proceso" EntityType="Self.Proceso" Schema="Proceso" store:Type="Tables" />
+          <AssociationSet Name="FK_BPMNDefinitions_BPMNCollaboration" Association="Self.FK_BPMNDefinitions_BPMNCollaboration">
+            <End Role="BPMNCollaboration" EntitySet="BPMNCollaboration" />
+            <End Role="BPMNDefinitions" EntitySet="BPMNDefinitions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNEvent_BPMNProcess" Association="Self.FK_BPMNEvent_BPMNProcess">
+            <End Role="BPMNProcess" EntitySet="BPMNProcess" />
+            <End Role="BPMNEvent" EntitySet="BPMNEvent" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNEvent_BPMNSubProcess" Association="Self.FK_BPMNEvent_BPMNSubProcess">
+            <End Role="BPMNSubProcess" EntitySet="BPMNSubProcess" />
+            <End Role="BPMNEvent" EntitySet="BPMNEvent" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNEventAssociation_BPMNEvent" Association="Self.FK_BPMNEventAssociation_BPMNEvent">
+            <End Role="BPMNEvent" EntitySet="BPMNEvent" />
+            <End Role="BPMNEventAssociation" EntitySet="BPMNEventAssociation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNEventAssociation_BPMNTextAnnotation" Association="Self.FK_BPMNEventAssociation_BPMNTextAnnotation">
+            <End Role="BPMNTextAnnotation" EntitySet="BPMNTextAnnotation" />
+            <End Role="BPMNEventAssociation" EntitySet="BPMNEventAssociation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNEventDataObject_BPMNDataObject" Association="Self.FK_BPMNEventDataObject_BPMNDataObject">
+            <End Role="BPMNDataObject" EntitySet="BPMNDataObject" />
+            <End Role="BPMNEventDataObject" EntitySet="BPMNEventDataObject" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNEventDataObject_BPMNEvent" Association="Self.FK_BPMNEventDataObject_BPMNEvent">
+            <End Role="BPMNEvent" EntitySet="BPMNEvent" />
+            <End Role="BPMNEventDataObject" EntitySet="BPMNEventDataObject" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNFlowNode_BPMNLane" Association="Self.FK_BPMNFlowNode_BPMNLane">
+            <End Role="BPMNLane" EntitySet="BPMNLane" />
+            <End Role="BPMNFlowNode" EntitySet="BPMNFlowNode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNGateway_BPMNProcess" Association="Self.FK_BPMNGateway_BPMNProcess">
+            <End Role="BPMNProcess" EntitySet="BPMNProcess" />
+            <End Role="BPMNGateway" EntitySet="BPMNGateway" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNGateway_BPMNSubProcess" Association="Self.FK_BPMNGateway_BPMNSubProcess">
+            <End Role="BPMNSubProcess" EntitySet="BPMNSubProcess" />
+            <End Role="BPMNGateway" EntitySet="BPMNGateway" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNIncomingEvent_BPMNEvent" Association="Self.FK_BPMNIncomingEvent_BPMNEvent">
+            <End Role="BPMNEvent" EntitySet="BPMNEvent" />
+            <End Role="BPMNIncomingEvent" EntitySet="BPMNIncomingEvent" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNIncomingGateway_BPMNGateway" Association="Self.FK_BPMNIncomingGateway_BPMNGateway">
+            <End Role="BPMNGateway" EntitySet="BPMNGateway" />
+            <End Role="BPMNIncomingGateway" EntitySet="BPMNIncomingGateway" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNIncomingTask_BPMNTask" Association="Self.FK_BPMNIncomingTask_BPMNTask">
+            <End Role="BPMNTask" EntitySet="BPMNTask" />
+            <End Role="BPMNIncomingTask" EntitySet="BPMNIncomingTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNLane_BPMNLaneParent" Association="Self.FK_BPMNLane_BPMNLaneParent">
+            <End Role="BPMNLane" EntitySet="BPMNLane" />
+            <End Role="BPMNLane1" EntitySet="BPMNLane" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNLane_BPMNLaneSet" Association="Self.FK_BPMNLane_BPMNLaneSet">
+            <End Role="BPMNLaneSet" EntitySet="BPMNLaneSet" />
+            <End Role="BPMNLane" EntitySet="BPMNLane" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNLaneSet_BPMNProcess" Association="Self.FK_BPMNLaneSet_BPMNProcess">
+            <End Role="BPMNProcess" EntitySet="BPMNProcess" />
+            <End Role="BPMNLaneSet" EntitySet="BPMNLaneSet" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNMessageFlow_BPMNCollaboration" Association="Self.FK_BPMNMessageFlow_BPMNCollaboration">
+            <End Role="BPMNCollaboration" EntitySet="BPMNCollaboration" />
+            <End Role="BPMNMessageFlow" EntitySet="BPMNMessageFlow" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNModel_BPMNDefinitions" Association="Self.FK_BPMNModel_BPMNDefinitions">
+            <End Role="BPMNDefinitions" EntitySet="BPMNDefinitions" />
+            <End Role="BPMNModel" EntitySet="BPMNModel" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNModel_Proceso" Association="Self.FK_BPMNModel_Proceso">
+            <End Role="Proceso" EntitySet="Proceso" />
+            <End Role="BPMNModel" EntitySet="BPMNModel" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNOutgoingEvent_BPMNEvent" Association="Self.FK_BPMNOutgoingEvent_BPMNEvent">
+            <End Role="BPMNEvent" EntitySet="BPMNEvent" />
+            <End Role="BPMNOutgoingEvent" EntitySet="BPMNOutgoingEvent" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNOutgoingGateway_BPMNGateway" Association="Self.FK_BPMNOutgoingGateway_BPMNGateway">
+            <End Role="BPMNGateway" EntitySet="BPMNGateway" />
+            <End Role="BPMNOutgoingGateway" EntitySet="BPMNOutgoingGateway" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNOutgoingTask_BPMNTask" Association="Self.FK_BPMNOutgoingTask_BPMNTask">
+            <End Role="BPMNTask" EntitySet="BPMNTask" />
+            <End Role="BPMNOutgoingTask" EntitySet="BPMNOutgoingTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNParticipant_BPMNCollaboration" Association="Self.FK_BPMNParticipant_BPMNCollaboration">
+            <End Role="BPMNCollaboration" EntitySet="BPMNCollaboration" />
+            <End Role="BPMNParticipant" EntitySet="BPMNParticipant" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNProcess_BPMNDefinitions" Association="Self.FK_BPMNProcess_BPMNDefinitions">
+            <End Role="BPMNDefinitions" EntitySet="BPMNDefinitions" />
+            <End Role="BPMNProcess" EntitySet="BPMNProcess" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNSequenceFlow_BPMNProcess" Association="Self.FK_BPMNSequenceFlow_BPMNProcess">
+            <End Role="BPMNProcess" EntitySet="BPMNProcess" />
+            <End Role="BPMNSequenceFlow" EntitySet="BPMNSequenceFlow" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNSequenceFlow_BPMNSubProcess" Association="Self.FK_BPMNSequenceFlow_BPMNSubProcess">
+            <End Role="BPMNSubProcess" EntitySet="BPMNSubProcess" />
+            <End Role="BPMNSequenceFlow" EntitySet="BPMNSequenceFlow" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNSubProcess_BPMNProcess" Association="Self.FK_BPMNSubProcess_BPMNProcess">
+            <End Role="BPMNProcess" EntitySet="BPMNProcess" />
+            <End Role="BPMNSubProcess" EntitySet="BPMNSubProcess" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNSubProcess_BPMNSubProcess" Association="Self.FK_BPMNSubProcess_BPMNSubProcess">
+            <End Role="BPMNSubProcess" EntitySet="BPMNSubProcess" />
+            <End Role="BPMNSubProcess1" EntitySet="BPMNSubProcess" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNTask_BPMNProcess" Association="Self.FK_BPMNTask_BPMNProcess">
+            <End Role="BPMNProcess" EntitySet="BPMNProcess" />
+            <End Role="BPMNTask" EntitySet="BPMNTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNTask_BPMNSubProcess" Association="Self.FK_BPMNTask_BPMNSubProcess">
+            <End Role="BPMNSubProcess" EntitySet="BPMNSubProcess" />
+            <End Role="BPMNTask" EntitySet="BPMNTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNTaskAssociation_BPMNTask" Association="Self.FK_BPMNTaskAssociation_BPMNTask">
+            <End Role="BPMNTask" EntitySet="BPMNTask" />
+            <End Role="BPMNTaskAssociation" EntitySet="BPMNTaskAssociation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNTaskAssociation_BPMNTextAnnotation" Association="Self.FK_BPMNTaskAssociation_BPMNTextAnnotation">
+            <End Role="BPMNTextAnnotation" EntitySet="BPMNTextAnnotation" />
+            <End Role="BPMNTaskAssociation" EntitySet="BPMNTaskAssociation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNTaskDataObject_BPMNDataObject" Association="Self.FK_BPMNTaskDataObject_BPMNDataObject">
+            <End Role="BPMNDataObject" EntitySet="BPMNDataObject" />
+            <End Role="BPMNTaskDataObject" EntitySet="BPMNTaskDataObject" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNTaskDataObject_BPMNTask" Association="Self.FK_BPMNTaskDataObject_BPMNTask">
+            <End Role="BPMNTask" EntitySet="BPMNTask" />
+            <End Role="BPMNTaskDataObject" EntitySet="BPMNTaskDataObject" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExecDataObject_BPMNDataObject" Association="Self.FK_ExecDataObject_BPMNDataObject">
+            <End Role="BPMNDataObject" EntitySet="BPMNDataObject" />
+            <End Role="ExecDataObject" EntitySet="ExecDataObject" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExecDataObject_ExecModelProcess" Association="Self.FK_ExecDataObject_ExecModelProcess">
+            <End Role="ExecModelProcess" EntitySet="ExecModelProcess" />
+            <End Role="ExecDataObject" EntitySet="ExecDataObject" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExecEvent_BPMNEvent" Association="Self.FK_ExecEvent_BPMNEvent">
+            <End Role="BPMNEvent" EntitySet="BPMNEvent" />
+            <End Role="ExecEvent" EntitySet="ExecEvent" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExecEvent_ExecModelProcess" Association="Self.FK_ExecEvent_ExecModelProcess">
+            <End Role="ExecModelProcess" EntitySet="ExecModelProcess" />
+            <End Role="ExecEvent" EntitySet="ExecEvent" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExecModelProcess_BPMNModel" Association="Self.FK_ExecModelProcess_BPMNModel">
+            <End Role="BPMNModel" EntitySet="BPMNModel" />
+            <End Role="ExecModelProcess" EntitySet="ExecModelProcess" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExecSequenceFlow_BPMNSequenceFlow" Association="Self.FK_ExecSequenceFlow_BPMNSequenceFlow">
+            <End Role="BPMNSequenceFlow" EntitySet="BPMNSequenceFlow" />
+            <End Role="ExecSequenceFlow" EntitySet="ExecSequenceFlow" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExecSequenceFlow_ExecModelProcess" Association="Self.FK_ExecSequenceFlow_ExecModelProcess">
+            <End Role="ExecModelProcess" EntitySet="ExecModelProcess" />
+            <End Role="ExecSequenceFlow" EntitySet="ExecSequenceFlow" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExecTask_BPMNTask" Association="Self.FK_ExecTask_BPMNTask">
+            <End Role="BPMNTask" EntitySet="BPMNTask" />
+            <End Role="ExecTask" EntitySet="ExecTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExecTask_ExecModelProcess" Association="Self.FK_ExecTask_ExecModelProcess">
+            <End Role="ExecModelProcess" EntitySet="ExecModelProcess" />
+            <End Role="ExecTask" EntitySet="ExecTask" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="BPMNProcessTMSModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="BPMNCollaboration">
+          <Key>
+            <PropertyRef Name="CollaborationId" />
+          </Key>
+          <Property Name="CollaborationId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNMessageFlow" Relationship="Self.FK_BPMNMessageFlow_BPMNCollaboration" FromRole="BPMNCollaboration" ToRole="BPMNMessageFlow" />
+          <NavigationProperty Name="BPMNParticipant" Relationship="Self.FK_BPMNParticipant_BPMNCollaboration" FromRole="BPMNCollaboration" ToRole="BPMNParticipant" />
+          <NavigationProperty Name="BPMNDefinitions" Relationship="BPMNProcessTMSModel.FK_BPMNDefinitions_BPMNCollaboration" FromRole="BPMNCollaboration" ToRole="BPMNDefinitions" />
+          <Property Name="IdProceso" Type="Int32" />
+        </EntityType>
+        <EntityType Name="BPMNDataObject">
+          <Key>
+            <PropertyRef Name="DataObjectId" />
+          </Key>
+          <Property Name="DataObjectId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="DataObjectRef" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNEventDataObject" Relationship="Self.FK_BPMNEventDataObject_BPMNDataObject" FromRole="BPMNDataObject" ToRole="BPMNEventDataObject" />
+          <NavigationProperty Name="BPMNTaskDataObject" Relationship="Self.FK_BPMNTaskDataObject_BPMNDataObject" FromRole="BPMNDataObject" ToRole="BPMNTaskDataObject" />
+          <NavigationProperty Name="ExecDataObject" Relationship="BPMNProcessTMSModel.FK_ExecDataObject_BPMNDataObject" FromRole="BPMNDataObject" ToRole="ExecDataObject" />
+          <Property Name="IdTipoDoc" Type="Int32" />
+        </EntityType>
+        <EntityType Name="BPMNEvent">
+          <Key>
+            <PropertyRef Name="EventId" />
+          </Key>
+          <Property Name="EventId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Event" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Type" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="TypeId" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ProcessId" Type="Int32" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNProcess" Relationship="Self.FK_BPMNEvent_BPMNProcess" FromRole="BPMNEvent" ToRole="BPMNProcess" />
+          <NavigationProperty Name="BPMNEventAssociation" Relationship="Self.FK_BPMNEventAssociation_BPMNEvent" FromRole="BPMNEvent" ToRole="BPMNEventAssociation" />
+          <NavigationProperty Name="BPMNEventDataObject" Relationship="Self.FK_BPMNEventDataObject_BPMNEvent" FromRole="BPMNEvent" ToRole="BPMNEventDataObject" />
+          <NavigationProperty Name="BPMNIncomingEvent" Relationship="Self.FK_BPMNIncomingEvent_BPMNEvent" FromRole="BPMNEvent" ToRole="BPMNIncomingEvent" />
+          <NavigationProperty Name="BPMNOutgoingEvent" Relationship="Self.FK_BPMNOutgoingEvent_BPMNEvent" FromRole="BPMNEvent" ToRole="BPMNOutgoingEvent" />
+          <NavigationProperty Name="ExecEvent" Relationship="BPMNProcessTMSModel.FK_ExecEvent_BPMNEvent" FromRole="BPMNEvent" ToRole="ExecEvent" />
+          <Property Name="IdTipoSol" Type="Decimal" Precision="4" Scale="0" />
+          <Property Name="SubProcessId" Type="Int32" />
+          <NavigationProperty Name="BPMNSubProcess" Relationship="BPMNProcessTMSModel.FK_BPMNEvent_BPMNSubProcess" FromRole="BPMNEvent" ToRole="BPMNSubProcess" />
+          <Property Name="IdTipoDoc" Type="Int32" />
+        </EntityType>
+        <EntityType Name="BPMNEventAssociation">
+          <Key>
+            <PropertyRef Name="EventId" />
+            <PropertyRef Name="TextAnnotationId" />
+          </Key>
+          <Property Name="EventAssociationId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EventId" Type="Int32" Nullable="false" />
+          <Property Name="TextAnnotationId" Type="Int32" Nullable="false" />
+          <Property Name="Id" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="SourceRef" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="TargetRef" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNEvent" Relationship="Self.FK_BPMNEventAssociation_BPMNEvent" FromRole="BPMNEventAssociation" ToRole="BPMNEvent" />
+          <NavigationProperty Name="BPMNTextAnnotation" Relationship="Self.FK_BPMNEventAssociation_BPMNTextAnnotation" FromRole="BPMNEventAssociation" ToRole="BPMNTextAnnotation" />
+        </EntityType>
+        <EntityType Name="BPMNEventDataObject">
+          <Key>
+            <PropertyRef Name="EventId" />
+            <PropertyRef Name="DataObjectId" />
+          </Key>
+          <Property Name="EventDataObjectId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EventId" Type="Int32" Nullable="false" />
+          <Property Name="DataObjectId" Type="Int32" Nullable="false" />
+          <Property Name="SourceRef" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="TargetRef" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DataInputAssociationId" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DataOutputAssociationId" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNDataObject" Relationship="Self.FK_BPMNEventDataObject_BPMNDataObject" FromRole="BPMNEventDataObject" ToRole="BPMNDataObject" />
+          <NavigationProperty Name="BPMNEvent" Relationship="Self.FK_BPMNEventDataObject_BPMNEvent" FromRole="BPMNEventDataObject" ToRole="BPMNEvent" />
+        </EntityType>
+        <EntityType Name="BPMNFlowNode">
+          <Key>
+            <PropertyRef Name="FlowNodeRefId" />
+          </Key>
+          <Property Name="FlowNodeRefId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="LaneId" Type="Int32" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNLane" Relationship="Self.FK_BPMNFlowNode_BPMNLane" FromRole="BPMNFlowNode" ToRole="BPMNLane" />
+        </EntityType>
+        <EntityType Name="BPMNGateway">
+          <Key>
+            <PropertyRef Name="GatewayId" />
+          </Key>
+          <Property Name="GatewayId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Type" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Direction" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DefaultFlow" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ProcessId" Type="Int32" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNProcess" Relationship="Self.FK_BPMNGateway_BPMNProcess" FromRole="BPMNGateway" ToRole="BPMNProcess" />
+          <NavigationProperty Name="BPMNIncomingGateway" Relationship="Self.FK_BPMNIncomingGateway_BPMNGateway" FromRole="BPMNGateway" ToRole="BPMNIncomingGateway" />
+          <NavigationProperty Name="BPMNOutgoingGateway" Relationship="Self.FK_BPMNOutgoingGateway_BPMNGateway" FromRole="BPMNGateway" ToRole="BPMNOutgoingGateway" />
+          <Property Name="SubProcessId" Type="Int32" />
+          <NavigationProperty Name="BPMNSubProcess" Relationship="BPMNProcessTMSModel.FK_BPMNGateway_BPMNSubProcess" FromRole="BPMNGateway" ToRole="BPMNSubProcess" />
+        </EntityType>
+        <EntityType Name="BPMNIncomingEvent">
+          <Key>
+            <PropertyRef Name="IncomingTaskId" />
+          </Key>
+          <Property Name="IncomingTaskId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EventId" Type="Int32" Nullable="false" />
+          <Property Name="Incoming" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNEvent" Relationship="Self.FK_BPMNIncomingEvent_BPMNEvent" FromRole="BPMNIncomingEvent" ToRole="BPMNEvent" />
+        </EntityType>
+        <EntityType Name="BPMNIncomingGateway">
+          <Key>
+            <PropertyRef Name="IncomingGatewayId" />
+          </Key>
+          <Property Name="IncomingGatewayId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GatewayId" Type="Int32" Nullable="false" />
+          <Property Name="Incoming" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNGateway" Relationship="Self.FK_BPMNIncomingGateway_BPMNGateway" FromRole="BPMNIncomingGateway" ToRole="BPMNGateway" />
+        </EntityType>
+        <EntityType Name="BPMNIncomingTask">
+          <Key>
+            <PropertyRef Name="IncomingTaskId" />
+          </Key>
+          <Property Name="IncomingTaskId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TaskId" Type="Int32" Nullable="false" />
+          <Property Name="Incoming" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNTask" Relationship="BPMNProcessTMSModel.FK_BPMNIncomingTask_BPMNTask" FromRole="BPMNIncomingTask" ToRole="BPMNTask" />
+        </EntityType>
+        <EntityType Name="BPMNLane">
+          <Key>
+            <PropertyRef Name="LaneId" />
+          </Key>
+          <Property Name="LaneId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="LaneSetId" Type="Int32" Nullable="false" />
+          <Property Name="LaneParentId" Type="Int32" />
+          <Property Name="ChildLaneSet" Type="Boolean" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNFlowNode" Relationship="Self.FK_BPMNFlowNode_BPMNLane" FromRole="BPMNLane" ToRole="BPMNFlowNode" />
+          <NavigationProperty Name="BPMNLane1" Relationship="Self.FK_BPMNLane_BPMNLaneParent" FromRole="BPMNLane" ToRole="BPMNLane1" />
+          <NavigationProperty Name="BPMNLane2" Relationship="Self.FK_BPMNLane_BPMNLaneParent" FromRole="BPMNLane1" ToRole="BPMNLane" />
+          <NavigationProperty Name="BPMNLaneSet" Relationship="Self.FK_BPMNLane_BPMNLaneSet" FromRole="BPMNLane" ToRole="BPMNLaneSet" />
+          <Property Name="IdCargo" Type="Decimal" Precision="9" Scale="0" />
+          <Property Name="IdRol" Type="Decimal" Precision="4" Scale="0" />
+        </EntityType>
+        <EntityType Name="BPMNLaneSet">
+          <Key>
+            <PropertyRef Name="LaneSetId" />
+          </Key>
+          <Property Name="LaneSetId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ProcessId" Type="Int32" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNLane" Relationship="Self.FK_BPMNLane_BPMNLaneSet" FromRole="BPMNLaneSet" ToRole="BPMNLane" />
+          <NavigationProperty Name="BPMNProcess" Relationship="Self.FK_BPMNLaneSet_BPMNProcess" FromRole="BPMNLaneSet" ToRole="BPMNProcess" />
+        </EntityType>
+        <EntityType Name="BPMNMessageFlow">
+          <Key>
+            <PropertyRef Name="MessageFlowId" />
+          </Key>
+          <Property Name="MessageFlowId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="SourceRef" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="TargetRef" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="CollaborationId" Type="Int32" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNCollaboration" Relationship="Self.FK_BPMNMessageFlow_BPMNCollaboration" FromRole="BPMNMessageFlow" ToRole="BPMNCollaboration" />
+        </EntityType>
+        <EntityType Name="BPMNModel">
+          <Key>
+            <PropertyRef Name="ModelId" />
+          </Key>
+          <Property Name="ModelId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GID" Type="Guid" Nullable="false" />
+          <Property Name="FileName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="XMLFile" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Active" Type="Boolean" Nullable="false" />
+          <Property Name="Version" Type="Int32" Nullable="false" />
+          <Property Name="DefinitionId" Type="Int32" />
+          <NavigationProperty Name="BPMNDefinitions" Relationship="BPMNProcessTMSModel.FK_BPMNModel_BPMNDefinitions" FromRole="BPMNModel" ToRole="BPMNDefinitions" />
+          <Property Name="IdProceso" Type="Int32" />
+          <NavigationProperty Name="Proceso" Relationship="BPMNProcessTMSModel.FK_BPMNModel_Proceso" FromRole="BPMNModel" ToRole="Proceso" />
+          <NavigationProperty Name="ExecModelProcess" Relationship="BPMNProcessTMSModel.FK_ExecModelProcess_BPMNModel" FromRole="BPMNModel" ToRole="ExecModelProcess" />
+          <Property Name="Procesado" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BPMNOutgoingEvent">
+          <Key>
+            <PropertyRef Name="OutgoingEventId" />
+          </Key>
+          <Property Name="OutgoingEventId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EventId" Type="Int32" Nullable="false" />
+          <Property Name="Outgoing" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNEvent" Relationship="Self.FK_BPMNOutgoingEvent_BPMNEvent" FromRole="BPMNOutgoingEvent" ToRole="BPMNEvent" />
+        </EntityType>
+        <EntityType Name="BPMNOutgoingGateway">
+          <Key>
+            <PropertyRef Name="OutgoingGatewayId" />
+          </Key>
+          <Property Name="OutgoingGatewayId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GatewayId" Type="Int32" Nullable="false" />
+          <Property Name="Outgoing" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNGateway" Relationship="Self.FK_BPMNOutgoingGateway_BPMNGateway" FromRole="BPMNOutgoingGateway" ToRole="BPMNGateway" />
+        </EntityType>
+        <EntityType Name="BPMNOutgoingTask">
+          <Key>
+            <PropertyRef Name="OutgoingTaskId" />
+          </Key>
+          <Property Name="OutgoingTaskId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TaskId" Type="Int32" Nullable="false" />
+          <Property Name="Outgoing" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNTask" Relationship="BPMNProcessTMSModel.FK_BPMNOutgoingTask_BPMNTask" FromRole="BPMNOutgoingTask" ToRole="BPMNTask" />
+        </EntityType>
+        <EntityType Name="BPMNParticipant">
+          <Key>
+            <PropertyRef Name="ParticipantId" />
+          </Key>
+          <Property Name="ParticipantId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="ProcessRef" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="CollaborationId" Type="Int32" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNCollaboration" Relationship="Self.FK_BPMNParticipant_BPMNCollaboration" FromRole="BPMNParticipant" ToRole="BPMNCollaboration" />
+          <Property Name="IdProceso" Type="Int32" />
+        </EntityType>
+        <EntityType Name="BPMNProcess">
+          <Key>
+            <PropertyRef Name="ProcessId" />
+          </Key>
+          <Property Name="ProcessId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DefinitionId" Type="Int32" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNEvent" Relationship="Self.FK_BPMNEvent_BPMNProcess" FromRole="BPMNProcess" ToRole="BPMNEvent" />
+          <NavigationProperty Name="BPMNGateway" Relationship="Self.FK_BPMNGateway_BPMNProcess" FromRole="BPMNProcess" ToRole="BPMNGateway" />
+          <NavigationProperty Name="BPMNLaneSet" Relationship="Self.FK_BPMNLaneSet_BPMNProcess" FromRole="BPMNProcess" ToRole="BPMNLaneSet" />
+          <NavigationProperty Name="BPMNSequenceFlow" Relationship="Self.FK_BPMNSequenceFlow_BPMNProcess" FromRole="BPMNProcess" ToRole="BPMNSequenceFlow" />
+          <NavigationProperty Name="BPMNDefinitions" Relationship="BPMNProcessTMSModel.FK_BPMNProcess_BPMNDefinitions" FromRole="BPMNProcess" ToRole="BPMNDefinitions" />
+          <NavigationProperty Name="BPMNTask" Relationship="BPMNProcessTMSModel.FK_BPMNTask_BPMNProcess" FromRole="BPMNProcess" ToRole="BPMNTask" />
+          <NavigationProperty Name="BPMNSubProcess" Relationship="BPMNProcessTMSModel.FK_BPMNSubProcess_BPMNProcess" FromRole="BPMNProcess" ToRole="BPMNSubProcess" />
+          <Property Name="IdProceso" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BPMNSequenceFlow">
+          <Key>
+            <PropertyRef Name="SequenceId" />
+          </Key>
+          <Property Name="SequenceId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="SourceRef" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="TargetRef" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ConditionId" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ConditionExpression" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="ProcessId" Type="Int32" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNProcess" Relationship="Self.FK_BPMNSequenceFlow_BPMNProcess" FromRole="BPMNSequenceFlow" ToRole="BPMNProcess" />
+          <Property Name="SourceRefType" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="TargetRefType" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ExecSequenceFlow" Relationship="BPMNProcessTMSModel.FK_ExecSequenceFlow_BPMNSequenceFlow" FromRole="BPMNSequenceFlow" ToRole="ExecSequenceFlow" />
+          <Property Name="SubProcessId" Type="Int32" />
+          <NavigationProperty Name="BPMNSubProcess" Relationship="BPMNProcessTMSModel.FK_BPMNSequenceFlow_BPMNSubProcess" FromRole="BPMNSequenceFlow" ToRole="BPMNSubProcess" />
+          <Property Name="IdCausa" Type="Decimal" Precision="5" Scale="0" />
+          <Property Name="IdCausaTipificacion" Type="Decimal" Precision="5" Scale="0" />
+        </EntityType>
+        <EntityType Name="BPMNTaskAssociation">
+          <Key>
+            <PropertyRef Name="TaskId" />
+            <PropertyRef Name="TextAnnotationId" />
+          </Key>
+          <Property Name="TaskAssociationId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TaskId" Type="Int32" Nullable="false" />
+          <Property Name="TextAnnotationId" Type="Int32" Nullable="false" />
+          <Property Name="Id" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="SourceRef" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="TargetRef" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNTextAnnotation" Relationship="Self.FK_BPMNTaskAssociation_BPMNTextAnnotation" FromRole="BPMNTaskAssociation" ToRole="BPMNTextAnnotation" />
+          <NavigationProperty Name="BPMNTask" Relationship="BPMNProcessTMSModel.FK_BPMNTaskAssociation_BPMNTask" FromRole="BPMNTaskAssociation" ToRole="BPMNTask" />
+        </EntityType>
+        <EntityType Name="BPMNTaskDataObject">
+          <Key>
+            <PropertyRef Name="TaskId" />
+            <PropertyRef Name="DataObjectId" />
+          </Key>
+          <Property Name="TaskDataObjectId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TaskId" Type="Int32" Nullable="false" />
+          <Property Name="DataObjectId" Type="Int32" Nullable="false" />
+          <Property Name="SourceRef" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="TargetRef" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DataInputAssociationId" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DataOutputAssociationId" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNDataObject" Relationship="Self.FK_BPMNTaskDataObject_BPMNDataObject" FromRole="BPMNTaskDataObject" ToRole="BPMNDataObject" />
+          <NavigationProperty Name="BPMNTask" Relationship="BPMNProcessTMSModel.FK_BPMNTaskDataObject_BPMNTask" FromRole="BPMNTaskDataObject" ToRole="BPMNTask" />
+        </EntityType>
+        <EntityType Name="BPMNTextAnnotation">
+          <Key>
+            <PropertyRef Name="TextAnnotationId" />
+          </Key>
+          <Property Name="TextAnnotationId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Text" Type="String" MaxLength="2000" FixedLength="false" Unicode="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNEventAssociation" Relationship="Self.FK_BPMNEventAssociation_BPMNTextAnnotation" FromRole="BPMNTextAnnotation" ToRole="BPMNEventAssociation" />
+          <NavigationProperty Name="BPMNTaskAssociation" Relationship="Self.FK_BPMNTaskAssociation_BPMNTextAnnotation" FromRole="BPMNTextAnnotation" ToRole="BPMNTaskAssociation" />
+        </EntityType>
+        <Association Name="FK_BPMNMessageFlow_BPMNCollaboration">
+          <End Role="BPMNCollaboration" Type="Self.BPMNCollaboration" Multiplicity="1" />
+          <End Role="BPMNMessageFlow" Type="Self.BPMNMessageFlow" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNCollaboration">
+              <PropertyRef Name="CollaborationId" />
+            </Principal>
+            <Dependent Role="BPMNMessageFlow">
+              <PropertyRef Name="CollaborationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNParticipant_BPMNCollaboration">
+          <End Role="BPMNCollaboration" Type="Self.BPMNCollaboration" Multiplicity="1" />
+          <End Role="BPMNParticipant" Type="Self.BPMNParticipant" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNCollaboration">
+              <PropertyRef Name="CollaborationId" />
+            </Principal>
+            <Dependent Role="BPMNParticipant">
+              <PropertyRef Name="CollaborationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNEventDataObject_BPMNDataObject">
+          <End Role="BPMNDataObject" Type="Self.BPMNDataObject" Multiplicity="1" />
+          <End Role="BPMNEventDataObject" Type="Self.BPMNEventDataObject" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNDataObject">
+              <PropertyRef Name="DataObjectId" />
+            </Principal>
+            <Dependent Role="BPMNEventDataObject">
+              <PropertyRef Name="DataObjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNTaskDataObject_BPMNDataObject">
+          <End Role="BPMNDataObject" Type="Self.BPMNDataObject" Multiplicity="1" />
+          <End Role="BPMNTaskDataObject" Type="Self.BPMNTaskDataObject" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNDataObject">
+              <PropertyRef Name="DataObjectId" />
+            </Principal>
+            <Dependent Role="BPMNTaskDataObject">
+              <PropertyRef Name="DataObjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNEvent_BPMNProcess">
+          <End Role="BPMNProcess" Type="Self.BPMNProcess" Multiplicity="1" />
+          <End Role="BPMNEvent" Type="Self.BPMNEvent" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNProcess">
+              <PropertyRef Name="ProcessId" />
+            </Principal>
+            <Dependent Role="BPMNEvent">
+              <PropertyRef Name="ProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNEventAssociation_BPMNEvent">
+          <End Role="BPMNEvent" Type="Self.BPMNEvent" Multiplicity="1" />
+          <End Role="BPMNEventAssociation" Type="Self.BPMNEventAssociation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNEvent">
+              <PropertyRef Name="EventId" />
+            </Principal>
+            <Dependent Role="BPMNEventAssociation">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNEventDataObject_BPMNEvent">
+          <End Role="BPMNEvent" Type="Self.BPMNEvent" Multiplicity="1" />
+          <End Role="BPMNEventDataObject" Type="Self.BPMNEventDataObject" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNEvent">
+              <PropertyRef Name="EventId" />
+            </Principal>
+            <Dependent Role="BPMNEventDataObject">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNIncomingEvent_BPMNEvent">
+          <End Role="BPMNEvent" Type="Self.BPMNEvent" Multiplicity="1" />
+          <End Role="BPMNIncomingEvent" Type="Self.BPMNIncomingEvent" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNEvent">
+              <PropertyRef Name="EventId" />
+            </Principal>
+            <Dependent Role="BPMNIncomingEvent">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNOutgoingEvent_BPMNEvent">
+          <End Role="BPMNEvent" Type="Self.BPMNEvent" Multiplicity="1" />
+          <End Role="BPMNOutgoingEvent" Type="Self.BPMNOutgoingEvent" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNEvent">
+              <PropertyRef Name="EventId" />
+            </Principal>
+            <Dependent Role="BPMNOutgoingEvent">
+              <PropertyRef Name="EventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNEventAssociation_BPMNTextAnnotation">
+          <End Role="BPMNTextAnnotation" Type="Self.BPMNTextAnnotation" Multiplicity="1" />
+          <End Role="BPMNEventAssociation" Type="Self.BPMNEventAssociation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNTextAnnotation">
+              <PropertyRef Name="TextAnnotationId" />
+            </Principal>
+            <Dependent Role="BPMNEventAssociation">
+              <PropertyRef Name="TextAnnotationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNFlowNode_BPMNLane">
+          <End Role="BPMNLane" Type="Self.BPMNLane" Multiplicity="1" />
+          <End Role="BPMNFlowNode" Type="Self.BPMNFlowNode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNLane">
+              <PropertyRef Name="LaneId" />
+            </Principal>
+            <Dependent Role="BPMNFlowNode">
+              <PropertyRef Name="LaneId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNGateway_BPMNProcess">
+          <End Role="BPMNProcess" Type="Self.BPMNProcess" Multiplicity="1" />
+          <End Role="BPMNGateway" Type="Self.BPMNGateway" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNProcess">
+              <PropertyRef Name="ProcessId" />
+            </Principal>
+            <Dependent Role="BPMNGateway">
+              <PropertyRef Name="ProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNIncomingGateway_BPMNGateway">
+          <End Role="BPMNGateway" Type="Self.BPMNGateway" Multiplicity="1" />
+          <End Role="BPMNIncomingGateway" Type="Self.BPMNIncomingGateway" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNGateway">
+              <PropertyRef Name="GatewayId" />
+            </Principal>
+            <Dependent Role="BPMNIncomingGateway">
+              <PropertyRef Name="GatewayId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNOutgoingGateway_BPMNGateway">
+          <End Role="BPMNGateway" Type="Self.BPMNGateway" Multiplicity="1" />
+          <End Role="BPMNOutgoingGateway" Type="Self.BPMNOutgoingGateway" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNGateway">
+              <PropertyRef Name="GatewayId" />
+            </Principal>
+            <Dependent Role="BPMNOutgoingGateway">
+              <PropertyRef Name="GatewayId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNLane_BPMNLaneParent">
+          <End Role="BPMNLane" Type="Self.BPMNLane" Multiplicity="0..1" />
+          <End Role="BPMNLane1" Type="Self.BPMNLane" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNLane">
+              <PropertyRef Name="LaneId" />
+            </Principal>
+            <Dependent Role="BPMNLane1">
+              <PropertyRef Name="LaneParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNLane_BPMNLaneSet">
+          <End Role="BPMNLaneSet" Type="Self.BPMNLaneSet" Multiplicity="1" />
+          <End Role="BPMNLane" Type="Self.BPMNLane" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNLaneSet">
+              <PropertyRef Name="LaneSetId" />
+            </Principal>
+            <Dependent Role="BPMNLane">
+              <PropertyRef Name="LaneSetId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNLaneSet_BPMNProcess">
+          <End Role="BPMNProcess" Type="Self.BPMNProcess" Multiplicity="1" />
+          <End Role="BPMNLaneSet" Type="Self.BPMNLaneSet" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNProcess">
+              <PropertyRef Name="ProcessId" />
+            </Principal>
+            <Dependent Role="BPMNLaneSet">
+              <PropertyRef Name="ProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNSequenceFlow_BPMNProcess">
+          <End Role="BPMNProcess" Type="Self.BPMNProcess" Multiplicity="1" />
+          <End Role="BPMNSequenceFlow" Type="Self.BPMNSequenceFlow" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNProcess">
+              <PropertyRef Name="ProcessId" />
+            </Principal>
+            <Dependent Role="BPMNSequenceFlow">
+              <PropertyRef Name="ProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNTaskAssociation_BPMNTextAnnotation">
+          <End Role="BPMNTextAnnotation" Type="Self.BPMNTextAnnotation" Multiplicity="1" />
+          <End Role="BPMNTaskAssociation" Type="Self.BPMNTaskAssociation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNTextAnnotation">
+              <PropertyRef Name="TextAnnotationId" />
+            </Principal>
+            <Dependent Role="BPMNTaskAssociation">
+              <PropertyRef Name="TextAnnotationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="BPMNProcessTMS" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="BPMNCollaboration" EntityType="Self.BPMNCollaboration" />
+          <EntitySet Name="BPMNDataObject" EntityType="Self.BPMNDataObject" />
+          <EntitySet Name="BPMNEvent" EntityType="Self.BPMNEvent" />
+          <EntitySet Name="BPMNEventAssociation" EntityType="Self.BPMNEventAssociation" />
+          <EntitySet Name="BPMNEventDataObject" EntityType="Self.BPMNEventDataObject" />
+          <EntitySet Name="BPMNFlowNode" EntityType="Self.BPMNFlowNode" />
+          <EntitySet Name="BPMNGateway" EntityType="Self.BPMNGateway" />
+          <EntitySet Name="BPMNIncomingEvent" EntityType="Self.BPMNIncomingEvent" />
+          <EntitySet Name="BPMNIncomingGateway" EntityType="Self.BPMNIncomingGateway" />
+          <EntitySet Name="BPMNIncomingTask" EntityType="Self.BPMNIncomingTask" />
+          <EntitySet Name="BPMNLane" EntityType="Self.BPMNLane" />
+          <EntitySet Name="BPMNLaneSet" EntityType="Self.BPMNLaneSet" />
+          <EntitySet Name="BPMNMessageFlow" EntityType="Self.BPMNMessageFlow" />
+          <EntitySet Name="BPMNModel" EntityType="Self.BPMNModel" />
+          <EntitySet Name="BPMNOutgoingEvent" EntityType="Self.BPMNOutgoingEvent" />
+          <EntitySet Name="BPMNOutgoingGateway" EntityType="Self.BPMNOutgoingGateway" />
+          <EntitySet Name="BPMNOutgoingTask" EntityType="Self.BPMNOutgoingTask" />
+          <EntitySet Name="BPMNParticipant" EntityType="Self.BPMNParticipant" />
+          <EntitySet Name="BPMNProcess" EntityType="Self.BPMNProcess" />
+          <EntitySet Name="BPMNSequenceFlow" EntityType="Self.BPMNSequenceFlow" />
+          <EntitySet Name="BPMNTaskAssociation" EntityType="Self.BPMNTaskAssociation" />
+          <EntitySet Name="BPMNTaskDataObject" EntityType="Self.BPMNTaskDataObject" />
+          <EntitySet Name="BPMNTextAnnotation" EntityType="Self.BPMNTextAnnotation" />
+          <AssociationSet Name="FK_BPMNMessageFlow_BPMNCollaboration" Association="Self.FK_BPMNMessageFlow_BPMNCollaboration">
+            <End Role="BPMNCollaboration" EntitySet="BPMNCollaboration" />
+            <End Role="BPMNMessageFlow" EntitySet="BPMNMessageFlow" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNParticipant_BPMNCollaboration" Association="Self.FK_BPMNParticipant_BPMNCollaboration">
+            <End Role="BPMNCollaboration" EntitySet="BPMNCollaboration" />
+            <End Role="BPMNParticipant" EntitySet="BPMNParticipant" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNEventDataObject_BPMNDataObject" Association="Self.FK_BPMNEventDataObject_BPMNDataObject">
+            <End Role="BPMNDataObject" EntitySet="BPMNDataObject" />
+            <End Role="BPMNEventDataObject" EntitySet="BPMNEventDataObject" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNTaskDataObject_BPMNDataObject" Association="Self.FK_BPMNTaskDataObject_BPMNDataObject">
+            <End Role="BPMNDataObject" EntitySet="BPMNDataObject" />
+            <End Role="BPMNTaskDataObject" EntitySet="BPMNTaskDataObject" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNEvent_BPMNProcess" Association="Self.FK_BPMNEvent_BPMNProcess">
+            <End Role="BPMNProcess" EntitySet="BPMNProcess" />
+            <End Role="BPMNEvent" EntitySet="BPMNEvent" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNEventAssociation_BPMNEvent" Association="Self.FK_BPMNEventAssociation_BPMNEvent">
+            <End Role="BPMNEvent" EntitySet="BPMNEvent" />
+            <End Role="BPMNEventAssociation" EntitySet="BPMNEventAssociation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNEventDataObject_BPMNEvent" Association="Self.FK_BPMNEventDataObject_BPMNEvent">
+            <End Role="BPMNEvent" EntitySet="BPMNEvent" />
+            <End Role="BPMNEventDataObject" EntitySet="BPMNEventDataObject" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNIncomingEvent_BPMNEvent" Association="Self.FK_BPMNIncomingEvent_BPMNEvent">
+            <End Role="BPMNEvent" EntitySet="BPMNEvent" />
+            <End Role="BPMNIncomingEvent" EntitySet="BPMNIncomingEvent" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNOutgoingEvent_BPMNEvent" Association="Self.FK_BPMNOutgoingEvent_BPMNEvent">
+            <End Role="BPMNEvent" EntitySet="BPMNEvent" />
+            <End Role="BPMNOutgoingEvent" EntitySet="BPMNOutgoingEvent" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNEventAssociation_BPMNTextAnnotation" Association="Self.FK_BPMNEventAssociation_BPMNTextAnnotation">
+            <End Role="BPMNTextAnnotation" EntitySet="BPMNTextAnnotation" />
+            <End Role="BPMNEventAssociation" EntitySet="BPMNEventAssociation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNFlowNode_BPMNLane" Association="Self.FK_BPMNFlowNode_BPMNLane">
+            <End Role="BPMNLane" EntitySet="BPMNLane" />
+            <End Role="BPMNFlowNode" EntitySet="BPMNFlowNode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNGateway_BPMNProcess" Association="Self.FK_BPMNGateway_BPMNProcess">
+            <End Role="BPMNProcess" EntitySet="BPMNProcess" />
+            <End Role="BPMNGateway" EntitySet="BPMNGateway" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNIncomingGateway_BPMNGateway" Association="Self.FK_BPMNIncomingGateway_BPMNGateway">
+            <End Role="BPMNGateway" EntitySet="BPMNGateway" />
+            <End Role="BPMNIncomingGateway" EntitySet="BPMNIncomingGateway" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNOutgoingGateway_BPMNGateway" Association="Self.FK_BPMNOutgoingGateway_BPMNGateway">
+            <End Role="BPMNGateway" EntitySet="BPMNGateway" />
+            <End Role="BPMNOutgoingGateway" EntitySet="BPMNOutgoingGateway" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNLane_BPMNLaneParent" Association="Self.FK_BPMNLane_BPMNLaneParent">
+            <End Role="BPMNLane" EntitySet="BPMNLane" />
+            <End Role="BPMNLane1" EntitySet="BPMNLane" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNLane_BPMNLaneSet" Association="Self.FK_BPMNLane_BPMNLaneSet">
+            <End Role="BPMNLaneSet" EntitySet="BPMNLaneSet" />
+            <End Role="BPMNLane" EntitySet="BPMNLane" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNLaneSet_BPMNProcess" Association="Self.FK_BPMNLaneSet_BPMNProcess">
+            <End Role="BPMNProcess" EntitySet="BPMNProcess" />
+            <End Role="BPMNLaneSet" EntitySet="BPMNLaneSet" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNSequenceFlow_BPMNProcess" Association="Self.FK_BPMNSequenceFlow_BPMNProcess">
+            <End Role="BPMNProcess" EntitySet="BPMNProcess" />
+            <End Role="BPMNSequenceFlow" EntitySet="BPMNSequenceFlow" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNTaskAssociation_BPMNTextAnnotation" Association="Self.FK_BPMNTaskAssociation_BPMNTextAnnotation">
+            <End Role="BPMNTextAnnotation" EntitySet="BPMNTextAnnotation" />
+            <End Role="BPMNTaskAssociation" EntitySet="BPMNTaskAssociation" />
+          </AssociationSet>
+          <EntitySet Name="BPMNDefinitions" EntityType="BPMNProcessTMSModel.BPMNDefinitions" />
+          <AssociationSet Name="FK_BPMNDefinitions_BPMNCollaboration" Association="BPMNProcessTMSModel.FK_BPMNDefinitions_BPMNCollaboration">
+            <End Role="BPMNCollaboration" EntitySet="BPMNCollaboration" />
+            <End Role="BPMNDefinitions" EntitySet="BPMNDefinitions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNModel_BPMNDefinitions" Association="BPMNProcessTMSModel.FK_BPMNModel_BPMNDefinitions">
+            <End Role="BPMNDefinitions" EntitySet="BPMNDefinitions" />
+            <End Role="BPMNModel" EntitySet="BPMNModel" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNProcess_BPMNDefinitions" Association="BPMNProcessTMSModel.FK_BPMNProcess_BPMNDefinitions">
+            <End Role="BPMNDefinitions" EntitySet="BPMNDefinitions" />
+            <End Role="BPMNProcess" EntitySet="BPMNProcess" />
+          </AssociationSet>
+          <EntitySet Name="BPMNTask" EntityType="BPMNProcessTMSModel.BPMNTask" />
+          <AssociationSet Name="FK_BPMNIncomingTask_BPMNTask" Association="BPMNProcessTMSModel.FK_BPMNIncomingTask_BPMNTask">
+            <End Role="BPMNTask" EntitySet="BPMNTask" />
+            <End Role="BPMNIncomingTask" EntitySet="BPMNIncomingTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNOutgoingTask_BPMNTask" Association="BPMNProcessTMSModel.FK_BPMNOutgoingTask_BPMNTask">
+            <End Role="BPMNTask" EntitySet="BPMNTask" />
+            <End Role="BPMNOutgoingTask" EntitySet="BPMNOutgoingTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNTask_BPMNProcess" Association="BPMNProcessTMSModel.FK_BPMNTask_BPMNProcess">
+            <End Role="BPMNProcess" EntitySet="BPMNProcess" />
+            <End Role="BPMNTask" EntitySet="BPMNTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNTaskAssociation_BPMNTask" Association="BPMNProcessTMSModel.FK_BPMNTaskAssociation_BPMNTask">
+            <End Role="BPMNTask" EntitySet="BPMNTask" />
+            <End Role="BPMNTaskAssociation" EntitySet="BPMNTaskAssociation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNTaskDataObject_BPMNTask" Association="BPMNProcessTMSModel.FK_BPMNTaskDataObject_BPMNTask">
+            <End Role="BPMNTask" EntitySet="BPMNTask" />
+            <End Role="BPMNTaskDataObject" EntitySet="BPMNTaskDataObject" />
+          </AssociationSet>
+          <EntitySet Name="ExecDataObject" EntityType="BPMNProcessTMSModel.ExecDataObject" />
+          <EntitySet Name="ExecEvent" EntityType="BPMNProcessTMSModel.ExecEvent" />
+          <EntitySet Name="ExecModelProcess" EntityType="BPMNProcessTMSModel.ExecModelProcess" />
+          <EntitySet Name="ExecSequenceFlow" EntityType="BPMNProcessTMSModel.ExecSequenceFlow" />
+          <EntitySet Name="ExecTask" EntityType="BPMNProcessTMSModel.ExecTask" />
+          <EntitySet Name="Proceso" EntityType="BPMNProcessTMSModel.Proceso" />
+          <AssociationSet Name="FK_ExecDataObject_BPMNDataObject" Association="BPMNProcessTMSModel.FK_ExecDataObject_BPMNDataObject">
+            <End Role="BPMNDataObject" EntitySet="BPMNDataObject" />
+            <End Role="ExecDataObject" EntitySet="ExecDataObject" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExecEvent_BPMNEvent" Association="BPMNProcessTMSModel.FK_ExecEvent_BPMNEvent">
+            <End Role="BPMNEvent" EntitySet="BPMNEvent" />
+            <End Role="ExecEvent" EntitySet="ExecEvent" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNModel_Proceso" Association="BPMNProcessTMSModel.FK_BPMNModel_Proceso">
+            <End Role="Proceso" EntitySet="Proceso" />
+            <End Role="BPMNModel" EntitySet="BPMNModel" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExecModelProcess_BPMNModel" Association="BPMNProcessTMSModel.FK_ExecModelProcess_BPMNModel">
+            <End Role="BPMNModel" EntitySet="BPMNModel" />
+            <End Role="ExecModelProcess" EntitySet="ExecModelProcess" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExecSequenceFlow_BPMNSequenceFlow" Association="BPMNProcessTMSModel.FK_ExecSequenceFlow_BPMNSequenceFlow">
+            <End Role="BPMNSequenceFlow" EntitySet="BPMNSequenceFlow" />
+            <End Role="ExecSequenceFlow" EntitySet="ExecSequenceFlow" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExecTask_BPMNTask" Association="BPMNProcessTMSModel.FK_ExecTask_BPMNTask">
+            <End Role="BPMNTask" EntitySet="BPMNTask" />
+            <End Role="ExecTask" EntitySet="ExecTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExecDataObject_ExecModelProcess" Association="BPMNProcessTMSModel.FK_ExecDataObject_ExecModelProcess">
+            <End Role="ExecModelProcess" EntitySet="ExecModelProcess" />
+            <End Role="ExecDataObject" EntitySet="ExecDataObject" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExecEvent_ExecModelProcess" Association="BPMNProcessTMSModel.FK_ExecEvent_ExecModelProcess">
+            <End Role="ExecModelProcess" EntitySet="ExecModelProcess" />
+            <End Role="ExecEvent" EntitySet="ExecEvent" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExecSequenceFlow_ExecModelProcess" Association="BPMNProcessTMSModel.FK_ExecSequenceFlow_ExecModelProcess">
+            <End Role="ExecModelProcess" EntitySet="ExecModelProcess" />
+            <End Role="ExecSequenceFlow" EntitySet="ExecSequenceFlow" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ExecTask_ExecModelProcess" Association="BPMNProcessTMSModel.FK_ExecTask_ExecModelProcess">
+            <End Role="ExecModelProcess" EntitySet="ExecModelProcess" />
+            <End Role="ExecTask" EntitySet="ExecTask" />
+          </AssociationSet>
+          <EntitySet Name="BPMNSubProcess" EntityType="BPMNProcessTMSModel.BPMNSubProcess" />
+          <AssociationSet Name="FK_BPMNSubProcess_BPMNProcess" Association="BPMNProcessTMSModel.FK_BPMNSubProcess_BPMNProcess">
+            <End Role="BPMNProcess" EntitySet="BPMNProcess" />
+            <End Role="BPMNSubProcess" EntitySet="BPMNSubProcess" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNSubProcess_BPMNSubProcess" Association="BPMNProcessTMSModel.FK_BPMNSubProcess_BPMNSubProcess">
+            <End Role="BPMNSubProcess" EntitySet="BPMNSubProcess" />
+            <End Role="BPMNSubProcess1" EntitySet="BPMNSubProcess" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNEvent_BPMNSubProcess" Association="BPMNProcessTMSModel.FK_BPMNEvent_BPMNSubProcess">
+            <End Role="BPMNSubProcess" EntitySet="BPMNSubProcess" />
+            <End Role="BPMNEvent" EntitySet="BPMNEvent" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNGateway_BPMNSubProcess" Association="BPMNProcessTMSModel.FK_BPMNGateway_BPMNSubProcess">
+            <End Role="BPMNSubProcess" EntitySet="BPMNSubProcess" />
+            <End Role="BPMNGateway" EntitySet="BPMNGateway" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNTask_BPMNSubProcess" Association="BPMNProcessTMSModel.FK_BPMNTask_BPMNSubProcess">
+            <End Role="BPMNSubProcess" EntitySet="BPMNSubProcess" />
+            <End Role="BPMNTask" EntitySet="BPMNTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BPMNSequenceFlow_BPMNSubProcess" Association="BPMNProcessTMSModel.FK_BPMNSequenceFlow_BPMNSubProcess">
+            <End Role="BPMNSubProcess" EntitySet="BPMNSubProcess" />
+            <End Role="BPMNSequenceFlow" EntitySet="BPMNSequenceFlow" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="BPMNDefinitions">
+          <Key>
+            <PropertyRef Name="DefinitionId" />
+          </Key>
+          <Property Name="DefinitionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Exporter" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="ExporterVersion" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="CollaborationId" Type="Int32" />
+          <NavigationProperty Name="BPMNCollaboration" Relationship="BPMNProcessTMSModel.FK_BPMNDefinitions_BPMNCollaboration" FromRole="BPMNDefinitions" ToRole="BPMNCollaboration" />
+          <NavigationProperty Name="BPMNModel" Relationship="BPMNProcessTMSModel.FK_BPMNModel_BPMNDefinitions" FromRole="BPMNDefinitions" ToRole="BPMNModel" />
+          <NavigationProperty Name="BPMNProcess" Relationship="BPMNProcessTMSModel.FK_BPMNProcess_BPMNDefinitions" FromRole="BPMNDefinitions" ToRole="BPMNProcess" />
+        </EntityType>
+        <Association Name="FK_BPMNDefinitions_BPMNCollaboration">
+          <End Type="BPMNProcessTMSModel.BPMNCollaboration" Role="BPMNCollaboration" Multiplicity="0..1" />
+          <End Type="BPMNProcessTMSModel.BPMNDefinitions" Role="BPMNDefinitions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNCollaboration">
+              <PropertyRef Name="CollaborationId" />
+            </Principal>
+            <Dependent Role="BPMNDefinitions">
+              <PropertyRef Name="CollaborationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNModel_BPMNDefinitions">
+          <End Type="BPMNProcessTMSModel.BPMNDefinitions" Role="BPMNDefinitions" Multiplicity="0..1" />
+          <End Type="BPMNProcessTMSModel.BPMNModel" Role="BPMNModel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNDefinitions">
+              <PropertyRef Name="DefinitionId" />
+            </Principal>
+            <Dependent Role="BPMNModel">
+              <PropertyRef Name="DefinitionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNProcess_BPMNDefinitions">
+          <End Type="BPMNProcessTMSModel.BPMNDefinitions" Role="BPMNDefinitions" Multiplicity="1" />
+          <End Type="BPMNProcessTMSModel.BPMNProcess" Role="BPMNProcess" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNDefinitions">
+              <PropertyRef Name="DefinitionId" />
+            </Principal>
+            <Dependent Role="BPMNProcess">
+              <PropertyRef Name="DefinitionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="BPMNTask">
+          <Key>
+            <PropertyRef Name="TaskId" />
+          </Key>
+          <Property Name="TaskId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Type" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="StandardLoopCharacteristics" Type="Boolean" Nullable="false" />
+          <Property Name="MultiInstanceLoopCharacteristics" Type="Boolean" Nullable="false" />
+          <Property Name="IsSequential" Type="Boolean" Nullable="false" />
+          <Property Name="DefaultFlow" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ProcessId" Type="Int32" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BPMNIncomingTask" Relationship="BPMNProcessTMSModel.FK_BPMNIncomingTask_BPMNTask" FromRole="BPMNTask" ToRole="BPMNIncomingTask" />
+          <NavigationProperty Name="BPMNOutgoingTask" Relationship="BPMNProcessTMSModel.FK_BPMNOutgoingTask_BPMNTask" FromRole="BPMNTask" ToRole="BPMNOutgoingTask" />
+          <NavigationProperty Name="BPMNProcess" Relationship="BPMNProcessTMSModel.FK_BPMNTask_BPMNProcess" FromRole="BPMNTask" ToRole="BPMNProcess" />
+          <NavigationProperty Name="BPMNTaskAssociation" Relationship="BPMNProcessTMSModel.FK_BPMNTaskAssociation_BPMNTask" FromRole="BPMNTask" ToRole="BPMNTaskAssociation" />
+          <NavigationProperty Name="BPMNTaskDataObject" Relationship="BPMNProcessTMSModel.FK_BPMNTaskDataObject_BPMNTask" FromRole="BPMNTask" ToRole="BPMNTaskDataObject" />
+          <NavigationProperty Name="ExecTask" Relationship="BPMNProcessTMSModel.FK_ExecTask_BPMNTask" FromRole="BPMNTask" ToRole="ExecTask" />
+          <Property Name="IdTipoSol" Type="Decimal" Precision="4" Scale="0" />
+          <Property Name="SubProcessId" Type="Int32" />
+          <NavigationProperty Name="BPMNSubProcess" Relationship="BPMNProcessTMSModel.FK_BPMNTask_BPMNSubProcess" FromRole="BPMNTask" ToRole="BPMNSubProcess" />
+        </EntityType>
+        <Association Name="FK_BPMNIncomingTask_BPMNTask">
+          <End Type="BPMNProcessTMSModel.BPMNTask" Role="BPMNTask" Multiplicity="1" />
+          <End Type="BPMNProcessTMSModel.BPMNIncomingTask" Role="BPMNIncomingTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNTask">
+              <PropertyRef Name="TaskId" />
+            </Principal>
+            <Dependent Role="BPMNIncomingTask">
+              <PropertyRef Name="TaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNOutgoingTask_BPMNTask">
+          <End Type="BPMNProcessTMSModel.BPMNTask" Role="BPMNTask" Multiplicity="1" />
+          <End Type="BPMNProcessTMSModel.BPMNOutgoingTask" Role="BPMNOutgoingTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNTask">
+              <PropertyRef Name="TaskId" />
+            </Principal>
+            <Dependent Role="BPMNOutgoingTask">
+              <PropertyRef Name="TaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNTask_BPMNProcess">
+          <End Type="BPMNProcessTMSModel.BPMNProcess" Role="BPMNProcess" Multiplicity="1" />
+          <End Type="BPMNProcessTMSModel.BPMNTask" Role="BPMNTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNProcess">
+              <PropertyRef Name="ProcessId" />
+            </Principal>
+            <Dependent Role="BPMNTask">
+              <PropertyRef Name="ProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNTaskAssociation_BPMNTask">
+          <End Type="BPMNProcessTMSModel.BPMNTask" Role="BPMNTask" Multiplicity="1" />
+          <End Type="BPMNProcessTMSModel.BPMNTaskAssociation" Role="BPMNTaskAssociation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNTask">
+              <PropertyRef Name="TaskId" />
+            </Principal>
+            <Dependent Role="BPMNTaskAssociation">
+              <PropertyRef Name="TaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNTaskDataObject_BPMNTask">
+          <End Type="BPMNProcessTMSModel.BPMNTask" Role="BPMNTask" Multiplicity="1" />
+          <End Type="BPMNProcessTMSModel.BPMNTaskDataObject" Role="BPMNTaskDataObject" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNTask">
+              <PropertyRef Name="TaskId" />
+            </Principal>
+            <Dependent Role="BPMNTaskDataObject">
+              <PropertyRef Name="TaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="ExecDataObject">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BPMNDataObjectId" Type="Int32" Nullable="false" />
+          <Property Name="ExecModelProcessId" Type="Int32" Nullable="false" />
+          <Property Name="ObjectId" Type="Int32" />
+          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Generated" Type="Boolean" />
+          <Property Name="GeneratedDate" Type="DateTime" Precision="3" />
+          <Property Name="CycleNumber" Type="Int32" />
+          <Property Name="GeneratedDetails" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="BPMNDataObject" Relationship="BPMNProcessTMSModel.FK_ExecDataObject_BPMNDataObject" FromRole="ExecDataObject" ToRole="BPMNDataObject" />
+          <NavigationProperty Name="ExecModelProcess" Relationship="BPMNProcessTMSModel.FK_ExecDataObject_ExecModelProcess" FromRole="ExecDataObject" ToRole="ExecModelProcess" />
+        </EntityType>
+        <EntityType Name="ExecEvent">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BPMNEventId" Type="Int32" Nullable="false" />
+          <Property Name="ExecModelProcessId" Type="Int32" Nullable="false" />
+          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Generated" Type="Boolean" />
+          <Property Name="GeneratedDate" Type="DateTime" Precision="3" />
+          <Property Name="CycleNumber" Type="Int32" />
+          <Property Name="GeneratedDetails" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="BPMNEvent" Relationship="BPMNProcessTMSModel.FK_ExecEvent_BPMNEvent" FromRole="ExecEvent" ToRole="BPMNEvent" />
+          <NavigationProperty Name="ExecModelProcess" Relationship="BPMNProcessTMSModel.FK_ExecEvent_ExecModelProcess" FromRole="ExecEvent" ToRole="ExecModelProcess" />
+        </EntityType>
+        <EntityType Name="ExecModelProcess">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <Property Name="ProcessRadicationNumber" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UserId" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Close" Type="Boolean" />
+          <Property Name="Generated" Type="Boolean" />
+          <Property Name="GeneratedDate" Type="DateTime" Precision="3" />
+          <Property Name="CycleNumber" Type="Int32" />
+          <Property Name="GeneratedDetails" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="BPMNModel" Relationship="BPMNProcessTMSModel.FK_ExecModelProcess_BPMNModel" FromRole="ExecModelProcess" ToRole="BPMNModel" />
+          <NavigationProperty Name="ExecDataObject" Relationship="BPMNProcessTMSModel.FK_ExecDataObject_ExecModelProcess" FromRole="ExecModelProcess" ToRole="ExecDataObject" />
+          <NavigationProperty Name="ExecEvent" Relationship="BPMNProcessTMSModel.FK_ExecEvent_ExecModelProcess" FromRole="ExecModelProcess" ToRole="ExecEvent" />
+          <NavigationProperty Name="ExecSequenceFlow" Relationship="BPMNProcessTMSModel.FK_ExecSequenceFlow_ExecModelProcess" FromRole="ExecModelProcess" ToRole="ExecSequenceFlow" />
+          <NavigationProperty Name="ExecTask" Relationship="BPMNProcessTMSModel.FK_ExecTask_ExecModelProcess" FromRole="ExecModelProcess" ToRole="ExecTask" />
+        </EntityType>
+        <EntityType Name="ExecSequenceFlow">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BPMNSequenceFlowId" Type="Int32" Nullable="false" />
+          <Property Name="ExecModelProcessId" Type="Int32" Nullable="false" />
+          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Generated" Type="Boolean" />
+          <Property Name="GeneratedDate" Type="DateTime" Precision="3" />
+          <Property Name="CycleNumber" Type="Int32" />
+          <Property Name="GeneratedDetails" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="BPMNSequenceFlow" Relationship="BPMNProcessTMSModel.FK_ExecSequenceFlow_BPMNSequenceFlow" FromRole="ExecSequenceFlow" ToRole="BPMNSequenceFlow" />
+          <NavigationProperty Name="ExecModelProcess" Relationship="BPMNProcessTMSModel.FK_ExecSequenceFlow_ExecModelProcess" FromRole="ExecSequenceFlow" ToRole="ExecModelProcess" />
+        </EntityType>
+        <EntityType Name="ExecTask">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BPMNTaskId" Type="Int32" Nullable="false" />
+          <Property Name="ExecModelProcessId" Type="Int32" Nullable="false" />
+          <Property Name="TaskRadicationNumber" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Close" Type="Boolean" />
+          <Property Name="Generated" Type="Boolean" />
+          <Property Name="GeneratedDate" Type="DateTime" Precision="3" />
+          <Property Name="CycleNumber" Type="Int32" />
+          <Property Name="GeneratedDetails" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="BPMNTask" Relationship="BPMNProcessTMSModel.FK_ExecTask_BPMNTask" FromRole="ExecTask" ToRole="BPMNTask" />
+          <NavigationProperty Name="ExecModelProcess" Relationship="BPMNProcessTMSModel.FK_ExecTask_ExecModelProcess" FromRole="ExecTask" ToRole="ExecModelProcess" />
+        </EntityType>
+        <EntityType Name="Proceso">
+          <Key>
+            <PropertyRef Name="IdProceso" />
+          </Key>
+          <Property Name="IdProceso" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Nombre" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="Descripcion" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="FechaCreacion" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UsuarioCreacion" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Version" Type="Int32" Nullable="false" />
+          <Property Name="Estado" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="GidProceso" Type="Guid" Nullable="false" />
+          <Property Name="FechaModificacion" Type="DateTime" Precision="3" />
+          <Property Name="UsuarioModificacion" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Aplicacion" Type="String" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Name="Ambiente" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="EstaBloqueado" Type="Boolean" Nullable="false" />
+          <Property Name="TipoProceso" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="BPMNModel" Relationship="BPMNProcessTMSModel.FK_BPMNModel_Proceso" FromRole="Proceso" ToRole="BPMNModel" />
+        </EntityType>
+        <Association Name="FK_ExecDataObject_BPMNDataObject">
+          <End Type="BPMNProcessTMSModel.BPMNDataObject" Role="BPMNDataObject" Multiplicity="1" />
+          <End Type="BPMNProcessTMSModel.ExecDataObject" Role="ExecDataObject" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNDataObject">
+              <PropertyRef Name="DataObjectId" />
+            </Principal>
+            <Dependent Role="ExecDataObject">
+              <PropertyRef Name="BPMNDataObjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExecEvent_BPMNEvent">
+          <End Type="BPMNProcessTMSModel.BPMNEvent" Role="BPMNEvent" Multiplicity="1" />
+          <End Type="BPMNProcessTMSModel.ExecEvent" Role="ExecEvent" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNEvent">
+              <PropertyRef Name="EventId" />
+            </Principal>
+            <Dependent Role="ExecEvent">
+              <PropertyRef Name="BPMNEventId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNModel_Proceso">
+          <End Type="BPMNProcessTMSModel.Proceso" Role="Proceso" Multiplicity="0..1" />
+          <End Type="BPMNProcessTMSModel.BPMNModel" Role="BPMNModel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proceso">
+              <PropertyRef Name="IdProceso" />
+            </Principal>
+            <Dependent Role="BPMNModel">
+              <PropertyRef Name="IdProceso" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExecModelProcess_BPMNModel">
+          <End Type="BPMNProcessTMSModel.BPMNModel" Role="BPMNModel" Multiplicity="1" />
+          <End Type="BPMNProcessTMSModel.ExecModelProcess" Role="ExecModelProcess" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNModel">
+              <PropertyRef Name="ModelId" />
+            </Principal>
+            <Dependent Role="ExecModelProcess">
+              <PropertyRef Name="ModelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExecSequenceFlow_BPMNSequenceFlow">
+          <End Type="BPMNProcessTMSModel.BPMNSequenceFlow" Role="BPMNSequenceFlow" Multiplicity="1" />
+          <End Type="BPMNProcessTMSModel.ExecSequenceFlow" Role="ExecSequenceFlow" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNSequenceFlow">
+              <PropertyRef Name="SequenceId" />
+            </Principal>
+            <Dependent Role="ExecSequenceFlow">
+              <PropertyRef Name="BPMNSequenceFlowId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExecTask_BPMNTask">
+          <End Type="BPMNProcessTMSModel.BPMNTask" Role="BPMNTask" Multiplicity="1" />
+          <End Type="BPMNProcessTMSModel.ExecTask" Role="ExecTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNTask">
+              <PropertyRef Name="TaskId" />
+            </Principal>
+            <Dependent Role="ExecTask">
+              <PropertyRef Name="BPMNTaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExecDataObject_ExecModelProcess">
+          <End Type="BPMNProcessTMSModel.ExecModelProcess" Role="ExecModelProcess" Multiplicity="1" />
+          <End Type="BPMNProcessTMSModel.ExecDataObject" Role="ExecDataObject" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExecModelProcess">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ExecDataObject">
+              <PropertyRef Name="ExecModelProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExecEvent_ExecModelProcess">
+          <End Type="BPMNProcessTMSModel.ExecModelProcess" Role="ExecModelProcess" Multiplicity="1" />
+          <End Type="BPMNProcessTMSModel.ExecEvent" Role="ExecEvent" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExecModelProcess">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ExecEvent">
+              <PropertyRef Name="ExecModelProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExecSequenceFlow_ExecModelProcess">
+          <End Type="BPMNProcessTMSModel.ExecModelProcess" Role="ExecModelProcess" Multiplicity="1" />
+          <End Type="BPMNProcessTMSModel.ExecSequenceFlow" Role="ExecSequenceFlow" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExecModelProcess">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ExecSequenceFlow">
+              <PropertyRef Name="ExecModelProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ExecTask_ExecModelProcess">
+          <End Type="BPMNProcessTMSModel.ExecModelProcess" Role="ExecModelProcess" Multiplicity="1" />
+          <End Type="BPMNProcessTMSModel.ExecTask" Role="ExecTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExecModelProcess">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ExecTask">
+              <PropertyRef Name="ExecModelProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="BPMNSubProcess">
+          <Key>
+            <PropertyRef Name="SubProcessId" />
+          </Key>
+          <Property Name="SubProcessId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="SubProcessParentId" Type="Int32" />
+          <Property Name="ProcessId" Type="Int32" Nullable="false" />
+          <Property Name="ModelId" Type="Int32" Nullable="false" />
+          <Property Name="IdTipoSol" Type="Decimal" Precision="4" Scale="0" />
+          <NavigationProperty Name="BPMNProcess" Relationship="BPMNProcessTMSModel.FK_BPMNSubProcess_BPMNProcess" FromRole="BPMNSubProcess" ToRole="BPMNProcess" />
+          <NavigationProperty Name="BPMNSubProcess1" Relationship="BPMNProcessTMSModel.FK_BPMNSubProcess_BPMNSubProcess" FromRole="BPMNSubProcess" ToRole="BPMNSubProcess1" />
+          <NavigationProperty Name="BPMNSubProcess2" Relationship="BPMNProcessTMSModel.FK_BPMNSubProcess_BPMNSubProcess" FromRole="BPMNSubProcess1" ToRole="BPMNSubProcess" />
+          <NavigationProperty Name="BPMNEvent" Relationship="BPMNProcessTMSModel.FK_BPMNEvent_BPMNSubProcess" FromRole="BPMNSubProcess" ToRole="BPMNEvent" />
+          <NavigationProperty Name="BPMNGateway" Relationship="BPMNProcessTMSModel.FK_BPMNGateway_BPMNSubProcess" FromRole="BPMNSubProcess" ToRole="BPMNGateway" />
+          <NavigationProperty Name="BPMNTask" Relationship="BPMNProcessTMSModel.FK_BPMNTask_BPMNSubProcess" FromRole="BPMNSubProcess" ToRole="BPMNTask" />
+          <NavigationProperty Name="BPMNSequenceFlow" Relationship="BPMNProcessTMSModel.FK_BPMNSequenceFlow_BPMNSubProcess" FromRole="BPMNSubProcess" ToRole="BPMNSequenceFlow" />
+        </EntityType>
+        <Association Name="FK_BPMNSubProcess_BPMNProcess">
+          <End Type="BPMNProcessTMSModel.BPMNProcess" Role="BPMNProcess" Multiplicity="1" />
+          <End Type="BPMNProcessTMSModel.BPMNSubProcess" Role="BPMNSubProcess" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNProcess">
+              <PropertyRef Name="ProcessId" />
+            </Principal>
+            <Dependent Role="BPMNSubProcess">
+              <PropertyRef Name="ProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNSubProcess_BPMNSubProcess">
+          <End Type="BPMNProcessTMSModel.BPMNSubProcess" Role="BPMNSubProcess" Multiplicity="0..1" />
+          <End Type="BPMNProcessTMSModel.BPMNSubProcess" Role="BPMNSubProcess1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNSubProcess">
+              <PropertyRef Name="SubProcessId" />
+            </Principal>
+            <Dependent Role="BPMNSubProcess1">
+              <PropertyRef Name="SubProcessParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNEvent_BPMNSubProcess">
+          <End Type="BPMNProcessTMSModel.BPMNSubProcess" Role="BPMNSubProcess" Multiplicity="0..1" />
+          <End Type="BPMNProcessTMSModel.BPMNEvent" Role="BPMNEvent" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNSubProcess">
+              <PropertyRef Name="SubProcessId" />
+            </Principal>
+            <Dependent Role="BPMNEvent">
+              <PropertyRef Name="SubProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNGateway_BPMNSubProcess">
+          <End Type="BPMNProcessTMSModel.BPMNSubProcess" Role="BPMNSubProcess" Multiplicity="0..1" />
+          <End Type="BPMNProcessTMSModel.BPMNGateway" Role="BPMNGateway" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNSubProcess">
+              <PropertyRef Name="SubProcessId" />
+            </Principal>
+            <Dependent Role="BPMNGateway">
+              <PropertyRef Name="SubProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNTask_BPMNSubProcess">
+          <End Type="BPMNProcessTMSModel.BPMNSubProcess" Role="BPMNSubProcess" Multiplicity="0..1" />
+          <End Type="BPMNProcessTMSModel.BPMNTask" Role="BPMNTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNSubProcess">
+              <PropertyRef Name="SubProcessId" />
+            </Principal>
+            <Dependent Role="BPMNTask">
+              <PropertyRef Name="SubProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BPMNSequenceFlow_BPMNSubProcess">
+          <End Type="BPMNProcessTMSModel.BPMNSubProcess" Role="BPMNSubProcess" Multiplicity="0..1" />
+          <End Type="BPMNProcessTMSModel.BPMNSequenceFlow" Role="BPMNSequenceFlow" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BPMNSubProcess">
+              <PropertyRef Name="SubProcessId" />
+            </Principal>
+            <Dependent Role="BPMNSequenceFlow">
+              <PropertyRef Name="SubProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="BPMNProcessTMSModelStoreContainer" CdmEntityContainer="BPMNProcessTMS">
+          <EntitySetMapping Name="BPMNCollaboration">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNCollaboration">
+              <MappingFragment StoreEntitySet="BPMNCollaboration">
+                <ScalarProperty Name="IdProceso" ColumnName="IdProceso" />
+                <ScalarProperty Name="CollaborationId" ColumnName="CollaborationId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNDataObject">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNDataObject">
+              <MappingFragment StoreEntitySet="BPMNDataObject">
+                <ScalarProperty Name="IdTipoDoc" ColumnName="IdTipoDoc" />
+                <ScalarProperty Name="DataObjectId" ColumnName="DataObjectId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="DataObjectRef" ColumnName="DataObjectRef" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNEvent">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNEvent">
+              <MappingFragment StoreEntitySet="BPMNEvent">
+                <ScalarProperty Name="IdTipoDoc" ColumnName="IdTipoDoc" />
+                <ScalarProperty Name="SubProcessId" ColumnName="SubProcessId" />
+                <ScalarProperty Name="IdTipoSol" ColumnName="IdTipoSol" />
+                <ScalarProperty Name="EventId" ColumnName="EventId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Event" ColumnName="Event" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="TypeId" ColumnName="TypeId" />
+                <ScalarProperty Name="ProcessId" ColumnName="ProcessId" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNEventAssociation">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNEventAssociation">
+              <MappingFragment StoreEntitySet="BPMNEventAssociation">
+                <ScalarProperty Name="EventAssociationId" ColumnName="EventAssociationId" />
+                <ScalarProperty Name="EventId" ColumnName="EventId" />
+                <ScalarProperty Name="TextAnnotationId" ColumnName="TextAnnotationId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SourceRef" ColumnName="SourceRef" />
+                <ScalarProperty Name="TargetRef" ColumnName="TargetRef" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNEventDataObject">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNEventDataObject">
+              <MappingFragment StoreEntitySet="BPMNEventDataObject">
+                <ScalarProperty Name="EventDataObjectId" ColumnName="EventDataObjectId" />
+                <ScalarProperty Name="EventId" ColumnName="EventId" />
+                <ScalarProperty Name="DataObjectId" ColumnName="DataObjectId" />
+                <ScalarProperty Name="SourceRef" ColumnName="SourceRef" />
+                <ScalarProperty Name="TargetRef" ColumnName="TargetRef" />
+                <ScalarProperty Name="DataInputAssociationId" ColumnName="DataInputAssociationId" />
+                <ScalarProperty Name="DataOutputAssociationId" ColumnName="DataOutputAssociationId" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNFlowNode">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNFlowNode">
+              <MappingFragment StoreEntitySet="BPMNFlowNode">
+                <ScalarProperty Name="FlowNodeRefId" ColumnName="FlowNodeRefId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="LaneId" ColumnName="LaneId" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNGateway">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNGateway">
+              <MappingFragment StoreEntitySet="BPMNGateway">
+                <ScalarProperty Name="SubProcessId" ColumnName="SubProcessId" />
+                <ScalarProperty Name="GatewayId" ColumnName="GatewayId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Direction" ColumnName="Direction" />
+                <ScalarProperty Name="DefaultFlow" ColumnName="DefaultFlow" />
+                <ScalarProperty Name="ProcessId" ColumnName="ProcessId" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNIncomingEvent">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNIncomingEvent">
+              <MappingFragment StoreEntitySet="BPMNIncomingEvent">
+                <ScalarProperty Name="IncomingTaskId" ColumnName="IncomingTaskId" />
+                <ScalarProperty Name="EventId" ColumnName="EventId" />
+                <ScalarProperty Name="Incoming" ColumnName="Incoming" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNIncomingGateway">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNIncomingGateway">
+              <MappingFragment StoreEntitySet="BPMNIncomingGateway">
+                <ScalarProperty Name="IncomingGatewayId" ColumnName="IncomingGatewayId" />
+                <ScalarProperty Name="GatewayId" ColumnName="GatewayId" />
+                <ScalarProperty Name="Incoming" ColumnName="Incoming" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNIncomingTask">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNIncomingTask">
+              <MappingFragment StoreEntitySet="BPMNIncomingTask">
+                <ScalarProperty Name="IncomingTaskId" ColumnName="IncomingTaskId" />
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+                <ScalarProperty Name="Incoming" ColumnName="Incoming" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNLane">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNLane">
+              <MappingFragment StoreEntitySet="BPMNLane">
+                <ScalarProperty Name="IdRol" ColumnName="IdRol" />
+                <ScalarProperty Name="IdCargo" ColumnName="IdCargo" />
+                <ScalarProperty Name="LaneId" ColumnName="LaneId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="LaneSetId" ColumnName="LaneSetId" />
+                <ScalarProperty Name="LaneParentId" ColumnName="LaneParentId" />
+                <ScalarProperty Name="ChildLaneSet" ColumnName="ChildLaneSet" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNLaneSet">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNLaneSet">
+              <MappingFragment StoreEntitySet="BPMNLaneSet">
+                <ScalarProperty Name="LaneSetId" ColumnName="LaneSetId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ProcessId" ColumnName="ProcessId" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNMessageFlow">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNMessageFlow">
+              <MappingFragment StoreEntitySet="BPMNMessageFlow">
+                <ScalarProperty Name="MessageFlowId" ColumnName="MessageFlowId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SourceRef" ColumnName="SourceRef" />
+                <ScalarProperty Name="TargetRef" ColumnName="TargetRef" />
+                <ScalarProperty Name="CollaborationId" ColumnName="CollaborationId" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNModel">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNModel">
+              <MappingFragment StoreEntitySet="BPMNModel">
+                <ScalarProperty Name="Procesado" ColumnName="Procesado" />
+                <ScalarProperty Name="IdProceso" ColumnName="IdProceso" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+                <ScalarProperty Name="GID" ColumnName="GID" />
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="XMLFile" ColumnName="XMLFile" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Active" ColumnName="Active" />
+                <ScalarProperty Name="Version" ColumnName="Version" />
+                <ScalarProperty Name="DefinitionId" ColumnName="DefinitionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNOutgoingEvent">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNOutgoingEvent">
+              <MappingFragment StoreEntitySet="BPMNOutgoingEvent">
+                <ScalarProperty Name="OutgoingEventId" ColumnName="OutgoingEventId" />
+                <ScalarProperty Name="EventId" ColumnName="EventId" />
+                <ScalarProperty Name="Outgoing" ColumnName="Outgoing" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNOutgoingGateway">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNOutgoingGateway">
+              <MappingFragment StoreEntitySet="BPMNOutgoingGateway">
+                <ScalarProperty Name="OutgoingGatewayId" ColumnName="OutgoingGatewayId" />
+                <ScalarProperty Name="GatewayId" ColumnName="GatewayId" />
+                <ScalarProperty Name="Outgoing" ColumnName="Outgoing" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNOutgoingTask">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNOutgoingTask">
+              <MappingFragment StoreEntitySet="BPMNOutgoingTask">
+                <ScalarProperty Name="OutgoingTaskId" ColumnName="OutgoingTaskId" />
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+                <ScalarProperty Name="Outgoing" ColumnName="Outgoing" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNParticipant">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNParticipant">
+              <MappingFragment StoreEntitySet="BPMNParticipant">
+                <ScalarProperty Name="IdProceso" ColumnName="IdProceso" />
+                <ScalarProperty Name="ParticipantId" ColumnName="ParticipantId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ProcessRef" ColumnName="ProcessRef" />
+                <ScalarProperty Name="CollaborationId" ColumnName="CollaborationId" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNProcess">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNProcess">
+              <MappingFragment StoreEntitySet="BPMNProcess">
+                <ScalarProperty Name="IdProceso" ColumnName="IdProceso" />
+                <ScalarProperty Name="ProcessId" ColumnName="ProcessId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="DefinitionId" ColumnName="DefinitionId" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNSequenceFlow">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNSequenceFlow">
+              <MappingFragment StoreEntitySet="BPMNSequenceFlow">
+                <ScalarProperty Name="IdCausaTipificacion" ColumnName="IdCausaTipificacion" />
+                <ScalarProperty Name="IdCausa" ColumnName="IdCausa" />
+                <ScalarProperty Name="SubProcessId" ColumnName="SubProcessId" />
+                <ScalarProperty Name="TargetRefType" ColumnName="TargetRefType" />
+                <ScalarProperty Name="SourceRefType" ColumnName="SourceRefType" />
+                <ScalarProperty Name="SequenceId" ColumnName="SequenceId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SourceRef" ColumnName="SourceRef" />
+                <ScalarProperty Name="TargetRef" ColumnName="TargetRef" />
+                <ScalarProperty Name="ConditionId" ColumnName="ConditionId" />
+                <ScalarProperty Name="ConditionExpression" ColumnName="ConditionExpression" />
+                <ScalarProperty Name="ProcessId" ColumnName="ProcessId" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNTaskAssociation">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNTaskAssociation">
+              <MappingFragment StoreEntitySet="BPMNTaskAssociation">
+                <ScalarProperty Name="TaskAssociationId" ColumnName="TaskAssociationId" />
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+                <ScalarProperty Name="TextAnnotationId" ColumnName="TextAnnotationId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SourceRef" ColumnName="SourceRef" />
+                <ScalarProperty Name="TargetRef" ColumnName="TargetRef" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNTaskDataObject">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNTaskDataObject">
+              <MappingFragment StoreEntitySet="BPMNTaskDataObject">
+                <ScalarProperty Name="TaskDataObjectId" ColumnName="TaskDataObjectId" />
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+                <ScalarProperty Name="DataObjectId" ColumnName="DataObjectId" />
+                <ScalarProperty Name="SourceRef" ColumnName="SourceRef" />
+                <ScalarProperty Name="TargetRef" ColumnName="TargetRef" />
+                <ScalarProperty Name="DataInputAssociationId" ColumnName="DataInputAssociationId" />
+                <ScalarProperty Name="DataOutputAssociationId" ColumnName="DataOutputAssociationId" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNTextAnnotation">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNTextAnnotation">
+              <MappingFragment StoreEntitySet="BPMNTextAnnotation">
+                <ScalarProperty Name="TextAnnotationId" ColumnName="TextAnnotationId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Text" ColumnName="Text" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNDefinitions">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNDefinitions">
+              <MappingFragment StoreEntitySet="BPMNDefinitions">
+                <ScalarProperty Name="CollaborationId" ColumnName="CollaborationId" />
+                <ScalarProperty Name="ExporterVersion" ColumnName="ExporterVersion" />
+                <ScalarProperty Name="Exporter" ColumnName="Exporter" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="DefinitionId" ColumnName="DefinitionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNTask">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNTask">
+              <MappingFragment StoreEntitySet="BPMNTask">
+                <ScalarProperty Name="SubProcessId" ColumnName="SubProcessId" />
+                <ScalarProperty Name="IdTipoSol" ColumnName="IdTipoSol" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+                <ScalarProperty Name="ProcessId" ColumnName="ProcessId" />
+                <ScalarProperty Name="DefaultFlow" ColumnName="DefaultFlow" />
+                <ScalarProperty Name="IsSequential" ColumnName="IsSequential" />
+                <ScalarProperty Name="MultiInstanceLoopCharacteristics" ColumnName="MultiInstanceLoopCharacteristics" />
+                <ScalarProperty Name="StandardLoopCharacteristics" ColumnName="StandardLoopCharacteristics" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ExecDataObject">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.ExecDataObject">
+              <MappingFragment StoreEntitySet="ExecDataObject">
+                <ScalarProperty Name="GeneratedDetails" ColumnName="GeneratedDetails" />
+                <ScalarProperty Name="CycleNumber" ColumnName="CycleNumber" />
+                <ScalarProperty Name="GeneratedDate" ColumnName="GeneratedDate" />
+                <ScalarProperty Name="Generated" ColumnName="Generated" />
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="ObjectId" ColumnName="ObjectId" />
+                <ScalarProperty Name="ExecModelProcessId" ColumnName="ExecModelProcessId" />
+                <ScalarProperty Name="BPMNDataObjectId" ColumnName="BPMNDataObjectId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ExecEvent">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.ExecEvent">
+              <MappingFragment StoreEntitySet="ExecEvent">
+                <ScalarProperty Name="GeneratedDetails" ColumnName="GeneratedDetails" />
+                <ScalarProperty Name="CycleNumber" ColumnName="CycleNumber" />
+                <ScalarProperty Name="GeneratedDate" ColumnName="GeneratedDate" />
+                <ScalarProperty Name="Generated" ColumnName="Generated" />
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="ExecModelProcessId" ColumnName="ExecModelProcessId" />
+                <ScalarProperty Name="BPMNEventId" ColumnName="BPMNEventId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ExecModelProcess">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.ExecModelProcess">
+              <MappingFragment StoreEntitySet="ExecModelProcess">
+                <ScalarProperty Name="GeneratedDetails" ColumnName="GeneratedDetails" />
+                <ScalarProperty Name="CycleNumber" ColumnName="CycleNumber" />
+                <ScalarProperty Name="GeneratedDate" ColumnName="GeneratedDate" />
+                <ScalarProperty Name="Generated" ColumnName="Generated" />
+                <ScalarProperty Name="Close" ColumnName="Close" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="ProcessRadicationNumber" ColumnName="ProcessRadicationNumber" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ExecSequenceFlow">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.ExecSequenceFlow">
+              <MappingFragment StoreEntitySet="ExecSequenceFlow">
+                <ScalarProperty Name="GeneratedDetails" ColumnName="GeneratedDetails" />
+                <ScalarProperty Name="CycleNumber" ColumnName="CycleNumber" />
+                <ScalarProperty Name="GeneratedDate" ColumnName="GeneratedDate" />
+                <ScalarProperty Name="Generated" ColumnName="Generated" />
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="ExecModelProcessId" ColumnName="ExecModelProcessId" />
+                <ScalarProperty Name="BPMNSequenceFlowId" ColumnName="BPMNSequenceFlowId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ExecTask">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.ExecTask">
+              <MappingFragment StoreEntitySet="ExecTask">
+                <ScalarProperty Name="GeneratedDetails" ColumnName="GeneratedDetails" />
+                <ScalarProperty Name="CycleNumber" ColumnName="CycleNumber" />
+                <ScalarProperty Name="GeneratedDate" ColumnName="GeneratedDate" />
+                <ScalarProperty Name="Generated" ColumnName="Generated" />
+                <ScalarProperty Name="Close" ColumnName="Close" />
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="TaskRadicationNumber" ColumnName="TaskRadicationNumber" />
+                <ScalarProperty Name="ExecModelProcessId" ColumnName="ExecModelProcessId" />
+                <ScalarProperty Name="BPMNTaskId" ColumnName="BPMNTaskId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Proceso">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.Proceso">
+              <MappingFragment StoreEntitySet="Proceso">
+                <ScalarProperty Name="TipoProceso" ColumnName="TipoProceso" />
+                <ScalarProperty Name="EstaBloqueado" ColumnName="EstaBloqueado" />
+                <ScalarProperty Name="Ambiente" ColumnName="Ambiente" />
+                <ScalarProperty Name="Aplicacion" ColumnName="Aplicacion" />
+                <ScalarProperty Name="UsuarioModificacion" ColumnName="UsuarioModificacion" />
+                <ScalarProperty Name="FechaModificacion" ColumnName="FechaModificacion" />
+                <ScalarProperty Name="GidProceso" ColumnName="GidProceso" />
+                <ScalarProperty Name="Estado" ColumnName="Estado" />
+                <ScalarProperty Name="Version" ColumnName="Version" />
+                <ScalarProperty Name="UsuarioCreacion" ColumnName="UsuarioCreacion" />
+                <ScalarProperty Name="FechaCreacion" ColumnName="FechaCreacion" />
+                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="IdProceso" ColumnName="IdProceso" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BPMNSubProcess">
+            <EntityTypeMapping TypeName="BPMNProcessTMSModel.BPMNSubProcess">
+              <MappingFragment StoreEntitySet="BPMNSubProcess">
+                <ScalarProperty Name="IdTipoSol" ColumnName="IdTipoSol" />
+                <ScalarProperty Name="ModelId" ColumnName="ModelId" />
+                <ScalarProperty Name="ProcessId" ColumnName="ProcessId" />
+                <ScalarProperty Name="SubProcessParentId" ColumnName="SubProcessParentId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SubProcessId" ColumnName="SubProcessId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

@@ -1,0 +1,1239 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="LogsTms.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="ControlFixesArq">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="VersionMayor" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Fix" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="HotFix" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="FechaInicioEjecucion" Type="datetime" Nullable="false" />
+          <Property Name="FechaFinEjecucion" Type="datetime" />
+          <Property Name="Descripcion" Type="varchar(max)" Nullable="false" />
+          <Property Name="Usuario" Type="varchar" MaxLength="80" Nullable="false" />
+          <Property Name="Ip" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ConsecutivoUnico" Type="varchar" MaxLength="10" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CONTROL_FIXES">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="versiontms" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="fix" Type="varchar" MaxLength="10" />
+          <Property Name="fecha_proceso" Type="datetime" Nullable="false" />
+          <Property Name="estado_proceso" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="mensaje" Type="varchar" MaxLength="2000" Nullable="false" />
+          <Property Name="ip" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="usuariowin" Type="varchar" MaxLength="80" Nullable="false" />
+          <Property Name="HotFix" Type="varchar" MaxLength="20" />
+          <Property Name="FechaFinProceso" Type="datetime" />
+          <Property Name="Descripcion" Type="varchar(max)" />
+        </EntityType>
+        <!--Errores durante la generación:
+advertencia 6002: La tabla o vista 'BDTMS2020.dbo.DocumentosNoProcesadosPorListarSolAsignacionMasivas' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
+        <EntityType Name="DocumentosNoProcesadosPorListarSolAsignacionMasivas">
+          <Key>
+            <PropertyRef Name="IdRegistro" />
+            <PropertyRef Name="FechaRegistro" />
+          </Key>
+          <Property Name="IdRegistro" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdDocumento" Type="int" />
+          <Property Name="IdTipoDoc" Type="int" />
+          <Property Name="NombreTipoDoc" Type="varchar" MaxLength="250" />
+          <Property Name="IdBloque" Type="int" />
+          <Property Name="Radicacion" Type="varchar" MaxLength="50" />
+          <Property Name="FechaRadicacion" Type="datetime" />
+          <Property Name="IdUsuarioRadicador" Type="varchar" MaxLength="30" />
+          <Property Name="NombreUsuarioRadicador" Type="varchar" MaxLength="200" />
+          <Property Name="IdDeptoRadicador" Type="int" />
+          <Property Name="NombreDeptoRadicador" Type="varchar" MaxLength="100" />
+          <Property Name="Descripcion" Type="varchar" MaxLength="512" />
+          <Property Name="FechaRegistro" Type="datetime" Nullable="false" />
+        </EntityType>
+        <!--Errores durante la generación:
+advertencia 6002: La tabla o vista 'BDTMS2020.dbo.ERROR_SERVICIO_ASIGNACION_MASIVA' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
+        <EntityType Name="ERROR_SERVICIO_ASIGNACION_MASIVA">
+          <Key>
+            <PropertyRef Name="id_documento" />
+            <PropertyRef Name="id_bloque" />
+            <PropertyRef Name="fecha_proceso" />
+            <PropertyRef Name="Intento" />
+          </Key>
+          <Property Name="id_documento" Type="int" Nullable="false" />
+          <Property Name="id_bloque" Type="int" Nullable="false" />
+          <Property Name="descripcion_error" Type="varchar" MaxLength="6000" />
+          <Property Name="fecha_proceso" Type="datetime" Nullable="false" />
+          <Property Name="Intento" Type="tinyint" Nullable="false" />
+        </EntityType>
+        <!--Errores durante la generación:
+advertencia 6002: La tabla o vista 'BDTMS2020.dbo.ERROR_SERVICIO_ASIGNACION_MASIVA_LOG' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
+        <EntityType Name="ERROR_SERVICIO_ASIGNACION_MASIVA_LOG">
+          <Key>
+            <PropertyRef Name="id_documento" />
+            <PropertyRef Name="id_bloque" />
+            <PropertyRef Name="fecha_proceso" />
+            <PropertyRef Name="Intento" />
+          </Key>
+          <Property Name="id_documento" Type="int" Nullable="false" />
+          <Property Name="id_bloque" Type="int" Nullable="false" />
+          <Property Name="descripcion_error" Type="varchar" MaxLength="6000" />
+          <Property Name="fecha_proceso" Type="datetime" Nullable="false" />
+          <Property Name="Intento" Type="tinyint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ERROR_SERVICIO_CONSUMO_WEBSERVICE">
+          <Key>
+            <PropertyRef Name="id_log" />
+          </Key>
+          <Property Name="id_log" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id_solicitud" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="descripcion_error" Type="varchar" MaxLength="6000" Nullable="false" />
+          <Property Name="fecha_proceso" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ERROR_SERVICIO_CONSUMO_WEBSERVICE_LOG">
+          <Key>
+            <PropertyRef Name="id_log" />
+          </Key>
+          <Property Name="id_log" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id_solicitud" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="descripcion_error" Type="varchar" MaxLength="6000" Nullable="false" />
+          <Property Name="fecha_proceso" Type="datetime" Nullable="false" />
+        </EntityType>
+        <!--Errores durante la generación:
+advertencia 6002: La tabla o vista 'BDTMS2020.dbo.ERROR_SERVICIO_GENERACION_PROCESO' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
+        <EntityType Name="ERROR_SERVICIO_GENERACION_PROCESO">
+          <Key>
+            <PropertyRef Name="id_documento" />
+            <PropertyRef Name="fecha_proceso" />
+            <PropertyRef Name="Intento" />
+          </Key>
+          <Property Name="id_documento" Type="int" Nullable="false" />
+          <Property Name="descripcion_error" Type="varchar" MaxLength="6000" />
+          <Property Name="fecha_proceso" Type="datetime" Nullable="false" />
+          <Property Name="Intento" Type="tinyint" Nullable="false" />
+        </EntityType>
+        <!--Errores durante la generación:
+advertencia 6002: La tabla o vista 'BDTMS2020.dbo.ERROR_SERVICIO_GENERACION_PROCESO_DIST' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
+        <EntityType Name="ERROR_SERVICIO_GENERACION_PROCESO_DIST">
+          <Key>
+            <PropertyRef Name="id_documento" />
+            <PropertyRef Name="id_documento_destino" />
+            <PropertyRef Name="fecha_proceso" />
+            <PropertyRef Name="Intento" />
+          </Key>
+          <Property Name="id_documento" Type="int" Nullable="false" />
+          <Property Name="id_documento_destino" Type="int" Nullable="false" />
+          <Property Name="descripcion_error" Type="varchar" MaxLength="6000" />
+          <Property Name="fecha_proceso" Type="datetime" Nullable="false" />
+          <Property Name="Intento" Type="tinyint" Nullable="false" />
+        </EntityType>
+        <!--Errores durante la generación:
+advertencia 6002: La tabla o vista 'BDTMS2020.dbo.ERROR_SERVICIO_GENERACION_PROCESO_DIST_LOG' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
+        <EntityType Name="ERROR_SERVICIO_GENERACION_PROCESO_DIST_LOG">
+          <Key>
+            <PropertyRef Name="id_documento" />
+            <PropertyRef Name="id_documento_destino" />
+            <PropertyRef Name="fecha_proceso" />
+          </Key>
+          <Property Name="id_documento" Type="int" Nullable="false" />
+          <Property Name="id_documento_destino" Type="int" Nullable="false" />
+          <Property Name="descripcion_error" Type="varchar" MaxLength="6000" />
+          <Property Name="fecha_proceso" Type="datetime" Nullable="false" />
+        </EntityType>
+        <!--Errores durante la generación:
+advertencia 6002: La tabla o vista 'BDTMS2020.dbo.ERROR_SERVICIO_GENERACION_PROCESO_LOG' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
+        <EntityType Name="ERROR_SERVICIO_GENERACION_PROCESO_LOG">
+          <Key>
+            <PropertyRef Name="id_documento" />
+            <PropertyRef Name="fecha_proceso" />
+          </Key>
+          <Property Name="id_documento" Type="int" Nullable="false" />
+          <Property Name="descripcion_error" Type="varchar" MaxLength="6000" />
+          <Property Name="fecha_proceso" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="LOG_ERROR_TMS">
+          <Key>
+            <PropertyRef Name="id_error_tms" />
+          </Key>
+          <Property Name="id_error_tms" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="usuario" Type="varchar" MaxLength="30" />
+          <Property Name="fecha_error" Type="datetime" />
+          <Property Name="numero_error" Type="varchar" MaxLength="20" />
+          <Property Name="modulo" Type="varchar" MaxLength="5" />
+          <Property Name="fuente_error" Type="varchar" MaxLength="2000" />
+          <Property Name="descripcion_tecnica" Type="varchar" MaxLength="2000" />
+          <Property Name="descripcion_usuario" Type="varchar" MaxLength="2000" />
+          <Property Name="direccion_IP" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <!--Errores durante la generación:
+advertencia 6002: La tabla o vista 'BDTMS2020.dbo.LOG_ERROR_TMS_FILESYSTEM' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
+        <EntityType Name="LOG_ERROR_TMS_FILESYSTEM">
+          <Key>
+            <PropertyRef Name="id_error_tms" />
+          </Key>
+          <Property Name="id_error_tms" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="usuario" Type="varchar" MaxLength="30" />
+          <Property Name="fecha_error" Type="datetime" />
+          <Property Name="fuente_error" Type="varchar" MaxLength="2000" />
+          <Property Name="descripcion_tecnica" Type="varchar" MaxLength="2000" />
+          <Property Name="descripcion_usuario" Type="varchar" MaxLength="2000" />
+          <Property Name="direccion_IP" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="LOG_PROC_ESPECIAL">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="proceso" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="fec_proceso" Type="datetime" Nullable="false" />
+          <Property Name="usuario" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="id_documento" Type="int" />
+          <Property Name="id_documento_destino" Type="int" />
+          <Property Name="comentario" Type="varchar" MaxLength="50" />
+          <Property Name="estado" Type="varchar" MaxLength="50" />
+          <Property Name="operacion" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="LOG_PROCESADOS_B2B">
+          <Key>
+            <PropertyRef Name="id_log_procesadosB2B" />
+          </Key>
+          <Property Name="id_log_procesadosB2B" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="accion" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="fecha_recepcion" Type="datetime" Nullable="false" />
+          <Property Name="numero_proceso" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="descripcion" Type="varchar" MaxLength="1000" Nullable="false" />
+          <Property Name="notificacion_SrvPrincipal" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="LOG_PROCESO_CONSUMO_WS">
+          <Key>
+            <PropertyRef Name="id_log_ws" />
+          </Key>
+          <Property Name="id_log_ws" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id_solicitud" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="origen" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="respuesta" Type="varchar" MaxLength="2000" Nullable="false" />
+          <Property Name="procesado" Type="bit" Nullable="false" />
+          <Property Name="fecha_consumoWS" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="LOG_PROCESO_CREA_PROCESOS_TMS">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="tipo_proceso" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="id_objeto" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="id_usuario" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="fec_hora_inicio_proceso" Type="datetime" Nullable="false" />
+          <Property Name="fec_hora_last_update" Type="datetime" />
+          <Property Name="estado" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="canal" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="id_politica" Type="int" />
+          <Property Name="mensaje" Type="varchar" MaxLength="8000" />
+          <Property Name="TipoObjeto" Type="varchar" MaxLength="10" />
+          <Property Name="IdObjetoOriginador" Type="varchar" MaxLength="50" />
+          <Property Name="IdTareaOriginada" Type="varchar" MaxLength="50" />
+          <Property Name="direccion_ip" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="LOG_PROCESOS_ESPECIALES_SEGUIMIENTO">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="tipo_proceso" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="id_objeto" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="id_usuario" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="fec_hora_inicio_proceso" Type="datetime" Nullable="false" />
+          <Property Name="fec_hora_last_update" Type="datetime" />
+          <Property Name="estado" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="canal" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="id_politica" Type="int" />
+          <Property Name="mensaje" Type="varchar" MaxLength="8000" />
+        </EntityType>
+        <EntityType Name="LOG_TRANS_PAGO">
+          <Key>
+            <PropertyRef Name="id_log_trans_pago" />
+          </Key>
+          <Property Name="log_usuario" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="log_ticket_id" Type="varchar" MaxLength="35" />
+          <Property Name="log_trazability_code" Type="varchar" MaxLength="20" />
+          <Property Name="log_financial_inst_code" Type="varchar" MaxLength="35" />
+          <Property Name="log_transaction_value" Type="money" />
+          <Property Name="log_vat_value" Type="money" />
+          <Property Name="log_solicite_date" Type="datetime" Nullable="false" />
+          <Property Name="log_bank_process_date" Type="datetime" />
+          <Property Name="log_transaction_state" Type="varchar" MaxLength="50" />
+          <Property Name="log_articulos" Type="varchar" MaxLength="8000" />
+          <Property Name="log_ciclo" Type="int" />
+          <Property Name="id_log_trans_pago" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="log_tipo_pago" Type="int" />
+          <Property Name="log_confirmation" Type="int" Nullable="false" />
+          <Property Name="log_idusr_externo" Type="varchar" MaxLength="50" />
+          <Property Name="log_idusr_ext_descrip" Type="varchar" MaxLength="200" />
+          <Property Name="log_idtramite_externo" Type="varchar" MaxLength="50" />
+          <Property Name="log_idtramite_ext_descrip" Type="varchar" MaxLength="200" />
+          <Property Name="log_idusr_tercero" Type="varchar" MaxLength="50" />
+          <Property Name="log_idusr_tercero_descrip" Type="varchar" MaxLength="200" />
+          <Property Name="IP" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="LOG_WSRADICACION_FTP">
+          <Key>
+            <PropertyRef Name="IdLog" />
+          </Key>
+          <Property Name="IdLog" Type="numeric" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Fecha" Type="datetime" Nullable="false" />
+          <Property Name="Evento" Type="varchar" MaxLength="800" Nullable="false" />
+          <Property Name="Estado" Type="varchar" MaxLength="8000" />
+          <Property Name="Id_Documento" Type="int" />
+          <Property Name="Usuario" Type="varchar" MaxLength="30" />
+          <Property Name="Fuente" Type="numeric" Precision="18" Scale="0" Nullable="false" />
+        </EntityType>
+        <!--Errores durante la generación:
+advertencia 6002: La tabla o vista 'BDTMS2020.Monitor.Log' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
+        <EntityType Name="Log">
+          <Key>
+            <PropertyRef Name="Level" />
+            <PropertyRef Name="Date" />
+            <PropertyRef Name="Message" />
+            <PropertyRef Name="EventOk" />
+          </Key>
+          <Property Name="Level" Type="varchar" MaxLength="5" Nullable="false" />
+          <Property Name="Date" Type="datetime" Nullable="false" />
+          <Property Name="Component" Type="varchar" MaxLength="50" />
+          <Property Name="Method" Type="varchar" MaxLength="50" />
+          <Property Name="Title" Type="varchar" MaxLength="255" />
+          <Property Name="Message" Type="varchar(max)" Nullable="false" />
+          <Property Name="EventOk" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="LogGestionDocumentos">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdTarea" Type="int" Nullable="false" />
+          <Property Name="IdRegistro" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="FechaIniProceso" Type="datetime" />
+          <Property Name="FechaFinProceso" Type="datetime" />
+          <Property Name="Estado" Type="varchar" MaxLength="15" />
+          <Property Name="Descripción" Type="varchar" MaxLength="1000" />
+          <Property Name="Intentos" Type="int" />
+          <Property Name="Resultado" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <!--Errores durante la generación:
+advertencia 6002: La tabla o vista 'BDTMS2020.dbo.VWBloqueosBaseDatos' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
+        <EntityType Name="VWBloqueosBaseDatos">
+          <Key>
+            <PropertyRef Name="IdRegistro" />
+            <PropertyRef Name="FechaCreacion" />
+          </Key>
+          <Property Name="IdRegistro" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FechaCreacion" Type="datetime" Nullable="false" />
+          <Property Name="hora" Type="time" Precision="7" />
+          <Property Name="DbName" Type="varchar" MaxLength="100" />
+          <Property Name="DbNameBloquada" Type="varchar" MaxLength="100" />
+          <Property Name="Aplicacion" Type="varchar" MaxLength="100" />
+          <Property Name="AplicacionBloqueda" Type="varchar" MaxLength="100" />
+          <Property Name="objetoBloqueado" Type="varchar" MaxLength="100" />
+          <Property Name="statementText" Type="varchar(max)" />
+          <Property Name="StatementSqlBloqueada" Type="varchar(max)" />
+          <Property Name="ObjectoSPCausanteBloqueo" Type="nvarchar(max)" />
+          <Property Name="ObjectBloqueado" Type="nvarchar(max)" />
+        </EntityType>
+        <Function Name="PAGetContadores" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <EntityContainer Name="LogsTmsStoreContainer">
+          <EntitySet Name="ControlFixesArq" EntityType="Self.ControlFixesArq" Schema="Admin" store:Type="Tables" />
+          <EntitySet Name="CONTROL_FIXES" EntityType="Self.CONTROL_FIXES" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ERROR_SERVICIO_CONSUMO_WEBSERVICE" EntityType="Self.ERROR_SERVICIO_CONSUMO_WEBSERVICE" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ERROR_SERVICIO_CONSUMO_WEBSERVICE_LOG" EntityType="Self.ERROR_SERVICIO_CONSUMO_WEBSERVICE_LOG" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LOG_ERROR_TMS" EntityType="Self.LOG_ERROR_TMS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LOG_PROC_ESPECIAL" EntityType="Self.LOG_PROC_ESPECIAL" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LOG_PROCESADOS_B2B" EntityType="Self.LOG_PROCESADOS_B2B" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LOG_PROCESO_CONSUMO_WS" EntityType="Self.LOG_PROCESO_CONSUMO_WS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LOG_PROCESO_CREA_PROCESOS_TMS" EntityType="Self.LOG_PROCESO_CREA_PROCESOS_TMS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LOG_PROCESOS_ESPECIALES_SEGUIMIENTO" EntityType="Self.LOG_PROCESOS_ESPECIALES_SEGUIMIENTO" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LOG_TRANS_PAGO" EntityType="Self.LOG_TRANS_PAGO" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LOG_WSRADICACION_FTP" EntityType="Self.LOG_WSRADICACION_FTP" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LogGestionDocumentos" EntityType="Self.LogGestionDocumentos" Schema="TMSAgentes" store:Type="Tables" />
+          <EntitySet Name="DocumentosNoProcesadosPorListarSolAsignacionMasivas" EntityType="Self.DocumentosNoProcesadosPorListarSolAsignacionMasivas" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [DocumentosNoProcesadosPorListarSolAsignacionMasivas].[IdRegistro] AS [IdRegistro], 
+    [DocumentosNoProcesadosPorListarSolAsignacionMasivas].[IdDocumento] AS [IdDocumento], 
+    [DocumentosNoProcesadosPorListarSolAsignacionMasivas].[IdTipoDoc] AS [IdTipoDoc], 
+    [DocumentosNoProcesadosPorListarSolAsignacionMasivas].[NombreTipoDoc] AS [NombreTipoDoc], 
+    [DocumentosNoProcesadosPorListarSolAsignacionMasivas].[IdBloque] AS [IdBloque], 
+    [DocumentosNoProcesadosPorListarSolAsignacionMasivas].[Radicacion] AS [Radicacion], 
+    [DocumentosNoProcesadosPorListarSolAsignacionMasivas].[FechaRadicacion] AS [FechaRadicacion], 
+    [DocumentosNoProcesadosPorListarSolAsignacionMasivas].[IdUsuarioRadicador] AS [IdUsuarioRadicador], 
+    [DocumentosNoProcesadosPorListarSolAsignacionMasivas].[NombreUsuarioRadicador] AS [NombreUsuarioRadicador], 
+    [DocumentosNoProcesadosPorListarSolAsignacionMasivas].[IdDeptoRadicador] AS [IdDeptoRadicador], 
+    [DocumentosNoProcesadosPorListarSolAsignacionMasivas].[NombreDeptoRadicador] AS [NombreDeptoRadicador], 
+    [DocumentosNoProcesadosPorListarSolAsignacionMasivas].[Descripcion] AS [Descripcion], 
+    [DocumentosNoProcesadosPorListarSolAsignacionMasivas].[FechaRegistro] AS [FechaRegistro]
+    FROM [dbo].[DocumentosNoProcesadosPorListarSolAsignacionMasivas] AS [DocumentosNoProcesadosPorListarSolAsignacionMasivas]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="ERROR_SERVICIO_ASIGNACION_MASIVA" EntityType="Self.ERROR_SERVICIO_ASIGNACION_MASIVA" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [ERROR_SERVICIO_ASIGNACION_MASIVA].[id_documento] AS [id_documento], 
+    [ERROR_SERVICIO_ASIGNACION_MASIVA].[id_bloque] AS [id_bloque], 
+    [ERROR_SERVICIO_ASIGNACION_MASIVA].[descripcion_error] AS [descripcion_error], 
+    [ERROR_SERVICIO_ASIGNACION_MASIVA].[fecha_proceso] AS [fecha_proceso], 
+    [ERROR_SERVICIO_ASIGNACION_MASIVA].[Intento] AS [Intento]
+    FROM [dbo].[ERROR_SERVICIO_ASIGNACION_MASIVA] AS [ERROR_SERVICIO_ASIGNACION_MASIVA]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="ERROR_SERVICIO_ASIGNACION_MASIVA_LOG" EntityType="Self.ERROR_SERVICIO_ASIGNACION_MASIVA_LOG" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [ERROR_SERVICIO_ASIGNACION_MASIVA_LOG].[id_documento] AS [id_documento], 
+    [ERROR_SERVICIO_ASIGNACION_MASIVA_LOG].[id_bloque] AS [id_bloque], 
+    [ERROR_SERVICIO_ASIGNACION_MASIVA_LOG].[descripcion_error] AS [descripcion_error], 
+    [ERROR_SERVICIO_ASIGNACION_MASIVA_LOG].[fecha_proceso] AS [fecha_proceso], 
+    [ERROR_SERVICIO_ASIGNACION_MASIVA_LOG].[Intento] AS [Intento]
+    FROM [dbo].[ERROR_SERVICIO_ASIGNACION_MASIVA_LOG] AS [ERROR_SERVICIO_ASIGNACION_MASIVA_LOG]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="ERROR_SERVICIO_GENERACION_PROCESO" EntityType="Self.ERROR_SERVICIO_GENERACION_PROCESO" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [ERROR_SERVICIO_GENERACION_PROCESO].[id_documento] AS [id_documento], 
+    [ERROR_SERVICIO_GENERACION_PROCESO].[descripcion_error] AS [descripcion_error], 
+    [ERROR_SERVICIO_GENERACION_PROCESO].[fecha_proceso] AS [fecha_proceso], 
+    [ERROR_SERVICIO_GENERACION_PROCESO].[Intento] AS [Intento]
+    FROM [dbo].[ERROR_SERVICIO_GENERACION_PROCESO] AS [ERROR_SERVICIO_GENERACION_PROCESO]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="ERROR_SERVICIO_GENERACION_PROCESO_DIST" EntityType="Self.ERROR_SERVICIO_GENERACION_PROCESO_DIST" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [ERROR_SERVICIO_GENERACION_PROCESO_DIST].[id_documento] AS [id_documento], 
+    [ERROR_SERVICIO_GENERACION_PROCESO_DIST].[id_documento_destino] AS [id_documento_destino], 
+    [ERROR_SERVICIO_GENERACION_PROCESO_DIST].[descripcion_error] AS [descripcion_error], 
+    [ERROR_SERVICIO_GENERACION_PROCESO_DIST].[fecha_proceso] AS [fecha_proceso], 
+    [ERROR_SERVICIO_GENERACION_PROCESO_DIST].[Intento] AS [Intento]
+    FROM [dbo].[ERROR_SERVICIO_GENERACION_PROCESO_DIST] AS [ERROR_SERVICIO_GENERACION_PROCESO_DIST]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="ERROR_SERVICIO_GENERACION_PROCESO_DIST_LOG" EntityType="Self.ERROR_SERVICIO_GENERACION_PROCESO_DIST_LOG" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [ERROR_SERVICIO_GENERACION_PROCESO_DIST_LOG].[id_documento] AS [id_documento], 
+    [ERROR_SERVICIO_GENERACION_PROCESO_DIST_LOG].[id_documento_destino] AS [id_documento_destino], 
+    [ERROR_SERVICIO_GENERACION_PROCESO_DIST_LOG].[descripcion_error] AS [descripcion_error], 
+    [ERROR_SERVICIO_GENERACION_PROCESO_DIST_LOG].[fecha_proceso] AS [fecha_proceso]
+    FROM [dbo].[ERROR_SERVICIO_GENERACION_PROCESO_DIST_LOG] AS [ERROR_SERVICIO_GENERACION_PROCESO_DIST_LOG]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="ERROR_SERVICIO_GENERACION_PROCESO_LOG" EntityType="Self.ERROR_SERVICIO_GENERACION_PROCESO_LOG" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [ERROR_SERVICIO_GENERACION_PROCESO_LOG].[id_documento] AS [id_documento], 
+    [ERROR_SERVICIO_GENERACION_PROCESO_LOG].[descripcion_error] AS [descripcion_error], 
+    [ERROR_SERVICIO_GENERACION_PROCESO_LOG].[fecha_proceso] AS [fecha_proceso]
+    FROM [dbo].[ERROR_SERVICIO_GENERACION_PROCESO_LOG] AS [ERROR_SERVICIO_GENERACION_PROCESO_LOG]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="LOG_ERROR_TMS_FILESYSTEM" EntityType="Self.LOG_ERROR_TMS_FILESYSTEM" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [LOG_ERROR_TMS_FILESYSTEM].[id_error_tms] AS [id_error_tms], 
+    [LOG_ERROR_TMS_FILESYSTEM].[usuario] AS [usuario], 
+    [LOG_ERROR_TMS_FILESYSTEM].[fecha_error] AS [fecha_error], 
+    [LOG_ERROR_TMS_FILESYSTEM].[fuente_error] AS [fuente_error], 
+    [LOG_ERROR_TMS_FILESYSTEM].[descripcion_tecnica] AS [descripcion_tecnica], 
+    [LOG_ERROR_TMS_FILESYSTEM].[descripcion_usuario] AS [descripcion_usuario], 
+    [LOG_ERROR_TMS_FILESYSTEM].[direccion_IP] AS [direccion_IP]
+    FROM [dbo].[LOG_ERROR_TMS_FILESYSTEM] AS [LOG_ERROR_TMS_FILESYSTEM]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="Log" EntityType="Self.Log" store:Type="Tables" store:Schema="Monitor">
+            <DefiningQuery>SELECT 
+    [Log].[Level] AS [Level], 
+    [Log].[Date] AS [Date], 
+    [Log].[Component] AS [Component], 
+    [Log].[Method] AS [Method], 
+    [Log].[Title] AS [Title], 
+    [Log].[Message] AS [Message], 
+    [Log].[EventOk] AS [EventOk]
+    FROM [Monitor].[Log] AS [Log]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="VWBloqueosBaseDatos" EntityType="Self.VWBloqueosBaseDatos" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [VWBloqueosBaseDatos].[IdRegistro] AS [IdRegistro], 
+    [VWBloqueosBaseDatos].[FechaCreacion] AS [FechaCreacion], 
+    [VWBloqueosBaseDatos].[hora] AS [hora], 
+    [VWBloqueosBaseDatos].[DbName] AS [DbName], 
+    [VWBloqueosBaseDatos].[DbNameBloquada] AS [DbNameBloquada], 
+    [VWBloqueosBaseDatos].[Aplicacion] AS [Aplicacion], 
+    [VWBloqueosBaseDatos].[AplicacionBloqueda] AS [AplicacionBloqueda], 
+    [VWBloqueosBaseDatos].[objetoBloqueado] AS [objetoBloqueado], 
+    [VWBloqueosBaseDatos].[statementText] AS [statementText], 
+    [VWBloqueosBaseDatos].[StatementSqlBloqueada] AS [StatementSqlBloqueada], 
+    [VWBloqueosBaseDatos].[ObjectoSPCausanteBloqueo] AS [ObjectoSPCausanteBloqueo], 
+    [VWBloqueosBaseDatos].[ObjectBloqueado] AS [ObjectBloqueado]
+    FROM [dbo].[VWBloqueosBaseDatos] AS [VWBloqueosBaseDatos]</DefiningQuery>
+          </EntitySet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="Data" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="LOG_PROCESO_CREA_PROCESOS_TMS">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="tipo_proceso" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="id_objeto" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="id_usuario" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="fec_hora_inicio_proceso" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="fec_hora_last_update" Type="DateTime" Precision="3" />
+          <Property Name="estado" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="canal" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="id_politica" Type="Int32" />
+          <Property Name="mensaje" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="TipoObjeto" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="IdObjetoOriginador" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="IdTareaOriginada" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="direccion_ip" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+        </EntityType>
+        <EntityContainer Name="LogsTms" annotation:LazyLoadingEnabled="false">
+          <EntitySet Name="LOG_PROCESO_CREA_PROCESOS_TMS" EntityType="Self.LOG_PROCESO_CREA_PROCESOS_TMS" />
+          <EntitySet Name="LOG_ERROR_TMS" EntityType="Data.LOG_ERROR_TMS" />
+          <EntitySet Name="ERROR_SERVICIO_GENERACION_PROCESO" EntityType="Data.ERROR_SERVICIO_GENERACION_PROCESO" />
+          <EntitySet Name="ERROR_SERVICIO_ASIGNACION_MASIVA" EntityType="Data.ERROR_SERVICIO_ASIGNACION_MASIVA" />
+          <EntitySet Name="ERROR_SERVICIO_ASIGNACION_MASIVA_LOG" EntityType="Data.ERROR_SERVICIO_ASIGNACION_MASIVA_LOG" />
+          <EntitySet Name="ERROR_SERVICIO_GENERACION_PROCESO_LOG" EntityType="Data.ERROR_SERVICIO_GENERACION_PROCESO_LOG" />
+          <EntitySet Name="CONTROL_FIXES" EntityType="Data.CONTROL_FIXES" />
+          <EntitySet Name="ControlFixesArqs" EntityType="Data.ControlFixesArq" />
+          <EntitySet Name="VWBloqueosBaseDatos" EntityType="Data.VWBloqueosBaseDato" />
+          <EntitySet Name="LOG_PROCESADOS_B2B" EntityType="Data.LOG_PROCESADOS_B2B" />
+          <EntitySet Name="LOG_WSRADICACION_FTP" EntityType="Data.LOG_WSRADICACION_FTP" />
+          <EntitySet Name="LOG_ERROR_TMS_FILESYSTEM" EntityType="Data.LOG_ERROR_TMS_FILESYSTEM" />
+          <EntitySet Name="Logs" EntityType="Data.Log" />
+          <EntitySet Name="LOG_PROCESO_CONSUMO_WS" EntityType="Data.LOG_PROCESO_CONSUMO_WS" />
+          <EntitySet Name="LOG_PROC_ESPECIAL" EntityType="Data.LOG_PROC_ESPECIAL" />
+          <EntitySet Name="ERROR_SERVICIO_CONSUMO_WEBSERVICE" EntityType="Data.ERROR_SERVICIO_CONSUMO_WEBSERVICE" />
+          <EntitySet Name="ERROR_SERVICIO_CONSUMO_WEBSERVICE_LOG" EntityType="Data.ERROR_SERVICIO_CONSUMO_WEBSERVICE_LOG" />
+          <EntitySet Name="LogGestionDocumentos" EntityType="Data.LogGestionDocumento" />
+          <EntitySet Name="ERROR_SERVICIO_GENERACION_PROCESO_DIST" EntityType="Data.ERROR_SERVICIO_GENERACION_PROCESO_DIST" />
+          <EntitySet Name="ERROR_SERVICIO_GENERACION_PROCESO_DIST_LOG" EntityType="Data.ERROR_SERVICIO_GENERACION_PROCESO_DIST_LOG" />
+          <EntitySet Name="LOG_PROCESOS_ESPECIALES_SEGUIMIENTO" EntityType="Data.LOG_PROCESOS_ESPECIALES_SEGUIMIENTO" />
+          <EntitySet Name="LOG_TRANS_PAGO" EntityType="Data.LOG_TRANS_PAGO" />
+          <EntitySet Name="DocumentosNoProcesadosPorListarSolAsignacionMasivas" EntityType="Data.DocumentosNoProcesadosPorListarSolAsignacionMasivas" />
+          <FunctionImport Name="PAGetContadores" ReturnType="Collection(Data.PAGetContadores_Result)" />
+        </EntityContainer>
+        <EntityType Name="LOG_ERROR_TMS">
+          <Key>
+            <PropertyRef Name="id_error_tms" />
+          </Key>
+          <Property Name="id_error_tms" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="usuario" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="fecha_error" Type="DateTime" Precision="3" />
+          <Property Name="numero_error" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="modulo" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="fuente_error" Type="String" MaxLength="2000" FixedLength="false" Unicode="false" />
+          <Property Name="descripcion_tecnica" Type="String" MaxLength="2000" FixedLength="false" Unicode="false" />
+          <Property Name="descripcion_usuario" Type="String" MaxLength="2000" FixedLength="false" Unicode="false" />
+          <Property Name="direccion_IP" Type="String" Unicode="false" FixedLength="false" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="ERROR_SERVICIO_GENERACION_PROCESO">
+          <Key>
+            <PropertyRef Name="id_documento" />
+            <PropertyRef Name="fecha_proceso" />
+            <PropertyRef Name="Intento" />
+          </Key>
+          <Property Name="id_documento" Type="Int32" Nullable="false" />
+          <Property Name="descripcion_error" Type="String" MaxLength="6000" FixedLength="false" Unicode="false" />
+          <Property Name="fecha_proceso" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Intento" Type="Byte" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ERROR_SERVICIO_ASIGNACION_MASIVA">
+          <Key>
+            <PropertyRef Name="id_documento" />
+            <PropertyRef Name="id_bloque" />
+            <PropertyRef Name="fecha_proceso" />
+            <PropertyRef Name="Intento" />
+          </Key>
+          <Property Name="id_documento" Type="Int32" Nullable="false" />
+          <Property Name="id_bloque" Type="Int32" Nullable="false" />
+          <Property Name="descripcion_error" Type="String" MaxLength="6000" FixedLength="false" Unicode="false" />
+          <Property Name="fecha_proceso" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Intento" Type="Byte" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ERROR_SERVICIO_ASIGNACION_MASIVA_LOG">
+          <Key>
+            <PropertyRef Name="id_documento" />
+            <PropertyRef Name="id_bloque" />
+            <PropertyRef Name="fecha_proceso" />
+            <PropertyRef Name="Intento" />
+          </Key>
+          <Property Name="id_documento" Type="Int32" Nullable="false" />
+          <Property Name="id_bloque" Type="Int32" Nullable="false" />
+          <Property Name="descripcion_error" Type="String" MaxLength="6000" FixedLength="false" Unicode="false" />
+          <Property Name="fecha_proceso" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Intento" Type="Byte" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ERROR_SERVICIO_GENERACION_PROCESO_LOG">
+          <Key>
+            <PropertyRef Name="id_documento" />
+            <PropertyRef Name="fecha_proceso" />
+          </Key>
+          <Property Name="id_documento" Type="Int32" Nullable="false" />
+          <Property Name="descripcion_error" Type="String" MaxLength="6000" FixedLength="false" Unicode="false" />
+          <Property Name="fecha_proceso" Nullable="false" Precision="3" Type="DateTime" />
+        </EntityType>
+        <EntityType Name="CONTROL_FIXES">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="versiontms" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="fix" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="fecha_proceso" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="estado_proceso" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="mensaje" Type="String" Nullable="false" MaxLength="2000" FixedLength="false" Unicode="false" />
+          <Property Name="ip" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="usuariowin" Type="String" Nullable="false" MaxLength="80" FixedLength="false" Unicode="false" />
+          <Property Name="HotFix" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="FechaFinProceso" Type="DateTime" Precision="3" />
+          <Property Name="Descripcion" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="ControlFixesArq">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="VersionMayor" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Fix" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="HotFix" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="FechaInicioEjecucion" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="FechaFinEjecucion" Type="DateTime" Precision="3" />
+          <Property Name="Descripcion" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Usuario" Type="String" Nullable="false" MaxLength="80" FixedLength="false" Unicode="false" />
+          <Property Name="Ip" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ConsecutivoUnico" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="VWBloqueosBaseDato">
+          <Key>
+            <PropertyRef Name="IdRegistro" />
+            <PropertyRef Name="FechaCreacion" />
+          </Key>
+          <Property Name="IdRegistro" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FechaCreacion" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="hora" Type="Time" Precision="7" />
+          <Property Name="Aplicacion" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="AplicacionBloqueda" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="objetoBloqueado" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="statementText" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="StatementSqlBloqueada" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ObjectoSPCausanteBloqueo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ObjectBloqueado" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DbName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="DbNameBloquada" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="LOG_PROCESADOS_B2B">
+          <Key>
+            <PropertyRef Name="id_log_procesadosB2B" />
+          </Key>
+          <Property Name="id_log_procesadosB2B" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="accion" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="fecha_recepcion" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="numero_proceso" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="descripcion" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="notificacion_SrvPrincipal" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="LOG_WSRADICACION_FTP">
+          <Key>
+            <PropertyRef Name="IdLog" />
+          </Key>
+          <Property Name="IdLog" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="Fecha" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Evento" Type="String" Nullable="false" MaxLength="800" FixedLength="false" Unicode="false" />
+          <Property Name="Estado" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="Id_Documento" Type="Int32" />
+          <Property Name="Usuario" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Fuente" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+        </EntityType>
+        <EntityType Name="LOG_ERROR_TMS_FILESYSTEM">
+          <Key>
+            <PropertyRef Name="id_error_tms" />
+          </Key>
+          <Property Name="id_error_tms" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="usuario" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="fecha_error" Type="DateTime" Precision="3" />
+          <Property Name="fuente_error" Type="String" MaxLength="2000" FixedLength="false" Unicode="false" />
+          <Property Name="descripcion_tecnica" Type="String" MaxLength="2000" FixedLength="false" Unicode="false" />
+          <Property Name="descripcion_usuario" Type="String" MaxLength="2000" FixedLength="false" Unicode="false" />
+          <Property Name="direccion_IP" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Log">
+          <Key>
+            <PropertyRef Name="Level" />
+            <PropertyRef Name="Date" />
+            <PropertyRef Name="Message" />
+            <PropertyRef Name="EventOk" />
+          </Key>
+          <Property Name="Level" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Component" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Method" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Title" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Message" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="EventOk" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="LOG_PROCESO_CONSUMO_WS">
+          <Key>
+            <PropertyRef Name="id_log_ws" />
+          </Key>
+          <Property Name="id_log_ws" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id_solicitud" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="origen" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="respuesta" Type="String" Nullable="false" MaxLength="2000" FixedLength="false" Unicode="false" />
+          <Property Name="procesado" Type="Boolean" Nullable="false" />
+          <Property Name="fecha_consumoWS" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="LOG_PROC_ESPECIAL">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="proceso" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="fec_proceso" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="usuario" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="id_documento" Type="Int32" />
+          <Property Name="id_documento_destino" Type="Int32" />
+          <Property Name="comentario" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="estado" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="operacion" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="ERROR_SERVICIO_CONSUMO_WEBSERVICE">
+          <Key>
+            <PropertyRef Name="id_log" />
+          </Key>
+          <Property Name="id_log" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id_solicitud" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="descripcion_error" Type="String" Nullable="false" MaxLength="6000" FixedLength="false" Unicode="false" />
+          <Property Name="fecha_proceso" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="ERROR_SERVICIO_CONSUMO_WEBSERVICE_LOG">
+          <Key>
+            <PropertyRef Name="id_log" />
+          </Key>
+          <Property Name="id_log" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id_solicitud" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="descripcion_error" Type="String" Nullable="false" MaxLength="6000" FixedLength="false" Unicode="false" />
+          <Property Name="fecha_proceso" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="LogGestionDocumento">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdTarea" Type="Int32" Nullable="false" />
+          <Property Name="IdRegistro" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="FechaIniProceso" Type="DateTime" Precision="3" />
+          <Property Name="FechaFinProceso" Type="DateTime" Precision="3" />
+          <Property Name="Estado" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="Descripción" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="Intentos" Type="Int32" />
+          <Property Name="Resultado" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="ERROR_SERVICIO_GENERACION_PROCESO_DIST">
+          <Key>
+            <PropertyRef Name="id_documento" />
+            <PropertyRef Name="id_documento_destino" />
+            <PropertyRef Name="fecha_proceso" />
+            <PropertyRef Name="Intento" />
+          </Key>
+          <Property Name="id_documento" Type="Int32" Nullable="false" />
+          <Property Name="id_documento_destino" Type="Int32" Nullable="false" />
+          <Property Name="descripcion_error" Type="String" MaxLength="6000" FixedLength="false" Unicode="false" />
+          <Property Name="fecha_proceso" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Intento" Type="Byte" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ERROR_SERVICIO_GENERACION_PROCESO_DIST_LOG">
+          <Key>
+            <PropertyRef Name="id_documento" />
+            <PropertyRef Name="id_documento_destino" />
+            <PropertyRef Name="fecha_proceso" />
+          </Key>
+          <Property Name="id_documento" Type="Int32" Nullable="false" />
+          <Property Name="id_documento_destino" Type="Int32" Nullable="false" />
+          <Property Name="descripcion_error" Type="String" MaxLength="6000" FixedLength="false" Unicode="false" />
+          <Property Name="fecha_proceso" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="LOG_PROCESOS_ESPECIALES_SEGUIMIENTO">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="tipo_proceso" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="id_objeto" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="id_usuario" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="fec_hora_inicio_proceso" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="fec_hora_last_update" Type="DateTime" Precision="3" />
+          <Property Name="estado" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="canal" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="id_politica" Type="Int32" />
+          <Property Name="mensaje" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="LOG_TRANS_PAGO">
+          <Key>
+            <PropertyRef Name="id_log_trans_pago" />
+          </Key>
+          <Property Name="log_usuario" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="log_ticket_id" Type="String" MaxLength="35" FixedLength="false" Unicode="false" />
+          <Property Name="log_trazability_code" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="log_financial_inst_code" Type="String" MaxLength="35" FixedLength="false" Unicode="false" />
+          <Property Name="log_transaction_value" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="log_vat_value" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="log_solicite_date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="log_bank_process_date" Type="DateTime" Precision="3" />
+          <Property Name="log_transaction_state" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="log_articulos" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="log_ciclo" Type="Int32" />
+          <Property Name="id_log_trans_pago" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="log_tipo_pago" Type="Int32" />
+          <Property Name="log_confirmation" Type="Int32" Nullable="false" />
+          <Property Name="log_idusr_externo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="log_idusr_ext_descrip" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="log_idtramite_externo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="log_idtramite_ext_descrip" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="log_idusr_tercero" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="log_idusr_tercero_descrip" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="IP" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="DocumentosNoProcesadosPorListarSolAsignacionMasivas">
+          <Key>
+            <PropertyRef Name="IdRegistro" />
+            <PropertyRef Name="FechaRegistro" />
+          </Key>
+          <Property Name="IdRegistro" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdDocumento" Type="Int32" />
+          <Property Name="IdTipoDoc" Type="Int32" />
+          <Property Name="NombreTipoDoc" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="IdBloque" Type="Int32" />
+          <Property Name="Radicacion" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="FechaRadicacion" Type="DateTime" Precision="3" />
+          <Property Name="IdUsuarioRadicador" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="NombreUsuarioRadicador" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="IdDeptoRadicador" Type="Int32" />
+          <Property Name="NombreDeptoRadicador" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Descripcion" Type="String" MaxLength="512" FixedLength="false" Unicode="false" />
+          <Property Name="FechaRegistro" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <ComplexType Name="PAGetContadores_Result">
+          <Property Type="Int32" Name="RegistrosAsignacionMasiva" Nullable="true" />
+          <Property Type="Int32" Name="RegistrosAsignacionMasivalog" Nullable="true" />
+          <Property Type="Int32" Name="RegistrosgeneracionProceso" Nullable="true" />
+          <Property Type="Int32" Name="RegistrosgeneracionProcesolog" Nullable="true" />
+          <Property Type="Int32" Name="RegistroError" Nullable="true" />
+          <Property Type="Int32" Name="RegistroProceso" Nullable="true" />
+          <Property Type="Int32" Name="RegistroFixesDesarrollo" Nullable="true" />
+          <Property Type="Int32" Name="RegistroFixesArqu" Nullable="true" />
+          <Property Type="Int32" Name="RegistroBloqueosBD" Nullable="true" />
+          <Property Type="Int32" Name="RegistroRadicacionFtp" Nullable="true" />
+          <Property Type="Int32" Name="RegistroErrorFileSystem" Nullable="true" />
+          <Property Type="Int32" Name="RegistroProcesosB2B" Nullable="true" />
+          <Property Type="Int32" Name="RegistroMonitorLog" Nullable="true" />
+          <Property Type="Int32" Name="RegistroProcesoConsumoWS" Nullable="true" />
+          <Property Type="Int32" Name="RegistroLogProcEspecial" Nullable="true" />
+          <Property Type="Int32" Name="RegistroProcesoEnvioEmails" Nullable="true" />
+          <Property Type="Int32" Name="RegistroErrorConsumoWebService" Nullable="true" />
+          <Property Type="Int32" Name="RegistroErrorConsumoWebServiceLog" Nullable="true" />
+          <Property Type="Int32" Name="RegistroLogEventoGestion" Nullable="true" />
+          <Property Type="Int32" Name="RegistroLogGestionDocumento" Nullable="true" />
+          <Property Type="Int32" Name="RegistroErrorGeneracionProcesosDist" Nullable="true" />
+          <Property Type="Int32" Name="RegistroErrorGeneracionProcesosDistLog" Nullable="true" />
+          <Property Type="Int32" Name="RegistroLogprocesosespecialesseguimiento" Nullable="true" />
+          <Property Type="Int32" Name="RegistroLogTMSMonitor" Nullable="true" />
+          <Property Type="Int32" Name="RegistroLogTransPago" Nullable="true" />
+          <Property Type="Int32" Name="RegistroLogPagosTransTMS" Nullable="true" />
+          <Property Type="Int32" Name="RegistroLogPopProcesado" Nullable="true" />
+          <Property Type="Int32" Name="RegistroLogDocumentosNoProcesados" Nullable="true" />
+          <Property Type="Int32" Name="RegistroLogClasico" Nullable="true" />
+          <Property Type="Int32" Name="RegistroOptimizacionTablas" Nullable="true" />
+          <Property Type="Int32" Name="RegistroOptimizacionLog" Nullable="true" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="LogsTmsStoreContainer" CdmEntityContainer="LogsTms">
+          <EntitySetMapping Name="LOG_PROCESO_CREA_PROCESOS_TMS">
+            <EntityTypeMapping TypeName="Data.LOG_PROCESO_CREA_PROCESOS_TMS">
+              <MappingFragment StoreEntitySet="LOG_PROCESO_CREA_PROCESOS_TMS">
+                <ScalarProperty Name="direccion_ip" ColumnName="direccion_ip" />
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="tipo_proceso" ColumnName="tipo_proceso" />
+                <ScalarProperty Name="id_objeto" ColumnName="id_objeto" />
+                <ScalarProperty Name="id_usuario" ColumnName="id_usuario" />
+                <ScalarProperty Name="fec_hora_inicio_proceso" ColumnName="fec_hora_inicio_proceso" />
+                <ScalarProperty Name="fec_hora_last_update" ColumnName="fec_hora_last_update" />
+                <ScalarProperty Name="estado" ColumnName="estado" />
+                <ScalarProperty Name="canal" ColumnName="canal" />
+                <ScalarProperty Name="id_politica" ColumnName="id_politica" />
+                <ScalarProperty Name="mensaje" ColumnName="mensaje" />
+                <ScalarProperty Name="TipoObjeto" ColumnName="TipoObjeto" />
+                <ScalarProperty Name="IdObjetoOriginador" ColumnName="IdObjetoOriginador" />
+                <ScalarProperty Name="IdTareaOriginada" ColumnName="IdTareaOriginada" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LOG_ERROR_TMS">
+            <EntityTypeMapping TypeName="Data.LOG_ERROR_TMS">
+              <MappingFragment StoreEntitySet="LOG_ERROR_TMS">
+                <ScalarProperty Name="direccion_IP" ColumnName="direccion_IP" />
+                <ScalarProperty Name="descripcion_usuario" ColumnName="descripcion_usuario" />
+                <ScalarProperty Name="descripcion_tecnica" ColumnName="descripcion_tecnica" />
+                <ScalarProperty Name="fuente_error" ColumnName="fuente_error" />
+                <ScalarProperty Name="modulo" ColumnName="modulo" />
+                <ScalarProperty Name="numero_error" ColumnName="numero_error" />
+                <ScalarProperty Name="fecha_error" ColumnName="fecha_error" />
+                <ScalarProperty Name="usuario" ColumnName="usuario" />
+                <ScalarProperty Name="id_error_tms" ColumnName="id_error_tms" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ERROR_SERVICIO_GENERACION_PROCESO">
+            <EntityTypeMapping TypeName="Data.ERROR_SERVICIO_GENERACION_PROCESO">
+              <MappingFragment StoreEntitySet="ERROR_SERVICIO_GENERACION_PROCESO">
+                <ScalarProperty Name="Intento" ColumnName="Intento" />
+                <ScalarProperty Name="fecha_proceso" ColumnName="fecha_proceso" />
+                <ScalarProperty Name="descripcion_error" ColumnName="descripcion_error" />
+                <ScalarProperty Name="id_documento" ColumnName="id_documento" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ERROR_SERVICIO_ASIGNACION_MASIVA">
+            <EntityTypeMapping TypeName="Data.ERROR_SERVICIO_ASIGNACION_MASIVA">
+              <MappingFragment StoreEntitySet="ERROR_SERVICIO_ASIGNACION_MASIVA">
+                <ScalarProperty Name="Intento" ColumnName="Intento" />
+                <ScalarProperty Name="fecha_proceso" ColumnName="fecha_proceso" />
+                <ScalarProperty Name="descripcion_error" ColumnName="descripcion_error" />
+                <ScalarProperty Name="id_bloque" ColumnName="id_bloque" />
+                <ScalarProperty Name="id_documento" ColumnName="id_documento" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ERROR_SERVICIO_ASIGNACION_MASIVA_LOG">
+            <EntityTypeMapping TypeName="Data.ERROR_SERVICIO_ASIGNACION_MASIVA_LOG">
+              <MappingFragment StoreEntitySet="ERROR_SERVICIO_ASIGNACION_MASIVA_LOG">
+                <ScalarProperty Name="Intento" ColumnName="Intento" />
+                <ScalarProperty Name="fecha_proceso" ColumnName="fecha_proceso" />
+                <ScalarProperty Name="descripcion_error" ColumnName="descripcion_error" />
+                <ScalarProperty Name="id_bloque" ColumnName="id_bloque" />
+                <ScalarProperty Name="id_documento" ColumnName="id_documento" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ERROR_SERVICIO_GENERACION_PROCESO_LOG">
+            <EntityTypeMapping TypeName="Data.ERROR_SERVICIO_GENERACION_PROCESO_LOG">
+              <MappingFragment StoreEntitySet="ERROR_SERVICIO_GENERACION_PROCESO_LOG">
+                <ScalarProperty Name="fecha_proceso" ColumnName="fecha_proceso" />
+                <ScalarProperty Name="descripcion_error" ColumnName="descripcion_error" />
+                <ScalarProperty Name="id_documento" ColumnName="id_documento" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CONTROL_FIXES">
+            <EntityTypeMapping TypeName="Data.CONTROL_FIXES">
+              <MappingFragment StoreEntitySet="CONTROL_FIXES">
+                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+                <ScalarProperty Name="FechaFinProceso" ColumnName="FechaFinProceso" />
+                <ScalarProperty Name="HotFix" ColumnName="HotFix" />
+                <ScalarProperty Name="usuariowin" ColumnName="usuariowin" />
+                <ScalarProperty Name="ip" ColumnName="ip" />
+                <ScalarProperty Name="mensaje" ColumnName="mensaje" />
+                <ScalarProperty Name="estado_proceso" ColumnName="estado_proceso" />
+                <ScalarProperty Name="fecha_proceso" ColumnName="fecha_proceso" />
+                <ScalarProperty Name="fix" ColumnName="fix" />
+                <ScalarProperty Name="versiontms" ColumnName="versiontms" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ControlFixesArqs">
+            <EntityTypeMapping TypeName="Data.ControlFixesArq">
+              <MappingFragment StoreEntitySet="ControlFixesArq">
+                <ScalarProperty Name="ConsecutivoUnico" ColumnName="ConsecutivoUnico" />
+                <ScalarProperty Name="Ip" ColumnName="Ip" />
+                <ScalarProperty Name="Usuario" ColumnName="Usuario" />
+                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+                <ScalarProperty Name="FechaFinEjecucion" ColumnName="FechaFinEjecucion" />
+                <ScalarProperty Name="FechaInicioEjecucion" ColumnName="FechaInicioEjecucion" />
+                <ScalarProperty Name="HotFix" ColumnName="HotFix" />
+                <ScalarProperty Name="Fix" ColumnName="Fix" />
+                <ScalarProperty Name="VersionMayor" ColumnName="VersionMayor" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VWBloqueosBaseDatos">
+            <EntityTypeMapping TypeName="Data.VWBloqueosBaseDato">
+              <MappingFragment StoreEntitySet="VWBloqueosBaseDatos">
+                <ScalarProperty Name="DbNameBloquada" ColumnName="DbNameBloquada" />
+                <ScalarProperty Name="DbName" ColumnName="DbName" />
+                <ScalarProperty Name="ObjectBloqueado" ColumnName="ObjectBloqueado" />
+                <ScalarProperty Name="ObjectoSPCausanteBloqueo" ColumnName="ObjectoSPCausanteBloqueo" />
+                <ScalarProperty Name="StatementSqlBloqueada" ColumnName="StatementSqlBloqueada" />
+                <ScalarProperty Name="statementText" ColumnName="statementText" />
+                <ScalarProperty Name="objetoBloqueado" ColumnName="objetoBloqueado" />
+                <ScalarProperty Name="AplicacionBloqueda" ColumnName="AplicacionBloqueda" />
+                <ScalarProperty Name="Aplicacion" ColumnName="Aplicacion" />
+                <ScalarProperty Name="hora" ColumnName="hora" />
+                <ScalarProperty Name="FechaCreacion" ColumnName="FechaCreacion" />
+                <ScalarProperty Name="IdRegistro" ColumnName="IdRegistro" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LOG_PROCESADOS_B2B">
+            <EntityTypeMapping TypeName="Data.LOG_PROCESADOS_B2B">
+              <MappingFragment StoreEntitySet="LOG_PROCESADOS_B2B">
+                <ScalarProperty Name="notificacion_SrvPrincipal" ColumnName="notificacion_SrvPrincipal" />
+                <ScalarProperty Name="descripcion" ColumnName="descripcion" />
+                <ScalarProperty Name="numero_proceso" ColumnName="numero_proceso" />
+                <ScalarProperty Name="fecha_recepcion" ColumnName="fecha_recepcion" />
+                <ScalarProperty Name="accion" ColumnName="accion" />
+                <ScalarProperty Name="id_log_procesadosB2B" ColumnName="id_log_procesadosB2B" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LOG_WSRADICACION_FTP">
+            <EntityTypeMapping TypeName="Data.LOG_WSRADICACION_FTP">
+              <MappingFragment StoreEntitySet="LOG_WSRADICACION_FTP">
+                <ScalarProperty Name="Fuente" ColumnName="Fuente" />
+                <ScalarProperty Name="Usuario" ColumnName="Usuario" />
+                <ScalarProperty Name="Id_Documento" ColumnName="Id_Documento" />
+                <ScalarProperty Name="Estado" ColumnName="Estado" />
+                <ScalarProperty Name="Evento" ColumnName="Evento" />
+                <ScalarProperty Name="Fecha" ColumnName="Fecha" />
+                <ScalarProperty Name="IdLog" ColumnName="IdLog" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LOG_ERROR_TMS_FILESYSTEM">
+            <EntityTypeMapping TypeName="Data.LOG_ERROR_TMS_FILESYSTEM">
+              <MappingFragment StoreEntitySet="LOG_ERROR_TMS_FILESYSTEM">
+                <ScalarProperty Name="direccion_IP" ColumnName="direccion_IP" />
+                <ScalarProperty Name="descripcion_usuario" ColumnName="descripcion_usuario" />
+                <ScalarProperty Name="descripcion_tecnica" ColumnName="descripcion_tecnica" />
+                <ScalarProperty Name="fuente_error" ColumnName="fuente_error" />
+                <ScalarProperty Name="fecha_error" ColumnName="fecha_error" />
+                <ScalarProperty Name="usuario" ColumnName="usuario" />
+                <ScalarProperty Name="id_error_tms" ColumnName="id_error_tms" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Logs">
+            <EntityTypeMapping TypeName="Data.Log">
+              <MappingFragment StoreEntitySet="Log">
+                <ScalarProperty Name="EventOk" ColumnName="EventOk" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Method" ColumnName="Method" />
+                <ScalarProperty Name="Component" ColumnName="Component" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Level" ColumnName="Level" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LOG_PROCESO_CONSUMO_WS">
+            <EntityTypeMapping TypeName="Data.LOG_PROCESO_CONSUMO_WS">
+              <MappingFragment StoreEntitySet="LOG_PROCESO_CONSUMO_WS">
+                <ScalarProperty Name="fecha_consumoWS" ColumnName="fecha_consumoWS" />
+                <ScalarProperty Name="procesado" ColumnName="procesado" />
+                <ScalarProperty Name="respuesta" ColumnName="respuesta" />
+                <ScalarProperty Name="origen" ColumnName="origen" />
+                <ScalarProperty Name="id_solicitud" ColumnName="id_solicitud" />
+                <ScalarProperty Name="id_log_ws" ColumnName="id_log_ws" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LOG_PROC_ESPECIAL">
+            <EntityTypeMapping TypeName="Data.LOG_PROC_ESPECIAL">
+              <MappingFragment StoreEntitySet="LOG_PROC_ESPECIAL">
+                <ScalarProperty Name="operacion" ColumnName="operacion" />
+                <ScalarProperty Name="estado" ColumnName="estado" />
+                <ScalarProperty Name="comentario" ColumnName="comentario" />
+                <ScalarProperty Name="id_documento_destino" ColumnName="id_documento_destino" />
+                <ScalarProperty Name="id_documento" ColumnName="id_documento" />
+                <ScalarProperty Name="usuario" ColumnName="usuario" />
+                <ScalarProperty Name="fec_proceso" ColumnName="fec_proceso" />
+                <ScalarProperty Name="proceso" ColumnName="proceso" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ERROR_SERVICIO_CONSUMO_WEBSERVICE">
+            <EntityTypeMapping TypeName="Data.ERROR_SERVICIO_CONSUMO_WEBSERVICE">
+              <MappingFragment StoreEntitySet="ERROR_SERVICIO_CONSUMO_WEBSERVICE">
+                <ScalarProperty Name="fecha_proceso" ColumnName="fecha_proceso" />
+                <ScalarProperty Name="descripcion_error" ColumnName="descripcion_error" />
+                <ScalarProperty Name="id_solicitud" ColumnName="id_solicitud" />
+                <ScalarProperty Name="id_log" ColumnName="id_log" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ERROR_SERVICIO_CONSUMO_WEBSERVICE_LOG">
+            <EntityTypeMapping TypeName="Data.ERROR_SERVICIO_CONSUMO_WEBSERVICE_LOG">
+              <MappingFragment StoreEntitySet="ERROR_SERVICIO_CONSUMO_WEBSERVICE_LOG">
+                <ScalarProperty Name="fecha_proceso" ColumnName="fecha_proceso" />
+                <ScalarProperty Name="descripcion_error" ColumnName="descripcion_error" />
+                <ScalarProperty Name="id_solicitud" ColumnName="id_solicitud" />
+                <ScalarProperty Name="id_log" ColumnName="id_log" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LogGestionDocumentos">
+            <EntityTypeMapping TypeName="Data.LogGestionDocumento">
+              <MappingFragment StoreEntitySet="LogGestionDocumentos">
+                <ScalarProperty Name="Resultado" ColumnName="Resultado" />
+                <ScalarProperty Name="Intentos" ColumnName="Intentos" />
+                <ScalarProperty Name="Descripción" ColumnName="Descripción" />
+                <ScalarProperty Name="Estado" ColumnName="Estado" />
+                <ScalarProperty Name="FechaFinProceso" ColumnName="FechaFinProceso" />
+                <ScalarProperty Name="FechaIniProceso" ColumnName="FechaIniProceso" />
+                <ScalarProperty Name="IdRegistro" ColumnName="IdRegistro" />
+                <ScalarProperty Name="IdTarea" ColumnName="IdTarea" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ERROR_SERVICIO_GENERACION_PROCESO_DIST">
+            <EntityTypeMapping TypeName="Data.ERROR_SERVICIO_GENERACION_PROCESO_DIST">
+              <MappingFragment StoreEntitySet="ERROR_SERVICIO_GENERACION_PROCESO_DIST">
+                <ScalarProperty Name="Intento" ColumnName="Intento" />
+                <ScalarProperty Name="fecha_proceso" ColumnName="fecha_proceso" />
+                <ScalarProperty Name="descripcion_error" ColumnName="descripcion_error" />
+                <ScalarProperty Name="id_documento_destino" ColumnName="id_documento_destino" />
+                <ScalarProperty Name="id_documento" ColumnName="id_documento" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ERROR_SERVICIO_GENERACION_PROCESO_DIST_LOG">
+            <EntityTypeMapping TypeName="Data.ERROR_SERVICIO_GENERACION_PROCESO_DIST_LOG">
+              <MappingFragment StoreEntitySet="ERROR_SERVICIO_GENERACION_PROCESO_DIST_LOG">
+                <ScalarProperty Name="fecha_proceso" ColumnName="fecha_proceso" />
+                <ScalarProperty Name="descripcion_error" ColumnName="descripcion_error" />
+                <ScalarProperty Name="id_documento_destino" ColumnName="id_documento_destino" />
+                <ScalarProperty Name="id_documento" ColumnName="id_documento" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LOG_PROCESOS_ESPECIALES_SEGUIMIENTO">
+            <EntityTypeMapping TypeName="Data.LOG_PROCESOS_ESPECIALES_SEGUIMIENTO">
+              <MappingFragment StoreEntitySet="LOG_PROCESOS_ESPECIALES_SEGUIMIENTO">
+                <ScalarProperty Name="mensaje" ColumnName="mensaje" />
+                <ScalarProperty Name="id_politica" ColumnName="id_politica" />
+                <ScalarProperty Name="canal" ColumnName="canal" />
+                <ScalarProperty Name="estado" ColumnName="estado" />
+                <ScalarProperty Name="fec_hora_last_update" ColumnName="fec_hora_last_update" />
+                <ScalarProperty Name="fec_hora_inicio_proceso" ColumnName="fec_hora_inicio_proceso" />
+                <ScalarProperty Name="id_usuario" ColumnName="id_usuario" />
+                <ScalarProperty Name="id_objeto" ColumnName="id_objeto" />
+                <ScalarProperty Name="tipo_proceso" ColumnName="tipo_proceso" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LOG_TRANS_PAGO">
+            <EntityTypeMapping TypeName="Data.LOG_TRANS_PAGO">
+              <MappingFragment StoreEntitySet="LOG_TRANS_PAGO">
+                <ScalarProperty Name="IP" ColumnName="IP" />
+                <ScalarProperty Name="log_idusr_tercero_descrip" ColumnName="log_idusr_tercero_descrip" />
+                <ScalarProperty Name="log_idusr_tercero" ColumnName="log_idusr_tercero" />
+                <ScalarProperty Name="log_idtramite_ext_descrip" ColumnName="log_idtramite_ext_descrip" />
+                <ScalarProperty Name="log_idtramite_externo" ColumnName="log_idtramite_externo" />
+                <ScalarProperty Name="log_idusr_ext_descrip" ColumnName="log_idusr_ext_descrip" />
+                <ScalarProperty Name="log_idusr_externo" ColumnName="log_idusr_externo" />
+                <ScalarProperty Name="log_confirmation" ColumnName="log_confirmation" />
+                <ScalarProperty Name="log_tipo_pago" ColumnName="log_tipo_pago" />
+                <ScalarProperty Name="id_log_trans_pago" ColumnName="id_log_trans_pago" />
+                <ScalarProperty Name="log_ciclo" ColumnName="log_ciclo" />
+                <ScalarProperty Name="log_articulos" ColumnName="log_articulos" />
+                <ScalarProperty Name="log_transaction_state" ColumnName="log_transaction_state" />
+                <ScalarProperty Name="log_bank_process_date" ColumnName="log_bank_process_date" />
+                <ScalarProperty Name="log_solicite_date" ColumnName="log_solicite_date" />
+                <ScalarProperty Name="log_vat_value" ColumnName="log_vat_value" />
+                <ScalarProperty Name="log_transaction_value" ColumnName="log_transaction_value" />
+                <ScalarProperty Name="log_financial_inst_code" ColumnName="log_financial_inst_code" />
+                <ScalarProperty Name="log_trazability_code" ColumnName="log_trazability_code" />
+                <ScalarProperty Name="log_ticket_id" ColumnName="log_ticket_id" />
+                <ScalarProperty Name="log_usuario" ColumnName="log_usuario" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DocumentosNoProcesadosPorListarSolAsignacionMasivas">
+            <EntityTypeMapping TypeName="Data.DocumentosNoProcesadosPorListarSolAsignacionMasivas">
+              <MappingFragment StoreEntitySet="DocumentosNoProcesadosPorListarSolAsignacionMasivas">
+                <ScalarProperty Name="FechaRegistro" ColumnName="FechaRegistro" />
+                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+                <ScalarProperty Name="NombreDeptoRadicador" ColumnName="NombreDeptoRadicador" />
+                <ScalarProperty Name="IdDeptoRadicador" ColumnName="IdDeptoRadicador" />
+                <ScalarProperty Name="NombreUsuarioRadicador" ColumnName="NombreUsuarioRadicador" />
+                <ScalarProperty Name="IdUsuarioRadicador" ColumnName="IdUsuarioRadicador" />
+                <ScalarProperty Name="FechaRadicacion" ColumnName="FechaRadicacion" />
+                <ScalarProperty Name="Radicacion" ColumnName="Radicacion" />
+                <ScalarProperty Name="IdBloque" ColumnName="IdBloque" />
+                <ScalarProperty Name="NombreTipoDoc" ColumnName="NombreTipoDoc" />
+                <ScalarProperty Name="IdTipoDoc" ColumnName="IdTipoDoc" />
+                <ScalarProperty Name="IdDocumento" ColumnName="IdDocumento" />
+                <ScalarProperty Name="IdRegistro" ColumnName="IdRegistro" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="PAGetContadores" FunctionName="LogsTms.Store.PAGetContadores">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="Data.PAGetContadores_Result">
+                <ScalarProperty Name="RegistrosAsignacionMasiva" ColumnName="RegistrosAsignacionMasiva" />
+                <ScalarProperty Name="RegistrosAsignacionMasivalog" ColumnName="RegistrosAsignacionMasivalog" />
+                <ScalarProperty Name="RegistrosgeneracionProceso" ColumnName="RegistrosgeneracionProceso" />
+                <ScalarProperty Name="RegistrosgeneracionProcesolog" ColumnName="RegistrosgeneracionProcesolog" />
+                <ScalarProperty Name="RegistroError" ColumnName="RegistroError" />
+                <ScalarProperty Name="RegistroProceso" ColumnName="RegistroProceso" />
+                <ScalarProperty Name="RegistroFixesDesarrollo" ColumnName="RegistroFixesDesarrollo" />
+                <ScalarProperty Name="RegistroFixesArqu" ColumnName="RegistroFixesArqu" />
+                <ScalarProperty Name="RegistroBloqueosBD" ColumnName="RegistroBloqueosBD" />
+                <ScalarProperty Name="RegistroRadicacionFtp" ColumnName="RegistroRadicacionFtp" />
+                <ScalarProperty Name="RegistroErrorFileSystem" ColumnName="RegistroErrorFileSystem" />
+                <ScalarProperty Name="RegistroProcesosB2B" ColumnName="RegistroProcesosB2B" />
+                <ScalarProperty Name="RegistroMonitorLog" ColumnName="RegistroMonitorLog" />
+                <ScalarProperty Name="RegistroProcesoConsumoWS" ColumnName="RegistroProcesoConsumoWS" />
+                <ScalarProperty Name="RegistroLogProcEspecial" ColumnName="RegistroLogProcEspecial" />
+                <ScalarProperty Name="RegistroProcesoEnvioEmails" ColumnName="RegistroProcesoEnvioEmails" />
+                <ScalarProperty Name="RegistroErrorConsumoWebService" ColumnName="RegistroErrorConsumoWebService" />
+                <ScalarProperty Name="RegistroErrorConsumoWebServiceLog" ColumnName="RegistroErrorConsumoWebServiceLog" />
+                <ScalarProperty Name="RegistroLogEventoGestion" ColumnName="RegistroLogEventoGestion" />
+                <ScalarProperty Name="RegistroLogGestionDocumento" ColumnName="RegistroLogGestionDocumento" />
+                <ScalarProperty Name="RegistroErrorGeneracionProcesosDist" ColumnName="RegistroErrorGeneracionProcesosDist" />
+                <ScalarProperty Name="RegistroErrorGeneracionProcesosDistLog" ColumnName="RegistroErrorGeneracionProcesosDistLog" />
+                <ScalarProperty Name="RegistroLogprocesosespecialesseguimiento" ColumnName="RegistroLogprocesosespecialesseguimiento" />
+                <ScalarProperty Name="RegistroLogTMSMonitor" ColumnName="RegistroLogTMSMonitor" />
+                <ScalarProperty Name="RegistroLogTransPago" ColumnName="RegistroLogTransPago" />
+                <ScalarProperty Name="RegistroLogPagosTransTMS" ColumnName="RegistroLogPagosTransTMS" />
+                <ScalarProperty Name="RegistroLogPopProcesado" ColumnName="RegistroLogPopProcesado" />
+                <ScalarProperty Name="RegistroLogDocumentosNoProcesados" ColumnName="RegistroLogDocumentosNoProcesados" />
+                <ScalarProperty Name="RegistroLogClasico" ColumnName="RegistroLogClasico" />
+                <ScalarProperty Name="RegistroOptimizacionTablas" ColumnName="RegistroOptimizacionTablas" />
+                <ScalarProperty Name="RegistroOptimizacionLog" ColumnName="RegistroOptimizacionLog" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="False" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="False" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
