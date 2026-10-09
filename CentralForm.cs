@@ -1,7 +1,5 @@
-using System.Reflection.Metadata;
 using System.Text;
 using System.Xml.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EDMXMigrationTool
 {
@@ -504,8 +502,8 @@ namespace EDMXMigrationTool
                 interfaceFile.Append($"namespace {parameters.Namespace}.Contracts.Repositories.{(hasSchema ? entity.Schema : DefaultSchema)};");
                 interfaceFile.AppendLine($"public interface I{entity.NameFixed}Repository : IRepository<Domain.{(hasSchema ? entity.Schema : DefaultSchema)}.{entity.NameFixed}> {{");
                 interfaceFile.Append('}');
-                File.WriteAllText(Path.Combine(parameters.DestinationPath, "IRepositories", (hasSchema?entity.Schema: DefaultSchema), "I" + entity.NameFixed + "Repository.cs"), interfaceFile.ToString());
-                
+                File.WriteAllText(Path.Combine(parameters.DestinationPath, "IRepositories", (hasSchema ? entity.Schema : DefaultSchema), "I" + entity.NameFixed + "Repository.cs"), interfaceFile.ToString());
+
                 StringBuilder repoFile = new StringBuilder();
                 repoFile.AppendLine($"using {parameters.Namespace}.Contracts.Repositories.{(hasSchema ? entity.Schema : DefaultSchema)};{Environment.NewLine}");
                 repoFile.AppendLine($"namespace {parameters.Namespace}.Repositories.{(hasSchema ? entity.Schema : DefaultSchema)};");
@@ -513,7 +511,7 @@ namespace EDMXMigrationTool
                 repoFile.AppendLine($"   public {entity.NameFixed}Repository(AppDbContext context) : base(context) {{");
                 repoFile.AppendLine("   }");
                 repoFile.Append('}');
-                File.WriteAllText(Path.Combine(parameters.DestinationPath, "Repositories", (hasSchema?entity.Schema: DefaultSchema), entity.NameFixed + "Repository.cs"), repoFile.ToString());
+                File.WriteAllText(Path.Combine(parameters.DestinationPath, "Repositories", (hasSchema ? entity.Schema : DefaultSchema), entity.NameFixed + "Repository.cs"), repoFile.ToString());
             }
         }
         /// <summary>
@@ -713,10 +711,11 @@ namespace EDMXMigrationTool
                 file.AppendLine("\";");
                 file.AppendLine("    }");
                 file.Append('}');
-                File.WriteAllText(Path.Combine(parameters.DestinationPath, "Domain", (hasSchema ? entity.Schema: DefaultSchema), entity.NameFixed + ".cs"), file.ToString());
+                File.WriteAllText(Path.Combine(parameters.DestinationPath, "Domain", (hasSchema ? entity.Schema : DefaultSchema), entity.NameFixed + ".cs"), file.ToString());
             }
 
-            foreach (KeyValuePair<string, ComplexType> item in conceptualModel.ComplexTypes) {
+            foreach (KeyValuePair<string, ComplexType> item in conceptualModel.ComplexTypes)
+            {
                 ComplexType complexType = item.Value;
                 string functionName = complexType.Name.Replace("_Result", string.Empty);
                 StorageFunction sfn = storage.Functions[functionName];
@@ -920,12 +919,12 @@ namespace EDMXMigrationTool
                 file.Append(Environment.NewLine);
                 file.AppendLine($"namespace {parameters.Namespace}.Configuration.{parameters.DbName}.{(hasSchema ? table.Schema : DefaultSchema)};");
                 file.Append(Environment.NewLine);
-                file.AppendLine( "/// <summary>");
+                file.AppendLine("/// <summary>");
                 file.AppendLine($"/// Provides the Entity Framework Core configuration for the {table.Name} table.");
-                file.AppendLine( "/// </summary>");
+                file.AppendLine("/// </summary>");
                 file.AppendLine("/// <remarks>This configuration defines the table mapping, primary key, property requirements, and");
                 file.AppendLine($"///    constraints for the {table.Name} table within the {table.Schema} schema. It is typically used by the");
-                file.AppendLine( "///    Entity Framework Core infrastructure and is not intended to be used directly in application code.");
+                file.AppendLine("///    Entity Framework Core infrastructure and is not intended to be used directly in application code.");
                 file.AppendLine("/// </remarks>");
                 file.AppendLine($"public class {table.EntityName}Configuration : IEntityTypeConfiguration<Domain.{parameters.DbName}.{(hasSchema ? table.Schema : DefaultSchema)}.{table.EntityName}>");
                 file.AppendLine("{");
@@ -1016,11 +1015,8 @@ namespace EDMXMigrationTool
                     {
                         file.Append(".HasPrecision(");
                         file.Append(column.Precision.Value);
-                        if (column.Scale is > 0)
-                        {
-                            file.Append(", ");
-                            file.Append(column.Scale.Value);
-                        }
+                        file.Append(", ");
+                        file.Append(column.Scale ?? 0);
                         file.Append(")");
                     }
                     switch (column.ValueGenerator)
@@ -1059,47 +1055,47 @@ namespace EDMXMigrationTool
                             }
                         }
                         else
-                        /* one to many */
-                        if (
-                            fk.Destination is Multiplicity.One or Multiplicity.ZeroOrOne &&
-                            fk.Source is Multiplicity.Many or Multiplicity.ZeroOrMany
-                        )
-                        {
-                            file.Append($"builder.HasOne(x => x.{fk.TableNameFixedWithCounter}).WithMany(x => x.{table.NameFixed}).HasForeignKey(x => ");
-                            if (fk.Columns.Count == 1)
+                            /* one to many */
+                            if (
+                                fk.Destination is Multiplicity.One or Multiplicity.ZeroOrOne &&
+                                fk.Source is Multiplicity.Many or Multiplicity.ZeroOrMany
+                            )
                             {
-                                file.AppendLine($"x.{fk.Columns[0].Key});");
+                                file.Append($"builder.HasOne(x => x.{fk.TableNameFixedWithCounter}).WithMany(x => x.{table.NameFixed}).HasForeignKey(x => ");
+                                if (fk.Columns.Count == 1)
+                                {
+                                    file.AppendLine($"x.{fk.Columns[0].Key});");
+                                }
+                                else
+                                {
+                                    file.Append("new {");
+                                    file.Append(string.Join(", ", fk.Columns.Select(c => "x." + c.Key)));
+                                    file.AppendLine("});");
+                                }
                             }
                             else
-                            {
-                                file.Append("new {");
-                                file.Append(string.Join(", ", fk.Columns.Select(c => "x." + c.Key)));
-                                file.AppendLine("});");
-                            }
-                        }
-                        else
-                        /* one to one */
-                        if (
-                            (fk.Destination == Multiplicity.One || fk.Destination == Multiplicity.ZeroOrOne) &&
-                            (fk.Source == Multiplicity.One || fk.Source == Multiplicity.ZeroOrOne)
-                        )
-                        {
-                            file.Append($"builder.HasOne(x => x.{fk.TableNameFixedWithCounter}).WithOne(x => x.{table.NameFixed}).HasForeignKey<Domain.{parameters.DbName}.{(fk.TableSchema == "dbo" ? DefaultSchema : fk.TableSchema)}.{fk.TableNameFixed}>(x => ");
-                            if (fk.Columns.Count == 1)
-                            {
-                                file.AppendLine($"x.{fk.Columns[0].Value});");
-                            }
-                            else
-                            {
-                                file.Append("new {");
-                                file.Append(string.Join(", ", fk.Columns.Select(c => "x." + c.Value)));
-                                file.AppendLine("});");
-                            }
-                        }
-                        else
-                        {
-                            throw new Exception("WFT!!");
-                        }
+                                /* one to one */
+                                if (
+                                    (fk.Destination == Multiplicity.One || fk.Destination == Multiplicity.ZeroOrOne) &&
+                                    (fk.Source == Multiplicity.One || fk.Source == Multiplicity.ZeroOrOne)
+                                )
+                                {
+                                    file.Append($"builder.HasOne(x => x.{fk.TableNameFixedWithCounter}).WithOne(x => x.{table.NameFixed}).HasForeignKey<Domain.{parameters.DbName}.{(fk.TableSchema == "dbo" ? DefaultSchema : fk.TableSchema)}.{fk.TableNameFixed}>(x => ");
+                                    if (fk.Columns.Count == 1)
+                                    {
+                                        file.AppendLine($"x.{fk.Columns[0].Value});");
+                                    }
+                                    else
+                                    {
+                                        file.Append("new {");
+                                        file.Append(string.Join(", ", fk.Columns.Select(c => "x." + c.Value)));
+                                        file.AppendLine("});");
+                                    }
+                                }
+                                else
+                                {
+                                    throw new Exception("WFT!!");
+                                }
                     }
                 }
                 file.AppendLine("   }");
@@ -1109,9 +1105,9 @@ namespace EDMXMigrationTool
                     , file.ToString());
             }
 
-            foreach (Function fn in conceptualModel.Functions.Where(x => 
-                                                                !x.Value.IsFunction 
-                                                                && !string.IsNullOrEmpty(x.Value.ReturnComplexType) 
+            foreach (Function fn in conceptualModel.Functions.Where(x =>
+                                                                !x.Value.IsFunction
+                                                                && !string.IsNullOrEmpty(x.Value.ReturnComplexType)
                                                                 && x.Value.ReturnComplexType.Contains("Collection")
                                                             ).Select(x => x.Value))
             {
@@ -1139,7 +1135,7 @@ namespace EDMXMigrationTool
                 file.AppendLine("    ///   Configuration of the store procedure");
                 file.AppendLine("    /// </summary>");
                 file.AppendLine($"    public void Configure(EntityTypeBuilder<Domain.{parameters.DbName}.{(hasSchema ? sfn.Schema : DefaultSchema)}.Procedure.{returnType}> builder)");
-                file.AppendLine( "    {");
+                file.AppendLine("    {");
                 file.AppendLine("        builder.HasNoKey();");
                 file.AppendLine("        //builder.ToView(null);");
                 /*
@@ -1399,7 +1395,7 @@ namespace EDMXMigrationTool
                         foreach (FunctionParameter parameter in fn.Parameters)
                         {
                             file.AppendLine($"        SqlParameter param{parameter.Name} = new(\"@{parameter.Name}\", SqlDbType.{FnMapCSharpTypeToSqlType(parameter.Type)})");
-                            file.AppendLine( "        {");
+                            file.AppendLine("        {");
                             var pLower = parameter.Name.ToLower();
                             if (parameter.Type == "string")
                             {
@@ -1452,7 +1448,8 @@ namespace EDMXMigrationTool
                         file.Append(" ");
                         file.Append(string.Join(",", from f in fn.Parameters select "{param" + f.Name + "}"));
                         file.AppendLine("\");");
-                        if (string.IsNullOrEmpty(returnType) && inputOutCount == 1) {
+                        if (string.IsNullOrEmpty(returnType) && inputOutCount == 1)
+                        {
                             file.Append("        return (");
                             file.Append(returnDataType);
                             file.Append(")");
@@ -1542,7 +1539,7 @@ namespace EDMXMigrationTool
         /// complex type, or a collection type depending on the function's metadata.</returns>
         private string fnCalculateReturnType(Function fn, StorageFunction sfn, UIParameters parameters)
         {
-            if (string.IsNullOrEmpty(fn.ReturnComplexType) 
+            if (string.IsNullOrEmpty(fn.ReturnComplexType)
                 || fn.ReturnComplexType == "Collection(String)"
                 || fn.ReturnComplexType == "Collection(Int32)"
                 || fn.ReturnComplexType == "Collection(Boolean)"
@@ -1728,7 +1725,8 @@ namespace EDMXMigrationTool
                     conceptualModel.Functions.Remove(function.FunctionName);
                     if (conceptualModel.Functions.ContainsKey(function.StoredProcedureName))
                     {
-                        if (storageContext.Functions.ContainsKey(function.FunctionName)){
+                        if (storageContext.Functions.ContainsKey(function.FunctionName))
+                        {
                             storageContext.Functions.Remove(function.FunctionName);
                         }
                     }

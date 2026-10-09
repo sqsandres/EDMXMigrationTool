@@ -8,4 +8,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="ArchivisticaBD.edmx" />
+    <None Remove="BPMNProcessBD.edmx" />
+    <None Remove="FacturaElectronicaBD.edmx" />
+    <None Remove="LogTms.edmx" />
+    <None Remove="OficinaPostalBD.edmx" />
+    <None Remove="ProyectosBD.edmx" />
+    <None Remove="TMSBD.edmx" />
+  </ItemGroup>
+
 </Project>
